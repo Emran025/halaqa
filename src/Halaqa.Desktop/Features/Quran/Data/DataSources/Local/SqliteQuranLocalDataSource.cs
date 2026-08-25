@@ -47,9 +47,10 @@ internal sealed class SqliteQuranLocalDataSource : IQuranLocalDataSource
 
     private async Task<string> EnsureDatabaseAsync(CancellationToken cancellationToken)
     {
-        if (_databasePath is not null && File.Exists(_databasePath))
+        var existingPath = _databasePath;
+        if (existingPath is not null && File.Exists(existingPath))
         {
-            return _databasePath;
+            return existingPath;
         }
 
         await _copyGate.WaitAsync(cancellationToken);
