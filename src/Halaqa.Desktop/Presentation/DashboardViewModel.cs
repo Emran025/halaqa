@@ -20,6 +20,7 @@ public sealed partial class DashboardViewModel
 
     public event EventHandler? ProfileRequested;
     public event EventHandler? StudentProfileRequested;
+    public event EventHandler? TeacherProfileRequested;
 
     public string UserName { get; }
     public string RoleLabel { get; }
@@ -35,6 +36,6 @@ public sealed partial class DashboardViewModel
             return;
         }
 
-        ProfileRequested?.Invoke(this, EventArgs.Empty);
+        TeacherProfileRequested?.Invoke(this, EventArgs.Empty);
     }
 }

@@ -16,6 +16,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly ResetPasswordViewModel _resetPasswordViewModel;
     private readonly GeneralProfileViewModel _generalProfileViewModel;
     private readonly StudentProfileViewModel _studentProfileViewModel;
+    private readonly TeacherProfileViewModel _teacherProfileViewModel;
     private readonly RestoreSessionUseCase _restoreSessionUseCase;
     private AuthenticatedUser? _authenticatedUser;
 
@@ -30,6 +31,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         ResetPasswordViewModel resetPasswordViewModel,
         GeneralProfileViewModel generalProfileViewModel,
         StudentProfileViewModel studentProfileViewModel,
+        TeacherProfileViewModel teacherProfileViewModel,
         RestoreSessionUseCase restoreSessionUseCase)
     {
         _loginViewModel = loginViewModel;
@@ -39,6 +41,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _resetPasswordViewModel = resetPasswordViewModel;
         _generalProfileViewModel = generalProfileViewModel;
         _studentProfileViewModel = studentProfileViewModel;
+        _teacherProfileViewModel = teacherProfileViewModel;
         _restoreSessionUseCase = restoreSessionUseCase;
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
@@ -56,6 +59,8 @@ public sealed partial class MainShellViewModel : ObservableObject
         _generalProfileViewModel.ProfileUpdated += (_, profile) => UpdateAuthenticatedUser(profile);
         _studentProfileViewModel.BackRequested += (_, _) => ShowDashboard();
         _studentProfileViewModel.ProfileUpdated += (_, profile) => UpdateAuthenticatedUser(profile);
+        _teacherProfileViewModel.BackRequested += (_, _) => ShowDashboard();
+        _teacherProfileViewModel.ProfileUpdated += (_, profile) => UpdateAuthenticatedUser(profile);
 
         CurrentPage = _loginViewModel;
     }
@@ -86,6 +91,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         var dashboardViewModel = new DashboardViewModel(_authenticatedUser.User);
         dashboardViewModel.ProfileRequested += async (_, _) => await ShowProfileAsync();
         dashboardViewModel.StudentProfileRequested += async (_, _) => await ShowStudentProfileAsync();
+        dashboardViewModel.TeacherProfileRequested += async (_, _) => await ShowTeacherProfileAsync();
         CurrentPage = dashboardViewModel;
     }
 
@@ -99,6 +105,12 @@ public sealed partial class MainShellViewModel : ObservableObject
     {
         CurrentPage = _studentProfileViewModel;
         await _studentProfileViewModel.LoadCommand.ExecuteAsync(null);
+    }
+
+    private async Task ShowTeacherProfileAsync()
+    {
+        CurrentPage = _teacherProfileViewModel;
+        await _teacherProfileViewModel.LoadCommand.ExecuteAsync(null);
     }
 
     private void UpdateAuthenticatedUser(UserProfile profile)
@@ -124,6 +136,19 @@ public sealed partial class MainShellViewModel : ObservableObject
         _authenticatedUser = _authenticatedUser with
         {
             User = new AuthUser(profile.Id, UserRole.Student, profile.Name, profile.Email, profile.Status)
+        };
+    }
+
+    private void UpdateAuthenticatedUser(TeacherProfile profile)
+    {
+        if (_authenticatedUser is null)
+        {
+            return;
+        }
+
+        _authenticatedUser = _authenticatedUser with
+        {
+            User = new AuthUser(profile.Id, UserRole.Teacher, profile.DisplayName, profile.Email ?? _authenticatedUser.User.Email, _authenticatedUser.User.Status)
         };
     }
 }
