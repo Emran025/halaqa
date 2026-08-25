@@ -1,20 +1,42 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <Color x:Key="AppCanvasColor">#FFF8FAF9</Color>
+    <Color x:Key="AppCanvasColor">#FFF5F7F6</Color>
     <Color x:Key="AppSurfaceColor">#FFFFFFFF</Color>
-    <Color x:Key="AppInkColor">#FF18312B</Color>
-    <Color x:Key="AppMutedInkColor">#FF53665F</Color>
-    <Color x:Key="AppSuccessColor">#FF107C41</Color>
-    <Color x:Key="AppWarningColor">#FFB76E00</Color>
+    <Color x:Key="AppSurfaceMutedColor">#FFEEF3F0</Color>
+    <Color x:Key="AppBorderColor">#FFD9E3DE</Color>
+    <Color x:Key="AppInkColor">#FF16352C</Color>
+    <Color x:Key="AppMutedInkColor">#FF5B6F67</Color>
+    <Color x:Key="AppPrimaryColor">#FF166047</Color>
+    <Color x:Key="AppPrimaryHoverColor">#FF0E4B36</Color>
+    <Color x:Key="AppPrimarySoftColor">#FFDDF2E8</Color>
+    <Color x:Key="AppAccentColor">#FFF3AD3D</Color>
+    <Color x:Key="AppAccentSoftColor">#FFFFF4D8</Color>
+    <Color x:Key="AppSuccessColor">#FF147A4B</Color>
+    <Color x:Key="AppSuccessSoftColor">#FFDFF6E9</Color>
+    <Color x:Key="AppWarningColor">#FF9B6200</Color>
+    <Color x:Key="AppWarningSoftColor">#FFFFF1CF</Color>
     <Color x:Key="AppErrorColor">#FFB42318</Color>
-    <Color x:Key="AppInfoColor">#FF155EEF</Color>
+    <Color x:Key="AppErrorSoftColor">#FFFDE7E5</Color>
+    <Color x:Key="AppInfoColor">#FF2367C9</Color>
+    <Color x:Key="AppInfoSoftColor">#FFE6F0FF</Color>
 
     <SolidColorBrush x:Key="AppCanvasBrush" Color="{StaticResource AppCanvasColor}" />
     <SolidColorBrush x:Key="AppSurfaceBrush" Color="{StaticResource AppSurfaceColor}" />
+    <SolidColorBrush x:Key="AppSurfaceMutedBrush" Color="{StaticResource AppSurfaceMutedColor}" />
+    <SolidColorBrush x:Key="AppBorderBrush" Color="{StaticResource AppBorderColor}" />
     <SolidColorBrush x:Key="AppInkBrush" Color="{StaticResource AppInkColor}" />
     <SolidColorBrush x:Key="AppMutedInkBrush" Color="{StaticResource AppMutedInkColor}" />
+    <SolidColorBrush x:Key="AppPrimaryBrush" Color="{StaticResource AppPrimaryColor}" />
+    <SolidColorBrush x:Key="AppPrimaryHoverBrush" Color="{StaticResource AppPrimaryHoverColor}" />
+    <SolidColorBrush x:Key="AppPrimarySoftBrush" Color="{StaticResource AppPrimarySoftColor}" />
+    <SolidColorBrush x:Key="AppAccentBrush" Color="{StaticResource AppAccentColor}" />
+    <SolidColorBrush x:Key="AppAccentSoftBrush" Color="{StaticResource AppAccentSoftColor}" />
     <SolidColorBrush x:Key="AppSuccessBrush" Color="{StaticResource AppSuccessColor}" />
+    <SolidColorBrush x:Key="AppSuccessSoftBrush" Color="{StaticResource AppSuccessSoftColor}" />
     <SolidColorBrush x:Key="AppWarningBrush" Color="{StaticResource AppWarningColor}" />
+    <SolidColorBrush x:Key="AppWarningSoftBrush" Color="{StaticResource AppWarningSoftColor}" />
     <SolidColorBrush x:Key="AppErrorBrush" Color="{StaticResource AppErrorColor}" />
+    <SolidColorBrush x:Key="AppErrorSoftBrush" Color="{StaticResource AppErrorSoftColor}" />
     <SolidColorBrush x:Key="AppInfoBrush" Color="{StaticResource AppInfoColor}" />
+    <SolidColorBrush x:Key="AppInfoSoftBrush" Color="{StaticResource AppInfoSoftColor}" />
 </ResourceDictionary>

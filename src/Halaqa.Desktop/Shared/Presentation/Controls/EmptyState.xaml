@@ -1,0 +1,24 @@
+<UserControl x:Class="Halaqa.Desktop.Shared.Presentation.Controls.EmptyState"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             x:Name="Root">
+    <Border Style="{StaticResource AppCard}" Background="{StaticResource AppSurfaceMutedBrush}" BorderThickness="0" Padding="28">
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+            <materialDesign:PackIcon Kind="InformationOutline" Width="38" Height="38" Foreground="{StaticResource AppPrimaryBrush}" HorizontalAlignment="Center" />
+            <TextBlock Text="{Binding Title, ElementName=Root}" Style="{StaticResource SectionTitle}" HorizontalAlignment="Center" Margin="0,12,0,0" />
+            <TextBlock Text="{Binding Message, ElementName=Root}" Style="{StaticResource BodyMuted}" TextAlignment="Center" Margin="0,6,0,0" MaxWidth="420" />
+            <Button Content="{Binding ActionText, ElementName=Root}" Command="{Binding ActionCommand, ElementName=Root}" HorizontalAlignment="Center" Margin="0,16,0,0">
+                <Button.Style>
+                    <Style TargetType="{x:Type Button}" BasedOn="{StaticResource AppSecondaryButton}">
+                        <Style.Triggers>
+                            <DataTrigger Binding="{Binding ActionText, ElementName=Root}" Value="">
+                                <Setter Property="Visibility" Value="Collapsed" />
+                            </DataTrigger>
+                        </Style.Triggers>
+                    </Style>
+                </Button.Style>
+            </Button>
+        </StackPanel>
+    </Border>
+</UserControl>

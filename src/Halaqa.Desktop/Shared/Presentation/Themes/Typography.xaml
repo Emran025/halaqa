@@ -7,20 +7,43 @@
         <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
         <Setter Property="Foreground" Value="{StaticResource AppInkBrush}" />
         <Setter Property="TextWrapping" Value="Wrap" />
+        <Setter Property="LineHeight" Value="24" />
+    </Style>
+
+    <Style x:Key="DisplayTitle" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontSize" Value="34" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="LineHeight" Value="46" />
     </Style>
 
     <Style x:Key="PageTitle" TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="28" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="38" />
     </Style>
 
     <Style x:Key="SectionTitle" TargetType="{x:Type TextBlock}">
         <Setter Property="FontSize" Value="18" />
         <Setter Property="FontWeight" Value="SemiBold" />
+        <Setter Property="LineHeight" Value="28" />
     </Style>
 
     <Style x:Key="BodyMuted" TargetType="{x:Type TextBlock}">
         <Setter Property="Foreground" Value="{StaticResource AppMutedInkBrush}" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="LineHeight" Value="24" />
+    </Style>
+
+    <Style x:Key="CaptionText" TargetType="{x:Type TextBlock}">
+        <Setter Property="Foreground" Value="{StaticResource AppMutedInkBrush}" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="LineHeight" Value="18" />
+    </Style>
+
+    <Style x:Key="QuranText" TargetType="{x:Type TextBlock}">
+        <Setter Property="FontFamily" Value="{StaticResource QuranFontFamily}" />
+        <Setter Property="FontSize" Value="27" />
+        <Setter Property="LineHeight" Value="46" />
+        <Setter Property="TextAlignment" Value="Center" />
     </Style>
 </ResourceDictionary>
