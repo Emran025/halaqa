@@ -3,6 +3,7 @@ using Halaqa.Desktop.Features.Mistakes;
 using Halaqa.Desktop.Features.Profile;
 using Halaqa.Desktop.Features.Quran;
 using Halaqa.Desktop.Features.Sessions;
+using Halaqa.Desktop.Features.TeacherDocuments;
 using Halaqa.Desktop.Presentation;
 using Halaqa.Desktop.Shared.Domain.Time;
 using Microsoft.Extensions.Configuration;
@@ -28,6 +29,7 @@ public static class Bootstrapper
         services.AddHalaqaInfrastructure();
         services.AddAuthFeature();
         services.AddProfileFeature();
+        services.AddTeacherDocumentsFeature();
         services.AddQuranFeature();
         services.AddMistakesFeature();
         services.AddSessionsFeature();
