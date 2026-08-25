@@ -1,8 +1,9 @@
+using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 
 namespace Halaqa.Desktop.Presentation;
 
-public sealed class DashboardViewModel
+public sealed partial class DashboardViewModel
 {
     public DashboardViewModel(AuthUser user)
     {
@@ -14,8 +15,13 @@ public sealed class DashboardViewModel
             : "راجع عناصر الحفظ والمراجعة والتلاوة لليوم.";
     }
 
+    public event EventHandler? ProfileRequested;
+
     public string UserName { get; }
     public string RoleLabel { get; }
     public string PrimaryActionTitle { get; }
     public string PrimaryActionDescription { get; }
+
+    [RelayCommand]
+    private void OpenProfile() => ProfileRequested?.Invoke(this, EventArgs.Empty);
 }

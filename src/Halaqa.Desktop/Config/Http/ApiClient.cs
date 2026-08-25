@@ -12,6 +12,8 @@ public interface IApiClient
     Task<Result> PostAsync<TRequest>(string relativePath, TRequest request, CancellationToken cancellationToken = default);
     Task<Result<TResponse>> PutAsync<TRequest, TResponse>(string relativePath, TRequest request, CancellationToken cancellationToken = default);
     Task<Result> PutAsync<TRequest>(string relativePath, TRequest request, CancellationToken cancellationToken = default);
+    Task<Result<TResponse>> PatchAsync<TRequest, TResponse>(string relativePath, TRequest request, CancellationToken cancellationToken = default);
+    Task<Result> PatchAsync<TRequest>(string relativePath, TRequest request, CancellationToken cancellationToken = default);
 }
 
 public sealed class ApiClient(HttpClient httpClient) : IApiClient
@@ -119,6 +121,53 @@ public sealed class ApiClient(HttpClient httpClient) : IApiClient
         }
     }
 
+    public async Task<Result<TResponse>> PatchAsync<TRequest, TResponse>(
+        string relativePath,
+        TRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Patch, relativePath)
+            {
+                Content = JsonContent.Create(request, options: JsonOptions)
+            };
+            using var response = await httpClient.SendAsync(requestMessage, cancellationToken);
+            return await DeserializeAsync<TResponse>(response, cancellationToken);
+        }
+        catch (HttpRequestException)
+        {
+            return Result<TResponse>.Failure(AppError.Network("تعذر الاتصال بالخادم. تحقق من الشبكة ثم أعد المحاولة."));
+        }
+        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return Result<TResponse>.Failure(AppError.Network("انتهت مهلة الاتصال بالخادم."));
+        }
+    }
+
+    public async Task<Result> PatchAsync<TRequest>(string relativePath, TRequest request, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var requestMessage = new HttpRequestMessage(HttpMethod.Patch, relativePath)
+            {
+                Content = JsonContent.Create(request, options: JsonOptions)
+            };
+            using var response = await httpClient.SendAsync(requestMessage, cancellationToken);
+            return response.IsSuccessStatusCode
+                ? Result.Success()
+                : Result.Failure(await ApiErrorMapper.MapAsync(response, cancellationToken));
+        }
+        catch (HttpRequestException)
+        {
+            return Result.Failure(AppError.Network("تعذر الاتصال بالخادم. تحقق من الشبكة ثم أعد المحاولة."));
+        }
+        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return Result.Failure(AppError.Network("انتهت مهلة الاتصال بالخادم."));
+        }
+    }
+
     private static async Task<Result<TResponse>> DeserializeAsync<TResponse>(HttpResponseMessage response, CancellationToken cancellationToken)
     {
         if (!response.IsSuccessStatusCode)
@@ -126,9 +175,16 @@ public sealed class ApiClient(HttpClient httpClient) : IApiClient
             return Result<TResponse>.Failure(await ApiErrorMapper.MapAsync(response, cancellationToken));
         }
 
-        var model = await response.Content.ReadFromJsonAsync<TResponse>(JsonOptions, cancellationToken);
-        return model is null
-            ? Result<TResponse>.Failure(new AppError(AppErrorKind.Unknown, "أعاد الخادم استجابة فارغة أو غير متوقعة."))
-            : Result<TResponse>.Success(model);
+        try
+        {
+            var model = await response.Content.ReadFromJsonAsync<TResponse>(JsonOptions, cancellationToken);
+            return model is null
+                ? Result<TResponse>.Failure(new AppError(AppErrorKind.Unknown, "أعاد الخادم استجابة فارغة أو غير متوقعة."))
+                : Result<TResponse>.Success(model);
+        }
+        catch (JsonException)
+        {
+            return Result<TResponse>.Failure(new AppError(AppErrorKind.Unknown, "أعاد الخادم استجابة غير متوقعة."));
+        }
     }
 }
