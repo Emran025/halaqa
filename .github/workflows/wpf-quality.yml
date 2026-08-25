@@ -1,0 +1,76 @@
+name: WPF Quality Gate
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: wpf-quality-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    name: Build, test, and validate architecture
+    runs-on: windows-latest
+    timeout-minutes: 20
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Restore
+        run: dotnet restore halaqa.sln --locked-mode
+
+      - name: Build WPF solution
+        run: dotnet build halaqa.sln --configuration Release --no-restore --nologo
+
+      - name: Run unit tests
+        run: dotnet test halaqa.sln --configuration Release --no-build --nologo --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+
+      - name: Check whitespace errors
+        shell: pwsh
+        run: |
+          $base = '${{ github.event.pull_request.base.sha }}'
+          if ([string]::IsNullOrWhiteSpace($base)) { $base = 'HEAD~1' }
+          git diff --check "$base..HEAD"
+
+      - name: Enforce clean-layer import boundaries
+        shell: pwsh
+        run: |
+          $presentationViolations = Get-ChildItem 'src/Halaqa.Desktop/Features' -Recurse -Filter '*.cs' |
+            Where-Object { $_.FullName -match '\\Presentation\\' } |
+            Select-String -Pattern 'using Halaqa\.Desktop\.Features\..*\.Data\b|using Halaqa\.Desktop\.Config\.Http\b'
+          if ($presentationViolations) {
+            $presentationViolations | ForEach-Object { Write-Error "Presentation must not reference Data or HTTP directly: $($_.Path):$($_.LineNumber)" }
+            exit 1
+          }
+
+          $domainViolations = Get-ChildItem 'src/Halaqa.Desktop/Features' -Recurse -Filter '*.cs' |
+            Where-Object { $_.FullName -match '\\Domain\\' } |
+            Select-String -Pattern 'using Halaqa\.Desktop\.Features\..*\.(Data|Presentation)\b|using Microsoft\.Data\.Sqlite\b|using System\.Net\.Http\b'
+          if ($domainViolations) {
+            $domainViolations | ForEach-Object { Write-Error "Domain must not reference Data, Presentation, SQL, or HTTP: $($_.Path):$($_.LineNumber)" }
+            exit 1
+          }
+
+      - name: Publish test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/*.trx
+          if-no-files-found: ignore
+          retention-days: 14

@@ -1,3 +1,4 @@
+using System.Net.Http;
 using Halaqa.Desktop.Config.Persistence;
 
 namespace Halaqa.Desktop.Config.Http;
