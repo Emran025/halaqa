@@ -23,9 +23,11 @@ public sealed partial class DashboardViewModel
     public event EventHandler? TeacherProfileRequested;
     public event EventHandler? HalaqasRequested;
     public event EventHandler? StudentRegistrationsRequested;
+    public event EventHandler? FollowUpRequested;
 
     public string UserName { get; }
     public string RoleLabel { get; }
+    public bool IsStudent => _isStudent;
     public string PrimaryActionTitle { get; }
     public string PrimaryActionDescription { get; }
 
@@ -39,6 +41,15 @@ public sealed partial class DashboardViewModel
         }
 
         HalaqasRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    [RelayCommand]
+    private void OpenFollowUp()
+    {
+        if (_isStudent)
+        {
+            FollowUpRequested?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     [RelayCommand]
