@@ -23,7 +23,7 @@ public sealed record HalaqaTeacher(
     int ExperienceYears,
     bool CapacityAvailable);
 
-public sealed record Halaqa(
+public sealed record HalaqaItem(
     Guid Id,
     HalaqaTeacher Teacher,
     string Name,
@@ -40,7 +40,7 @@ public sealed record Halaqa(
     DateTimeOffset? UpdatedAt);
 
 public sealed record HalaqaPage(
-    IReadOnlyList<Halaqa> Halaqas,
+    IReadOnlyList<HalaqaItem> Halaqas,
     int CurrentPage,
     int LastPage,
     int PerPage,

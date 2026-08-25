@@ -6,7 +6,7 @@ namespace Halaqa.Desktop.Features.Halaqas.Data.Mappers;
 
 internal static class HalaqaMapper
 {
-    public static Result<Halaqa> ToDomain(HalaqaDto dto)
+    public static Result<HalaqaItem> ToDomain(HalaqaDto dto)
     {
         if (dto.Id == Guid.Empty || dto.Teacher is null ||
             string.IsNullOrWhiteSpace(dto.Name) ||
@@ -17,16 +17,16 @@ internal static class HalaqaMapper
             !TryParse(dto.Gender, out HalaqaGender gender) ||
             !TryParse(dto.Status, out HalaqaStatus status))
         {
-            return Result<Halaqa>.Failure(UnexpectedResponseError());
+            return Result<HalaqaItem>.Failure(UnexpectedResponseError());
         }
 
         var teacher = ToTeacher(dto.Teacher);
         if (!teacher.IsSuccess || teacher.Value is null)
         {
-            return Result<Halaqa>.Failure(teacher.Error!);
+            return Result<HalaqaItem>.Failure(teacher.Error!);
         }
 
-        return Result<Halaqa>.Success(new Halaqa(
+        return Result<HalaqaItem>.Success(new HalaqaItem(
             dto.Id,
             teacher.Value,
             dto.Name,

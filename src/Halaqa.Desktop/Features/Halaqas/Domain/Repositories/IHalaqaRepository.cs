@@ -9,15 +9,15 @@ public interface IHalaqaRepository
         int page = 1,
         CancellationToken cancellationToken = default);
 
-    Task<Result<Halaqa>> CreateAsync(
+    Task<Result<HalaqaItem>> CreateAsync(
         CreateHalaqaCommand command,
         CancellationToken cancellationToken = default);
 
-    Task<Result<Halaqa>> UpdateAsync(
+    Task<Result<HalaqaItem>> UpdateAsync(
         UpdateHalaqaCommand command,
         CancellationToken cancellationToken = default);
 
-    Task<Result<Halaqa>> ActivateAsync(Guid halaqaId, CancellationToken cancellationToken = default);
+    Task<Result<HalaqaItem>> ActivateAsync(Guid halaqaId, CancellationToken cancellationToken = default);
 
-    Task<Result<Halaqa>> DeactivateAsync(Guid halaqaId, CancellationToken cancellationToken = default);
+    Task<Result<HalaqaItem>> DeactivateAsync(Guid halaqaId, CancellationToken cancellationToken = default);
 }

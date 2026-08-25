@@ -70,25 +70,25 @@ public sealed class HalaqaUseCaseTests
         public Task<Result<HalaqaPage>> ListAsync(int page = 1, CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<HalaqaPage>.Success(new HalaqaPage([], 1, 1, 20, 0)));
 
-        public Task<Result<Halaqa>> CreateAsync(CreateHalaqaCommand command, CancellationToken cancellationToken = default)
+        public Task<Result<HalaqaItem>> CreateAsync(CreateHalaqaCommand command, CancellationToken cancellationToken = default)
         {
             CreatedCommand = command;
-            return Task.FromResult(Result<Halaqa>.Success(CreateHalaqa()));
+            return Task.FromResult(Result<HalaqaItem>.Success(CreateHalaqa()));
         }
 
-        public Task<Result<Halaqa>> UpdateAsync(UpdateHalaqaCommand command, CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<Halaqa>.Success(CreateHalaqa()));
+        public Task<Result<HalaqaItem>> UpdateAsync(UpdateHalaqaCommand command, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<HalaqaItem>.Success(CreateHalaqa()));
 
-        public Task<Result<Halaqa>> ActivateAsync(Guid halaqaId, CancellationToken cancellationToken = default)
+        public Task<Result<HalaqaItem>> ActivateAsync(Guid halaqaId, CancellationToken cancellationToken = default)
         {
             ActivatedId = halaqaId;
-            return Task.FromResult(Result<Halaqa>.Success(CreateHalaqa()));
+            return Task.FromResult(Result<HalaqaItem>.Success(CreateHalaqa()));
         }
 
-        public Task<Result<Halaqa>> DeactivateAsync(Guid halaqaId, CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<Halaqa>.Success(CreateHalaqa()));
+        public Task<Result<HalaqaItem>> DeactivateAsync(Guid halaqaId, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<HalaqaItem>.Success(CreateHalaqa()));
 
-        private static Halaqa CreateHalaqa() => new(
+        private static HalaqaItem CreateHalaqa() => new(
             Guid.NewGuid(),
             new HalaqaTeacher(Guid.NewGuid(), "معلم", "T-1", HalaqaGender.Male, "السعودية", "الرياض", "بكالوريوس", 5, true),
             "حلقة اختبار",

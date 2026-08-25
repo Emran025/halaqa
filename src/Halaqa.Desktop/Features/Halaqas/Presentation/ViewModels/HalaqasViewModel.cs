@@ -30,10 +30,10 @@ public sealed partial class HalaqasViewModel : ObservableObject
         _deactivateHalaqaUseCase = deactivateHalaqaUseCase;
     }
 
-    public ObservableCollection<Halaqa> Halaqas { get; } = [];
+    public ObservableCollection<HalaqaItem> Halaqas { get; } = [];
     public IReadOnlyList<string> GenderOptions { get; } = ["male", "female"];
 
-    [ObservableProperty] private Halaqa? _selectedHalaqa;
+    [ObservableProperty] private HalaqaItem? _selectedHalaqa;
     [ObservableProperty] private string _name = string.Empty;
     [ObservableProperty] private string? _description;
     [ObservableProperty] private string _gender = "male";
@@ -100,7 +100,7 @@ public sealed partial class HalaqasViewModel : ObservableObject
         ClearFeedback();
         try
         {
-            Result<Halaqa> result;
+            Result<HalaqaItem> result;
             if (SelectedHalaqa is null)
             {
                 result = await _createHalaqaUseCase.ExecuteAsync(new CreateHalaqaCommand(
@@ -180,7 +180,7 @@ public sealed partial class HalaqasViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanNavigateBack))]
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
 
-    partial void OnSelectedHalaqaChanged(Halaqa? value)
+    partial void OnSelectedHalaqaChanged(HalaqaItem? value)
     {
         if (value is null)
         {
@@ -279,7 +279,7 @@ public sealed partial class HalaqasViewModel : ObservableObject
         return true;
     }
 
-    private void Upsert(Halaqa halaqa)
+    private void Upsert(HalaqaItem halaqa)
     {
         var index = Halaqas.Select((value, index) => (value, index)).FirstOrDefault(item => item.value.Id == halaqa.Id).index;
         if (index >= 0 && index < Halaqas.Count && Halaqas[index].Id == halaqa.Id)

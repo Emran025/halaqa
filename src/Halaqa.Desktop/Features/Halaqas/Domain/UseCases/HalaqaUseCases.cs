@@ -14,40 +14,40 @@ public sealed class ListHalaqasUseCase(IHalaqaRepository repository)
 
 public sealed class CreateHalaqaUseCase(IHalaqaRepository repository)
 {
-    public Task<Result<Halaqa>> ExecuteAsync(CreateHalaqaCommand command, CancellationToken cancellationToken = default) =>
+    public Task<Result<HalaqaItem>> ExecuteAsync(CreateHalaqaCommand command, CancellationToken cancellationToken = default) =>
         HalaqaCommandValidation.Validate(command.Name, command.Description, command.Country, command.Residence, command.MaxStudents, command.Timezone) is { } error
-            ? Task.FromResult(Result<Halaqa>.Failure(error))
+            ? Task.FromResult(Result<HalaqaItem>.Failure(error))
             : repository.CreateAsync(command, cancellationToken);
 }
 
 public sealed class UpdateHalaqaUseCase(IHalaqaRepository repository)
 {
-    public Task<Result<Halaqa>> ExecuteAsync(UpdateHalaqaCommand command, CancellationToken cancellationToken = default)
+    public Task<Result<HalaqaItem>> ExecuteAsync(UpdateHalaqaCommand command, CancellationToken cancellationToken = default)
     {
         if (command.Id == Guid.Empty)
         {
-            return Task.FromResult(Result<Halaqa>.Failure(new AppError(AppErrorKind.Validation, "معرّف الحلقة غير صالح.")));
+            return Task.FromResult(Result<HalaqaItem>.Failure(new AppError(AppErrorKind.Validation, "معرّف الحلقة غير صالح.")));
         }
 
         return HalaqaCommandValidation.Validate(command.Name, command.Description, command.Country, command.Residence, command.MaxStudents, command.Timezone) is { } error
-            ? Task.FromResult(Result<Halaqa>.Failure(error))
+            ? Task.FromResult(Result<HalaqaItem>.Failure(error))
             : repository.UpdateAsync(command, cancellationToken);
     }
 }
 
 public sealed class ActivateHalaqaUseCase(IHalaqaRepository repository)
 {
-    public Task<Result<Halaqa>> ExecuteAsync(Guid halaqaId, CancellationToken cancellationToken = default) =>
+    public Task<Result<HalaqaItem>> ExecuteAsync(Guid halaqaId, CancellationToken cancellationToken = default) =>
         halaqaId == Guid.Empty
-            ? Task.FromResult(Result<Halaqa>.Failure(new AppError(AppErrorKind.Validation, "معرّف الحلقة غير صالح.")))
+            ? Task.FromResult(Result<HalaqaItem>.Failure(new AppError(AppErrorKind.Validation, "معرّف الحلقة غير صالح.")))
             : repository.ActivateAsync(halaqaId, cancellationToken);
 }
 
 public sealed class DeactivateHalaqaUseCase(IHalaqaRepository repository)
 {
-    public Task<Result<Halaqa>> ExecuteAsync(Guid halaqaId, CancellationToken cancellationToken = default) =>
+    public Task<Result<HalaqaItem>> ExecuteAsync(Guid halaqaId, CancellationToken cancellationToken = default) =>
         halaqaId == Guid.Empty
-            ? Task.FromResult(Result<Halaqa>.Failure(new AppError(AppErrorKind.Validation, "معرّف الحلقة غير صالح.")))
+            ? Task.FromResult(Result<HalaqaItem>.Failure(new AppError(AppErrorKind.Validation, "معرّف الحلقة غير صالح.")))
             : repository.DeactivateAsync(halaqaId, cancellationToken);
 }
 

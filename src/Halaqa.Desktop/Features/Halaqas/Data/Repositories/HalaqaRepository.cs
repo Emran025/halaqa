@@ -21,38 +21,38 @@ internal sealed class HalaqaRepository(IHalaqaRemoteDataSource remoteDataSource)
             : HalaqaMapper.ToDomain(result.Value);
     }
 
-    public async Task<Result<Halaqa>> CreateAsync(CreateHalaqaCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result<HalaqaItem>> CreateAsync(CreateHalaqaCommand command, CancellationToken cancellationToken = default)
     {
         var result = await remoteDataSource.CreateAsync(HalaqaMapper.ToDto(command), cancellationToken);
         return MapResponse(result);
     }
 
-    public async Task<Result<Halaqa>> UpdateAsync(UpdateHalaqaCommand command, CancellationToken cancellationToken = default)
+    public async Task<Result<HalaqaItem>> UpdateAsync(UpdateHalaqaCommand command, CancellationToken cancellationToken = default)
     {
         var result = await remoteDataSource.UpdateAsync(command.Id, HalaqaMapper.ToDto(command), cancellationToken);
         return MapResponse(result);
     }
 
-    public async Task<Result<Halaqa>> ActivateAsync(Guid halaqaId, CancellationToken cancellationToken = default)
+    public async Task<Result<HalaqaItem>> ActivateAsync(Guid halaqaId, CancellationToken cancellationToken = default)
     {
         var result = await remoteDataSource.ActivateAsync(halaqaId, cancellationToken);
         return MapResponse(result);
     }
 
-    public async Task<Result<Halaqa>> DeactivateAsync(Guid halaqaId, CancellationToken cancellationToken = default)
+    public async Task<Result<HalaqaItem>> DeactivateAsync(Guid halaqaId, CancellationToken cancellationToken = default)
     {
         var result = await remoteDataSource.DeactivateAsync(halaqaId, cancellationToken);
         return MapResponse(result);
     }
 
-    private static Result<Halaqa> MapResponse(Result<HalaqaResponseDto> result)
+    private static Result<HalaqaItem> MapResponse(Result<HalaqaResponseDto> result)
     {
         if (!result.IsSuccess)
         {
-            return Result<Halaqa>.Failure(result.Error ?? UnknownError());
+            return Result<HalaqaItem>.Failure(result.Error ?? UnknownError());
         }
         return result.Value?.Halaqa is null
-            ? Result<Halaqa>.Failure(UnknownError())
+            ? Result<HalaqaItem>.Failure(UnknownError())
             : HalaqaMapper.ToDomain(result.Value.Halaqa);
     }
 
