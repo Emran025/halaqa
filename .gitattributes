@@ -60,4 +60,7 @@
 #*.pdf   diff=astextplain
 #*.PDF   diff=astextplain
 #*.rtf   diff=astextplain
+
+# Preserve the upstream Cairo OFL text byte-for-byte.
+src/Halaqa.Desktop/Assets/Fonts/Cairo-OFL.txt -whitespace
 #*.RTF   diff=astextplain

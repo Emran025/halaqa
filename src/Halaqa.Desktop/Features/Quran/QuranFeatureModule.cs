@@ -12,7 +12,7 @@ public static class QuranFeatureModule
     public static IServiceCollection AddQuranFeature(this IServiceCollection services)
     {
         services.AddSingleton<IQuranRemoteDataSource, QuranRemoteDataSource>();
-        services.AddSingleton<IQuranPageCache, FileQuranPageCache>();
+        services.AddSingleton<IQuranLocalDataSource, SqliteQuranLocalDataSource>();
         services.AddSingleton<IQuranRepository, QuranRepository>();
         services.AddSingleton<GetQuranPageUseCase>();
         return services;

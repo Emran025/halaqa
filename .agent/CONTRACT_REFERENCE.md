@@ -1,5 +1,9 @@
 # مرجع عقود الخادم
 
+## حدود الأنظمة
+
+`quran-halaqa` هو مشروع **خدمة ويب Laravel** يقدّم REST API والحالة التعليمية الرسمية. `halaqa` هو مشروع **WPF Application بلغة C# لسطح Windows** يستهلك هذا العقد. قاعدة `QuranV3.sqlite` والأنماط البصرية المأخوذة من `shafeea_teach` أصول محلية للعميل، وليست خدمة API ولا مرجعاً بديلاً للحالة الرسمية.
+
 ## المصدر المُلزم
 
 مصدر الحقيقة لخادم Laravel هو مستودع [quran-halaqa](https://github.com/samalnashamy780-art/quran-halaqa)، وتحدد نسخة العقد المراجعة في commit:
@@ -31,7 +35,7 @@ aee11df9eb4f58800455b600c3fc94128f0d7a76
 | Halaqas | `/halaqas`, `/halaqas/{halaqaId}`, عضويات الحلقة وطلابها |
 | Registrations | `/registration-requests` و`/halaqas/{halaqaId}/registration-requests` |
 | FollowUp | خطط الطالب والحضور و`/follow-up-items` والتتبعات |
-| Quran | `/quran/surahs`, `/quran/pages/{pageNumber}`, `/quran/ayahs/{ayahId}`, وحالة مصحف الجلسة |
+| Quran | `QuranV3.sqlite` المحلي لعرض المحتوى الثابت؛ ومسارات `/quran/*` و`/sessions/{sessionId}/mushaf-state` لمواءمة المحتوى وحفظ الحالة الرسمية عند الحاجة |
 | Sessions | `/sessions`، إعدادات realtime، وتفويض القناة الداخلية |
 | Mistakes | `/sessions/{sessionId}/tasks/{taskId}/mistakes` ومزامنة outbox |
 | Reports/Progress | التقرير، التقييمات، التقارير والتقدم والأخطاء التاريخية |

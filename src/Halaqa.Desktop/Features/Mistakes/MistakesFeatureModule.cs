@@ -1,6 +1,7 @@
 using Halaqa.Desktop.Features.Mistakes.Data.DataSources.Local;
 using Halaqa.Desktop.Features.Mistakes.Data.DataSources.Remote;
 using Halaqa.Desktop.Features.Mistakes.Data.Repositories;
+using Halaqa.Desktop.Features.Mistakes.Data.Sync;
 using Halaqa.Desktop.Features.Mistakes.Domain.Repositories;
 using Halaqa.Desktop.Features.Mistakes.Domain.UseCases;
 using Microsoft.Extensions.DependencyInjection;
@@ -11,9 +12,10 @@ public static class MistakesFeatureModule
 {
     public static IServiceCollection AddMistakesFeature(this IServiceCollection services)
     {
-        services.AddSingleton<IMistakeOutbox, FileMistakeOutbox>();
+        services.AddSingleton<IMistakeOutbox, SqliteMistakeOutbox>();
         services.AddSingleton<IMistakeRemoteDataSource, MistakeRemoteDataSource>();
         services.AddSingleton<IMistakeRepository, MistakeRepository>();
+        services.AddSingleton<IMistakeSyncService, MistakeSyncService>();
         services.AddSingleton<QueueMistakeUseCase>();
         return services;
     }

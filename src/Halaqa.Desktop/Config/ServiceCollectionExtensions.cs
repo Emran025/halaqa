@@ -11,6 +11,7 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddHalaqaInfrastructure(this IServiceCollection services)
     {
         services.AddSingleton<IAuthSessionStore, WindowsProtectedAuthSessionStore>();
+        services.AddSingleton<ILocalDatabase, SqliteLocalDatabase>();
         services.AddSingleton<IConnectivityService, NetworkConnectivityService>();
         services.AddTransient<BearerTokenHandler>();
         services.AddHttpClient<IApiClient, ApiClient>((provider, client) =>

@@ -2,6 +2,8 @@ namespace Halaqa.Desktop.Shared.Domain.Common;
 
 public enum AppErrorKind
 {
+    Data,
+    Cache,
     Network,
     Unauthorized,
     Forbidden,

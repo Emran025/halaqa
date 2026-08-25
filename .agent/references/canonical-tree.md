@@ -15,6 +15,13 @@ halaqa/
 │       ├── App.xaml.cs
 │       ├── Halaqa.Desktop.csproj
 │       ├── appsettings.json
+│       ├── Assets/
+│       │   ├── Quran/
+│       │   │   └── QuranV3.sqlite
+│       │   └── Fonts/
+│       │       ├── Cairo-VariableFont_slnt,wght.ttf
+│       │       ├── Kufam-Regular.ttf
+│       │       └── UthmanicHafs_V20.ttf
 │       ├── Config/
 │       │   ├── Bootstrapper.cs
 │       │   ├── DependencyInjection/
@@ -27,7 +34,9 @@ halaqa/
 │       │   │   └── ApiErrorMapper.cs
 │       │   ├── Persistence/
 │       │   │   ├── IAuthSessionStore.cs
-│       │   │   └── WindowsProtectedAuthSessionStore.cs
+│       │   │   ├── WindowsProtectedAuthSessionStore.cs
+│       │   │   ├── ILocalDatabase.cs
+│       │   │   └── SqliteLocalDatabase.cs
 │       │   ├── Connectivity/
 │       │   │   ├── IConnectivityService.cs
 │       │   │   └── NetworkConnectivityService.cs
@@ -137,4 +146,4 @@ halaqa/
 
 ينتمي أي ملف لا يخص سوى ميزة واحدة إلى ميزة واحدة، حتى لو بدا قابلاً لإعادة الاستخدام. يستخرج إلى `Shared` فقط بعد وجود حاجتين حقيقيتين أو عند كونه مكون عرض عاماً لا يعرف نطاقاً تعليمياً. لا يسمح لـ`Presentation` بالاعتماد على `Data`؛ تستدعي `Presentation` حالات الاستخدام والعقود ضمن `Domain` فقط. يعتمد `Data` على `Domain` لتنفيذ الـ ports، ولا يعتمد على `Presentation`.
 
-تضيف كل ميزة محلية التخزين (`Quran` و`Mistakes` فقط) `DataSources/Local` وعمليات transaction/serialization الخاصة بها داخل الميزة. التخزين الآمن للجلسة وإعداد العميل العام يظل في `Config` لأنه مشترك ولا يمثل بيانات مجال تعليمية.
+تضيف كل ميزة محلية التخزين (`Quran` و`Mistakes` فقط) `DataSources/Local` وعمليات SQLite الخاصة بها داخل الميزة. يحتفظ `Quran` بقراءة قاعدة `Assets/Quran/QuranV3.sqlite` بعد نسخها محلياً، بينما يحتفظ `Mistakes` بصف العمليات في `halaqa-local.db`. التخزين الآمن للجلسة وإعداد العميل العام يظل في `Config` لأنه مشترك ولا يمثل بيانات مجال تعليمية.
