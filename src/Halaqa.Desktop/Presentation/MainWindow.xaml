@@ -4,6 +4,8 @@
         xmlns:authVm="clr-namespace:Halaqa.Desktop.Features.Auth.Presentation.ViewModels"
         xmlns:authViews="clr-namespace:Halaqa.Desktop.Features.Auth.Presentation.Views"
         xmlns:local="clr-namespace:Halaqa.Desktop.Presentation"
+        xmlns:sessionsVm="clr-namespace:Halaqa.Desktop.Features.Sessions.Presentation.ViewModels"
+        xmlns:sessionsViews="clr-namespace:Halaqa.Desktop.Features.Sessions.Presentation.Views"
         Title="حلقة القرآن" Height="720" Width="1120" MinHeight="620" MinWidth="900"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -12,6 +14,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:DashboardViewModel}">
             <local:DashboardView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type sessionsVm:LiveSessionViewModel}">
+            <sessionsViews:LiveSessionView />
         </DataTemplate>
     </Window.Resources>
 

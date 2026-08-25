@@ -1,6 +1,7 @@
 using Halaqa.Desktop.Features.Auth;
 using Halaqa.Desktop.Features.Mistakes;
 using Halaqa.Desktop.Features.Quran;
+using Halaqa.Desktop.Features.Sessions;
 using Halaqa.Desktop.Presentation;
 using Halaqa.Desktop.Shared.Domain.Time;
 using Microsoft.Extensions.Configuration;
@@ -27,6 +28,7 @@ public static class Bootstrapper
         services.AddAuthFeature();
         services.AddQuranFeature();
         services.AddMistakesFeature();
+        services.AddSessionsFeature();
 
         services.AddSingleton<MainWindow>();
         services.AddSingleton<MainShellViewModel>();
