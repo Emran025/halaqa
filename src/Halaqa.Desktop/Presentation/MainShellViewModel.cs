@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
+using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 using Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
 namespace Halaqa.Desktop.Presentation;
@@ -11,6 +12,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly TeacherRegistrationViewModel _teacherRegistrationViewModel;
     private readonly ForgotPasswordViewModel _forgotPasswordViewModel;
     private readonly ResetPasswordViewModel _resetPasswordViewModel;
+    private readonly RestoreSessionUseCase _restoreSessionUseCase;
 
     [ObservableProperty]
     private object? _currentPage;
@@ -20,13 +22,15 @@ public sealed partial class MainShellViewModel : ObservableObject
         StudentRegistrationViewModel studentRegistrationViewModel,
         TeacherRegistrationViewModel teacherRegistrationViewModel,
         ForgotPasswordViewModel forgotPasswordViewModel,
-        ResetPasswordViewModel resetPasswordViewModel)
+        ResetPasswordViewModel resetPasswordViewModel,
+        RestoreSessionUseCase restoreSessionUseCase)
     {
         _loginViewModel = loginViewModel;
         _studentRegistrationViewModel = studentRegistrationViewModel;
         _teacherRegistrationViewModel = teacherRegistrationViewModel;
         _forgotPasswordViewModel = forgotPasswordViewModel;
         _resetPasswordViewModel = resetPasswordViewModel;
+        _restoreSessionUseCase = restoreSessionUseCase;
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
         _loginViewModel.StudentRegistrationRequested += (_, _) => CurrentPage = _studentRegistrationViewModel;
@@ -41,6 +45,15 @@ public sealed partial class MainShellViewModel : ObservableObject
         _teacherRegistrationViewModel.Registered += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
 
         CurrentPage = _loginViewModel;
+    }
+
+    public async Task RestoreSessionAsync(CancellationToken cancellationToken = default)
+    {
+        var authenticatedUser = await _restoreSessionUseCase.ExecuteAsync(cancellationToken);
+        if (authenticatedUser is not null)
+        {
+            ShowDashboard(authenticatedUser);
+        }
     }
 
     private void ShowDashboard(AuthenticatedUser authenticatedUser) =>
