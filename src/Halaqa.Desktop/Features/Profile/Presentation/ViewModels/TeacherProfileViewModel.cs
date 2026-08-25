@@ -80,6 +80,7 @@ public sealed partial class TeacherProfileViewModel : ObservableObject
     [ObservableProperty] private string? _maxHalaqasError;
 
     public event EventHandler? BackRequested;
+    public event EventHandler? DocumentsRequested;
     public event EventHandler<TeacherProfile>? ProfileUpdated;
 
     [RelayCommand(CanExecute = nameof(CanLoad))]
@@ -140,6 +141,9 @@ public sealed partial class TeacherProfileViewModel : ObservableObject
 
     [RelayCommand(CanExecute = nameof(CanNavigateBack))]
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
+
+    [RelayCommand(CanExecute = nameof(CanNavigateBack))]
+    private void OpenDocuments() => DocumentsRequested?.Invoke(this, EventArgs.Empty);
 
     protected override void OnPropertyChanged(PropertyChangedEventArgs e)
     {
@@ -343,6 +347,7 @@ public sealed partial class TeacherProfileViewModel : ObservableObject
         LoadCommand.NotifyCanExecuteChanged();
         SaveCommand.NotifyCanExecuteChanged();
         BackCommand.NotifyCanExecuteChanged();
+        OpenDocumentsCommand.NotifyCanExecuteChanged();
     }
 
     private void ClearFeedback()

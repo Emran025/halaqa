@@ -127,7 +127,8 @@
                         <TextBlock Text="{Binding BioError}" Style="{StaticResource SectionError}" />
 
                         <TextBlock Text="وثائق المعلم" Style="{StaticResource SectionHeading}" />
-                        <TextBlock Text="الوثائق ظاهرة للقراءة فقط؛ يضاف رفعها وإدارتها في شريحة مستقلة." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                        <TextBlock Text="الوثائق ظاهرة للقراءة فقط في هذه الملخصات؛ استخدم الإدارة لإرفاق وثيقة أو حذفها." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                        <Button Content="إدارة الوثائق" Command="{Binding OpenDocumentsCommand}" HorizontalAlignment="Right" Margin="0,0,0,8" />
                         <ItemsControl ItemsSource="{Binding Documents}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>

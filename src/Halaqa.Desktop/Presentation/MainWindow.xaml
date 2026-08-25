@@ -6,6 +6,8 @@
         xmlns:local="clr-namespace:Halaqa.Desktop.Presentation"
         xmlns:profileVm="clr-namespace:Halaqa.Desktop.Features.Profile.Presentation.ViewModels"
         xmlns:profileViews="clr-namespace:Halaqa.Desktop.Features.Profile.Presentation.Views"
+        xmlns:teacherDocumentsVm="clr-namespace:Halaqa.Desktop.Features.TeacherDocuments.Presentation.ViewModels"
+        xmlns:teacherDocumentsViews="clr-namespace:Halaqa.Desktop.Features.TeacherDocuments.Presentation.Views"
         xmlns:sessionsVm="clr-namespace:Halaqa.Desktop.Features.Sessions.Presentation.ViewModels"
         xmlns:sessionsViews="clr-namespace:Halaqa.Desktop.Features.Sessions.Presentation.Views"
         Title="حلقة القرآن" Height="720" Width="1120" MinHeight="620" MinWidth="900"
@@ -40,6 +42,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type profileVm:TeacherProfileViewModel}">
             <profileViews:TeacherProfileView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type teacherDocumentsVm:TeacherDocumentsViewModel}">
+            <teacherDocumentsViews:TeacherDocumentsView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type sessionsVm:LiveSessionViewModel}">
             <sessionsViews:LiveSessionView />

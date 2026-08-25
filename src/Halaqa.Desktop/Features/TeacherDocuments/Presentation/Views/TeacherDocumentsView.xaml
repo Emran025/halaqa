@@ -1,0 +1,105 @@
+<UserControl x:Class="Halaqa.Desktop.Features.TeacherDocuments.Presentation.Views.TeacherDocumentsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:shared="clr-namespace:Halaqa.Desktop.Shared.Presentation.Converters"
+             FlowDirection="RightToLeft">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <shared:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <Style x:Key="SectionError" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource AppErrorBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,4,0,8" />
+        </Style>
+        <Style x:Key="SectionHeading" TargetType="TextBlock" BasedOn="{StaticResource SectionTitle}">
+            <Setter Property="Margin" Value="0,18,0,10" />
+        </Style>
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource AppCanvasBrush}">
+        <Border Style="{StaticResource AppCard}" MaxWidth="960" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="28">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <DockPanel LastChildFill="True">
+                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى ملف المعلم">
+                        <materialDesign:PackIcon Kind="ArrowRight" />
+                    </Button>
+                    <StackPanel>
+                        <TextBlock Text="إدارة وثائق المعلم" Style="{StaticResource PageTitle}" />
+                        <TextBlock Text="تُرفع الوثيقة مباشرة إلى الخادم ولا تُحفظ محلياً بعد الإرسال." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                    </StackPanel>
+                </DockPanel>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,16,0,0">
+                    <StackPanel>
+                        <ProgressBar Height="4" Margin="0,0,0,12" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                        <TextBlock Text="إرفاق وثيقة أو مؤهل" Style="{StaticResource SectionHeading}" />
+                        <Grid>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <StackPanel Margin="0,0,8,0">
+                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" materialDesign:HintAssist.Hint="اسم الوثيقة" />
+                                <TextBlock Text="{Binding NameError}" Style="{StaticResource SectionError}" />
+                                <TextBox Text="{Binding CertificateType, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" materialDesign:HintAssist.Hint="نوع الشهادة أو الوثيقة" />
+                                <TextBlock Text="{Binding CertificateTypeError}" Style="{StaticResource SectionError}" />
+                                <TextBox Text="{Binding CertificateTypeOther, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" materialDesign:HintAssist.Hint="نوع آخر (اختياري)" />
+                                <TextBlock Text="{Binding CertificateTypeOtherError}" Style="{StaticResource SectionError}" />
+                                <TextBox Text="{Binding Riwayah, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" materialDesign:HintAssist.Hint="الرواية (اختياري)" />
+                                <TextBlock Text="{Binding RiwayahError}" Style="{StaticResource SectionError}" />
+                            </StackPanel>
+                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                <TextBox Text="{Binding IssuingPlace, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" materialDesign:HintAssist.Hint="جهة الإصدار (اختياري)" />
+                                <TextBlock Text="{Binding IssuingPlaceError}" Style="{StaticResource SectionError}" />
+                                <TextBox Text="{Binding IssuingDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" materialDesign:HintAssist.Hint="تاريخ الإصدار YYYY-MM-DD" />
+                                <TextBlock Text="{Binding IssuingDateError}" Style="{StaticResource SectionError}" />
+                                <DockPanel Margin="0,4,0,8">
+                                    <Button DockPanel.Dock="Left" Content="اختيار ملف" Command="{Binding ChooseFileCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
+                                    <TextBlock Text="{Binding SelectedFileName}" VerticalAlignment="Center" TextTrimming="CharacterEllipsis" FlowDirection="LeftToRight" Margin="8,0,0,0" />
+                                </DockPanel>
+                                <TextBlock Text="{Binding FileError}" Style="{StaticResource SectionError}" />
+                            </StackPanel>
+                        </Grid>
+                        <Button Content="رفع الوثيقة" Command="{Binding SaveCommand}" HorizontalAlignment="Left" />
+
+                        <TextBlock Text="وثائقي" Style="{StaticResource SectionHeading}" />
+                        <TextBlock Text="{Binding Total, StringFormat=إجمالي الوثائق: {0}}" Style="{StaticResource BodyMuted}" Margin="0,0,0,8" />
+                        <ItemsControl ItemsSource="{Binding Documents}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,3">
+                                        <DockPanel LastChildFill="True">
+                                            <Button DockPanel.Dock="Left" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف الوثيقة" Style="{StaticResource AppDangerButton}">
+                                                <materialDesign:PackIcon Kind="DeleteOutline" />
+                                            </Button>
+                                            <materialDesign:PackIcon DockPanel.Dock="Right" Kind="FileCertificateOutline" Width="22" Height="22" Foreground="{StaticResource AppInfoBrush}" Margin="0,0,8,0" />
+                                            <StackPanel>
+                                                <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
+                                                <TextBlock Text="{Binding CertificateType}" Style="{StaticResource BodyMuted}" />
+                                                <TextBlock Text="{Binding Riwayah}" Style="{StaticResource BodyMuted}" />
+                                            </StackPanel>
+                                        </DockPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                            <Button Content="السابق" Command="{Binding LoadPreviousPageCommand}" />
+                            <TextBlock Text="{Binding CurrentPage, StringFormat=الصفحة {0}}" VerticalAlignment="Center" Margin="12,0" />
+                            <Button Content="التالي" Command="{Binding LoadNextPageCommand}" />
+                        </StackPanel>
+
+                        <TextBlock Text="{Binding Message}" Foreground="{StaticResource AppMutedInkBrush}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,12,0,0" />
+                    </StackPanel>
+                </ScrollViewer>
+
+                <Button Grid.Row="2" Content="إعادة تحميل الوثائق" Command="{Binding LoadCommand}" HorizontalAlignment="Left" Margin="0,16,0,0" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
