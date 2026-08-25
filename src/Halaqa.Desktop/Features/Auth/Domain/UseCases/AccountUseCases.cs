@@ -61,3 +61,37 @@ public sealed class RequestPasswordResetUseCase(IAuthRepository repository)
             ? Task.FromResult(Result.Failure(new AppError(AppErrorKind.Validation, "أدخل بريداً إلكترونياً صالحاً.")))
             : repository.RequestPasswordResetAsync(email, cancellationToken);
 }
+
+public sealed class ResetPasswordUseCase(IAuthRepository repository)
+{
+    public Task<Result> ExecuteAsync(string email, string token, string password, string passwordConfirmation, CancellationToken cancellationToken = default)
+    {
+        var validationError = ValidatePasswordReset(email, token, password, passwordConfirmation);
+        return validationError is null
+            ? repository.ResetPasswordAsync(email, token, password, passwordConfirmation, cancellationToken)
+            : Task.FromResult(Result.Failure(validationError));
+    }
+
+    private static AppError? ValidatePasswordReset(string email, string token, string password, string passwordConfirmation) =>
+        string.IsNullOrWhiteSpace(email) || !email.Contains('@') || string.IsNullOrWhiteSpace(token)
+            ? new AppError(AppErrorKind.Validation, "أدخل البريد الإلكتروني ورمز إعادة التعيين.")
+            : ValidateNewPassword(password, passwordConfirmation);
+
+    internal static AppError? ValidateNewPassword(string password, string passwordConfirmation) =>
+        password.Length < 8 || password != passwordConfirmation
+            ? new AppError(AppErrorKind.Validation, "كلمة المرور وتأكيدها غير متطابقين أو أقصر من ثمانية أحرف.")
+            : null;
+}
+
+public sealed class ChangePasswordUseCase(IAuthRepository repository)
+{
+    public Task<Result> ExecuteAsync(string currentPassword, string password, string passwordConfirmation, CancellationToken cancellationToken = default)
+    {
+        var validationError = string.IsNullOrWhiteSpace(currentPassword)
+            ? new AppError(AppErrorKind.Validation, "أدخل كلمة المرور الحالية.")
+            : ResetPasswordUseCase.ValidateNewPassword(password, passwordConfirmation);
+        return validationError is null
+            ? repository.ChangePasswordAsync(currentPassword, password, passwordConfirmation, cancellationToken)
+            : Task.FromResult(Result.Failure(validationError));
+    }
+}

@@ -17,10 +17,14 @@ public static class AuthFeatureModule
         services.AddSingleton<RegisterStudentUseCase>();
         services.AddSingleton<RegisterTeacherUseCase>();
         services.AddSingleton<RequestPasswordResetUseCase>();
+        services.AddSingleton<ResetPasswordUseCase>();
+        services.AddSingleton<ChangePasswordUseCase>();
         services.AddSingleton<LoginViewModel>();
         services.AddTransient<ForgotPasswordViewModel>();
         services.AddTransient<StudentRegistrationViewModel>();
         services.AddTransient<TeacherRegistrationViewModel>();
+        services.AddTransient<ResetPasswordViewModel>();
+        services.AddTransient<ChangePasswordViewModel>();
         return services;
     }
 }

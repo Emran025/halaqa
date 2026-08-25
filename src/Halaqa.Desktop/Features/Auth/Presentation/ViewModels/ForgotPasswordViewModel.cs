@@ -11,6 +11,8 @@ public sealed partial class ForgotPasswordViewModel(RequestPasswordResetUseCase 
     [ObservableProperty] private string? _message;
     [ObservableProperty] private bool _isError;
 
+    public event EventHandler<string>? ResetRequested;
+
     [RelayCommand(CanExecute = nameof(CanSubmit))]
     private async Task SubmitAsync()
     {
@@ -33,6 +35,14 @@ public sealed partial class ForgotPasswordViewModel(RequestPasswordResetUseCase 
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanOpenReset))]
+    private void OpenReset() => ResetRequested?.Invoke(this, Email);
+
     private bool CanSubmit() => !IsBusy && !string.IsNullOrWhiteSpace(Email);
-    partial void OnEmailChanged(string value) => SubmitCommand.NotifyCanExecuteChanged();
+    private bool CanOpenReset() => !IsBusy && !string.IsNullOrWhiteSpace(Email);
+    partial void OnEmailChanged(string value)
+    {
+        SubmitCommand.NotifyCanExecuteChanged();
+        OpenResetCommand.NotifyCanExecuteChanged();
+    }
 }
