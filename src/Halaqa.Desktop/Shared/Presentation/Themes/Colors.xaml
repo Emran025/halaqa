@@ -1,0 +1,20 @@
+<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Color x:Key="AppCanvasColor">#FFF8FAF9</Color>
+    <Color x:Key="AppSurfaceColor">#FFFFFFFF</Color>
+    <Color x:Key="AppInkColor">#FF18312B</Color>
+    <Color x:Key="AppMutedInkColor">#FF53665F</Color>
+    <Color x:Key="AppSuccessColor">#FF107C41</Color>
+    <Color x:Key="AppWarningColor">#FFB76E00</Color>
+    <Color x:Key="AppErrorColor">#FFB42318</Color>
+    <Color x:Key="AppInfoColor">#FF155EEF</Color>
+
+    <SolidColorBrush x:Key="AppCanvasBrush" Color="{StaticResource AppCanvasColor}" />
+    <SolidColorBrush x:Key="AppSurfaceBrush" Color="{StaticResource AppSurfaceColor}" />
+    <SolidColorBrush x:Key="AppInkBrush" Color="{StaticResource AppInkColor}" />
+    <SolidColorBrush x:Key="AppMutedInkBrush" Color="{StaticResource AppMutedInkColor}" />
+    <SolidColorBrush x:Key="AppSuccessBrush" Color="{StaticResource AppSuccessColor}" />
+    <SolidColorBrush x:Key="AppWarningBrush" Color="{StaticResource AppWarningColor}" />
+    <SolidColorBrush x:Key="AppErrorBrush" Color="{StaticResource AppErrorColor}" />
+    <SolidColorBrush x:Key="AppInfoBrush" Color="{StaticResource AppInfoColor}" />
+</ResourceDictionary>

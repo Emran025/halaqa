@@ -1,0 +1,64 @@
+<UserControl x:Class="Halaqa.Desktop.Features.Auth.Presentation.Views.LoginView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             FlowDirection="RightToLeft">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid Margin="48">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="1.2*" />
+            <ColumnDefinition Width="0.8*" />
+        </Grid.ColumnDefinitions>
+
+        <StackPanel Grid.Column="0" VerticalAlignment="Center" Margin="0,0,64,0">
+            <TextBlock Text="أهلاً بك في حلقة القرآن" Style="{StaticResource PageTitle}" />
+            <TextBlock Text="نظّم حلقتك، تابع خطتك، وادخل إلى جلسات التعلم المباشرة ضمن تجربة واضحة وآمنة."
+                       Style="{StaticResource BodyMuted}" Margin="0,12,0,28" MaxWidth="520" />
+            <Border Padding="20" Background="#0D0F766E" CornerRadius="12" MaxWidth="520">
+                <StackPanel>
+                    <TextBlock Text="ملاحظة حول الاتصال" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Text="الحسابات والحلقات والجلسات تعمل عبر الإنترنت. تُحفظ صفحات المصحف وعمليات الأخطاء غير المتزامنة محلياً فقط عندما يلزم ذلك."
+                               Style="{StaticResource BodyMuted}" Margin="0,8,0,0" />
+                </StackPanel>
+            </Border>
+        </StackPanel>
+
+        <Border Grid.Column="1" Background="{StaticResource AppSurfaceBrush}" Padding="32" CornerRadius="16" VerticalAlignment="Center">
+            <StackPanel>
+                <TextBlock Text="تسجيل الدخول" Style="{StaticResource SectionTitle}" />
+                <TextBlock Text="أدخل حساب المعلم أو الطالب للمتابعة." Style="{StaticResource BodyMuted}" Margin="0,8,0,24" />
+
+                <TextBlock Text="البريد الإلكتروني" />
+                <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight"
+                         materialDesign:HintAssist.Hint="name@example.com" />
+
+                <TextBlock Text="كلمة المرور" />
+                <PasswordBox x:Name="PasswordBox" PasswordChanged="PasswordBox_OnPasswordChanged"
+                             FlowDirection="LeftToRight" />
+
+                <Border Background="#16B42318" Padding="12" CornerRadius="8" Margin="0,4,0,8"
+                        Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource AppErrorBrush}" />
+                </Border>
+
+                <Border Background="#16107C41" Padding="12" CornerRadius="8" Margin="0,4,0,8"
+                        Visibility="{Binding HasStatus, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource AppSuccessBrush}" />
+                </Border>
+
+                <Button Command="{Binding LoginCommand}" IsDefault="True" Height="46" Margin="0,12,0,8">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                        <materialDesign:PackIcon Kind="Login" Width="18" Height="18" Margin="0,0,8,0" />
+                        <TextBlock Text="دخول آمن" Foreground="White" />
+                    </StackPanel>
+                </Button>
+                <ProgressBar IsIndeterminate="True" Height="3" Margin="0,8,0,0"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <TextBlock Text="إنشاء حساب واستعادة كلمة المرور سيضافان في مسار المصادقة التالي من العقد." Style="{StaticResource BodyMuted}" Margin="0,18,0,0" />
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

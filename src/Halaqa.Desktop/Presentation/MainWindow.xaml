@@ -1,0 +1,32 @@
+<Window x:Class="Halaqa.Desktop.Presentation.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:authVm="clr-namespace:Halaqa.Desktop.Features.Auth.Presentation.ViewModels"
+        xmlns:authViews="clr-namespace:Halaqa.Desktop.Features.Auth.Presentation.Views"
+        Title="حلقة القرآن" Height="720" Width="1120" MinHeight="620" MinWidth="900"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type authVm:LoginViewModel}">
+            <authViews:LoginView />
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid Background="{StaticResource AppCanvasBrush}">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <Border Background="{StaticResource AppSurfaceBrush}" Padding="28,16" BorderBrush="#14000000" BorderThickness="0,0,0,1">
+            <DockPanel LastChildFill="True">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="حلقة القرآن" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
+                    <TextBlock Text="منصة للحلقات التعليمية المباشرة" Style="{StaticResource BodyMuted}" Margin="12,4,0,0" VerticalAlignment="Center" />
+                </StackPanel>
+                <TextBlock DockPanel.Dock="Left" Text="متصل عبر API آمن" Foreground="{StaticResource AppInfoBrush}" VerticalAlignment="Center" />
+            </DockPanel>
+        </Border>
+
+        <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" />
+    </Grid>
+</Window>

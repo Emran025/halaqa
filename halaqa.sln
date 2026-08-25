@@ -1,9 +1,8 @@
-﻿
-Microsoft Visual Studio Solution File, Format Version 12.00
+﻿Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.0.31903.59
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "halaqa", "halaqa.csproj", "{2B722966-2059-46EC-87F7-15E708CF7A3C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Halaqa.Desktop", "src\Halaqa.Desktop\Halaqa.Desktop.csproj", "{7C22D8A2-214D-468F-8E50-52BFAEC43D2E}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,15 +10,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2B722966-2059-46EC-87F7-15E708CF7A3C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2B722966-2059-46EC-87F7-15E708CF7A3C}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2B722966-2059-46EC-87F7-15E708CF7A3C}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2B722966-2059-46EC-87F7-15E708CF7A3C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7C22D8A2-214D-468F-8E50-52BFAEC43D2E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7C22D8A2-214D-468F-8E50-52BFAEC43D2E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7C22D8A2-214D-468F-8E50-52BFAEC43D2E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7C22D8A2-214D-468F-8E50-52BFAEC43D2E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {3607CF67-A816-43A5-BB89-3A94158D0FA8}
 	EndGlobalSection
 EndGlobal
