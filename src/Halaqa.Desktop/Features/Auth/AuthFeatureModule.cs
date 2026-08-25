@@ -14,7 +14,11 @@ public static class AuthFeatureModule
         services.AddSingleton<IAuthRemoteDataSource, AuthRemoteDataSource>();
         services.AddSingleton<IAuthRepository, AuthRepository>();
         services.AddSingleton<LoginUseCase>();
+        services.AddSingleton<RegisterStudentUseCase>();
+        services.AddSingleton<RegisterTeacherUseCase>();
+        services.AddSingleton<RequestPasswordResetUseCase>();
         services.AddSingleton<LoginViewModel>();
+        services.AddTransient<ForgotPasswordViewModel>();
         return services;
     }
 }
