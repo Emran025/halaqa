@@ -61,6 +61,7 @@ public sealed partial class HalaqasViewModel : ObservableObject
     public string ToggleStatusTitle => SelectedHalaqa?.Status == HalaqaStatus.Active ? "إيقاف الحلقة" : "تفعيل الحلقة";
 
     public event EventHandler? BackRequested;
+    public event EventHandler<HalaqaItem>? MembershipsRequested;
 
     [RelayCommand(CanExecute = nameof(CanLoad))]
     private async Task LoadAsync() => await LoadPageAsync(1);
@@ -180,6 +181,15 @@ public sealed partial class HalaqasViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanNavigateBack))]
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
 
+    [RelayCommand(CanExecute = nameof(CanOpenMemberships))]
+    private void OpenMemberships()
+    {
+        if (SelectedHalaqa is { } halaqa)
+        {
+            MembershipsRequested?.Invoke(this, halaqa);
+        }
+    }
+
     partial void OnSelectedHalaqaChanged(HalaqaItem? value)
     {
         if (value is null)
@@ -189,6 +199,7 @@ public sealed partial class HalaqasViewModel : ObservableObject
             OnPropertyChanged(nameof(SaveTitle));
             OnPropertyChanged(nameof(ToggleStatusTitle));
             ToggleStatusCommand.NotifyCanExecuteChanged();
+            OpenMembershipsCommand.NotifyCanExecuteChanged();
             return;
         }
 
@@ -204,6 +215,7 @@ public sealed partial class HalaqasViewModel : ObservableObject
         OnPropertyChanged(nameof(SaveTitle));
         OnPropertyChanged(nameof(ToggleStatusTitle));
         ToggleStatusCommand.NotifyCanExecuteChanged();
+        OpenMembershipsCommand.NotifyCanExecuteChanged();
         SaveCommand.NotifyCanExecuteChanged();
     }
 
@@ -216,6 +228,7 @@ public sealed partial class HalaqasViewModel : ObservableObject
     private bool CanEdit() => !IsBusy;
     private bool CanSave() => !IsBusy && !string.IsNullOrWhiteSpace(Name) && !string.IsNullOrWhiteSpace(Country) && !string.IsNullOrWhiteSpace(Residence) && !string.IsNullOrWhiteSpace(Timezone);
     private bool CanToggle() => !IsBusy && SelectedHalaqa is not null;
+    private bool CanOpenMemberships() => !IsBusy && SelectedHalaqa is not null;
     private bool CanNavigateBack() => !IsBusy;
 
     private async Task LoadPageAsync(int page)
@@ -313,6 +326,7 @@ public sealed partial class HalaqasViewModel : ObservableObject
         NewHalaqaCommand.NotifyCanExecuteChanged();
         SaveCommand.NotifyCanExecuteChanged();
         ToggleStatusCommand.NotifyCanExecuteChanged();
+        OpenMembershipsCommand.NotifyCanExecuteChanged();
         BackCommand.NotifyCanExecuteChanged();
     }
 
