@@ -1,3 +1,4 @@
+using Xunit;
 using Halaqa.Desktop.Features.Sessions.Domain.Entities;
 using Halaqa.Desktop.Features.Sessions.Domain.Repositories;
 using Halaqa.Desktop.Features.Sessions.Domain.UseCases;
