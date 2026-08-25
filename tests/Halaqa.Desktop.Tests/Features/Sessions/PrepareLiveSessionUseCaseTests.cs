@@ -34,8 +34,7 @@ public sealed class PrepareLiveSessionUseCaseTests
         var result = await new PrepareLiveSessionUseCase(repository).ExecuteAsync(sessionId, "client-1");
 
         Assert.True(result.IsSuccess);
-        Assert.NotNull(result.Value);
-        Assert.Equal(sessionId, result.Value.Value.Config.SessionId);
+        Assert.Equal(sessionId, result.Value.Config.SessionId);
         Assert.Equal("client-1", repository.ReceivedClientConnectionId);
     }
 
