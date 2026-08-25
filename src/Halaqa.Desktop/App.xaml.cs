@@ -9,11 +9,14 @@ public partial class App : Application
 {
     private ServiceProvider? _services;
 
-    protected override void OnStartup(StartupEventArgs e)
+    protected override async void OnStartup(StartupEventArgs e)
     {
         base.OnStartup(e);
 
         _services = Bootstrapper.BuildServices();
+        var shell = _services.GetRequiredService<MainShellViewModel>();
+        await shell.RestoreSessionAsync();
+
         var window = _services.GetRequiredService<MainWindow>();
         MainWindow = window;
         window.Show();
