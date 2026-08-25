@@ -9,7 +9,7 @@
 | SH-00 | النظام المشترك والثيم | غير منطبق | In progress | بناء WPF، اختبار الموارد، فحص RTL والتنقل والوصول. |
 | AU-01 | الدخول والخروج والجلسة | `/auth/login`, `/auth/logout`, `/me` | Partial | DTO/login/use case/session store واختبار 401 و422 والخروج. |
 | AU-02 | التسجيل واستعادة كلمة المرور | `/auth/register/*`, `/auth/password/*`, `/auth/password/change` | Planned | تحقق متعدد الخطوات، idempotency، رسائل الأخطاء الحقلية، تدفق النجاح. |
-| AC-01 | الملفات التفصيلية والوثائق | `/me/student-profile`, `/me/teacher-profile`, `/me/teacher-documents` | Partial | نُفذ ملف الطالب التفصيلي عبر طبقات Domain/Data/Presentation ونجحت بوابة Windows CI؛ ما زال ملف المعلم ووثائقه، واختبار API الحي، ضمن العمل القادم. |
+| AC-01 | الملفات التفصيلية والوثائق | `/me/student-profile`, `/me/teacher-profile`, `/me/teacher-documents` | Implemented | نُفذت ملفات الطالب والمعلم ووثائق المعلم عبر طبقات Domain/Data/Presentation، ونجحت بوابات Windows CI؛ ما زال اختبار API الحي لسلوك الخصوصية و403/422 ضمن التحقق اللاحق. |
 | AC-02 | الملف العام | `GET /me`, `PATCH /me` | Implemented | DTO/mapper، تحديث جزئي آمن، حالات استخدام، واجهة RTL، واختبارات Windows CI؛ لا يشمل اختبارات API حيّة أو الملفات التفصيلية. |
 | HA-01 | الحلقات والعضويات | `/halaqas`, عضوياتها وطلابها | Planned | أدوار المعلم/الطالب، create/update، 403/409، قوائم فارغة. |
 | RG-01 | الطلبات والمعلمون | `/teachers`, `/student-applications`, `/registration-requests` | Planned | إخفاء الخصوصية قبل القبول، قبول/رفض/سحب، idempotency. |
