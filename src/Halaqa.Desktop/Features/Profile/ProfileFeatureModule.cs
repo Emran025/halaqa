@@ -15,12 +15,17 @@ public static class ProfileFeatureModule
         services.AddSingleton<IProfileRepository, ProfileRepository>();
         services.AddSingleton<IStudentProfileRemoteDataSource, StudentProfileRemoteDataSource>();
         services.AddSingleton<IStudentProfileRepository, StudentProfileRepository>();
+        services.AddSingleton<ITeacherProfileRemoteDataSource, TeacherProfileRemoteDataSource>();
+        services.AddSingleton<ITeacherProfileRepository, TeacherProfileRepository>();
         services.AddSingleton<GetCurrentProfileUseCase>();
         services.AddSingleton<UpdateCurrentProfileUseCase>();
         services.AddSingleton<GetCurrentStudentProfileUseCase>();
         services.AddSingleton<UpdateCurrentStudentProfileUseCase>();
+        services.AddSingleton<GetCurrentTeacherProfileUseCase>();
+        services.AddSingleton<UpdateCurrentTeacherProfileUseCase>();
         services.AddSingleton<GeneralProfileViewModel>();
         services.AddSingleton<StudentProfileViewModel>();
+        services.AddSingleton<TeacherProfileViewModel>();
         return services;
     }
 }

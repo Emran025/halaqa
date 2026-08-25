@@ -38,6 +38,9 @@
         <DataTemplate DataType="{x:Type profileVm:StudentProfileViewModel}">
             <profileViews:StudentProfileView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type profileVm:TeacherProfileViewModel}">
+            <profileViews:TeacherProfileView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type sessionsVm:LiveSessionViewModel}">
             <sessionsViews:LiveSessionView />
         </DataTemplate>
