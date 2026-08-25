@@ -93,7 +93,8 @@
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,12,0,0">
                                 <Button Content="{Binding SaveTitle}" Command="{Binding SaveCommand}" Margin="0,0,8,0" />
                                 <Button Content="{Binding ToggleStatusTitle}" Command="{Binding ToggleStatusCommand}" Margin="0,0,8,0" />
-                                <Button Content="إدارة العضويات" Command="{Binding OpenMembershipsCommand}" />
+                                <Button Content="إدارة العضويات" Command="{Binding OpenMembershipsCommand}" Margin="0,0,8,0" />
+                                <Button Content="طلبات التسجيل" Command="{Binding OpenRegistrationRequestsCommand}" />
                             </StackPanel>
                             <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,12,0,0" />
                         </StackPanel>
