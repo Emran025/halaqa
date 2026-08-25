@@ -6,7 +6,7 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
-public sealed partial class StudentRegistrationViewModel(RegisterStudentUseCase registerStudentUseCase) : ObservableObject
+public sealed partial class TeacherRegistrationViewModel(RegisterTeacherUseCase registerTeacherUseCase) : ObservableObject
 {
     private readonly Guid _clientOperationId = Guid.NewGuid();
 
@@ -16,20 +16,16 @@ public sealed partial class StudentRegistrationViewModel(RegisterStudentUseCase 
     [ObservableProperty] private string _password = string.Empty;
     [ObservableProperty] private string _passwordConfirmation = string.Empty;
     [ObservableProperty] private Gender _gender = Gender.Male;
-    [ObservableProperty] private DateTime _birthDate = DateTime.Today.AddYears(-12);
+    [ObservableProperty] private DateTime _birthDate = DateTime.Today.AddYears(-21);
     [ObservableProperty] private string _country = string.Empty;
     [ObservableProperty] private string _city = string.Empty;
     [ObservableProperty] private string _phone = string.Empty;
     [ObservableProperty] private string _phoneZone = string.Empty;
-    [ObservableProperty] private string _timezone = "Asia/Riyadh";
-    [ObservableProperty] private int _attendanceDay = 0;
-    [ObservableProperty] private string _attendanceFrom = "18:00";
-    [ObservableProperty] private string _attendanceTo = "19:00";
-    [ObservableProperty] private FollowUpFrequency _frequency = FollowUpFrequency.Daily;
-    [ObservableProperty] private PlanTaskType _taskType = PlanTaskType.Memorization;
-    [ObservableProperty] private string _planUnit = "page";
-    [ObservableProperty] private decimal _planAmount = 1;
-    [ObservableProperty] private string? _teacherCode;
+    [ObservableProperty] private string _qualification = string.Empty;
+    [ObservableProperty] private int _experienceYears;
+    [ObservableProperty] private string? _bio;
+    [ObservableProperty] private string? _availableTime;
+    [ObservableProperty] private int? _maxHalaqas;
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private string? _message;
     [ObservableProperty] private bool _isError;
@@ -37,19 +33,16 @@ public sealed partial class StudentRegistrationViewModel(RegisterStudentUseCase 
     public event EventHandler<AuthenticatedUser>? Registered;
 
     public Array Genders => Enum.GetValues(typeof(Gender));
-    public Array Frequencies => Enum.GetValues(typeof(FollowUpFrequency));
-    public Array TaskTypes => Enum.GetValues(typeof(PlanTaskType));
     public bool IsFirstStep => Step == 1;
     public bool IsSecondStep => Step == 2;
-    public bool IsThirdStep => Step == 3;
 
     partial void OnStepChanged(int value)
     {
         OnPropertyChanged(nameof(IsFirstStep));
         OnPropertyChanged(nameof(IsSecondStep));
-        OnPropertyChanged(nameof(IsThirdStep));
         PreviousCommand.NotifyCanExecuteChanged();
         NextCommand.NotifyCanExecuteChanged();
+        SubmitCommand.NotifyCanExecuteChanged();
     }
 
     [RelayCommand(CanExecute = nameof(CanGoPrevious))]
@@ -67,15 +60,13 @@ public sealed partial class StudentRegistrationViewModel(RegisterStudentUseCase 
         SubmitCommand.NotifyCanExecuteChanged();
         try
         {
-            var command = new StudentRegistrationCommand(
-                _clientOperationId, Name, null, Email, Password, PasswordConfirmation, Gender, DateOnly.FromDateTime(BirthDate),
-                Country, City, null, Phone, PhoneZone, null, null, null, null,
-                new AttendancePreferences(Timezone, [new WeeklyAvailabilitySlot(AttendanceDay, AttendanceFrom, AttendanceTo, true)], 30),
-                new FollowUpPlan(Frequency, [new FollowUpPlanDetail(TaskType, PlanUnit, PlanAmount, null)], DateOnly.FromDateTime(DateTime.Today), null),
-                TeacherCode, null);
-            var result = await registerStudentUseCase.ExecuteAsync(command);
+            var command = new TeacherRegistrationCommand(
+                _clientOperationId, Name, null, Email, Password, PasswordConfirmation, Gender,
+                DateOnly.FromDateTime(BirthDate), Country, City, null, Phone, PhoneZone, null, null,
+                Qualification, ExperienceYears, Bio, AvailableTime, MaxHalaqas);
+            var result = await registerTeacherUseCase.ExecuteAsync(command);
             IsError = !result.IsSuccess;
-            Message = result.IsSuccess ? "تم إنشاء الحساب بنجاح." : RenderError(result.Error);
+            Message = result.IsSuccess ? "تم إنشاء حساب المعلم بنجاح." : RenderError(result.Error);
             if (result.IsSuccess && result.Value is not null)
             {
                 Registered?.Invoke(this, result.Value);
@@ -88,9 +79,9 @@ public sealed partial class StudentRegistrationViewModel(RegisterStudentUseCase 
         }
     }
 
-    private bool CanGoPrevious() => Step > 1;
-    private bool CanGoNext() => Step < 3 && !IsBusy;
-    private bool CanSubmit() => Step == 3 && !IsBusy;
+    private bool CanGoPrevious() => Step > 1 && !IsBusy;
+    private bool CanGoNext() => Step < 2 && !IsBusy;
+    private bool CanSubmit() => Step == 2 && !IsBusy;
 
-    private static string RenderError(AppError? error) => error?.Message ?? "تعذر إنشاء الحساب حالياً.";
+    private static string RenderError(AppError? error) => error?.Message ?? "تعذر إنشاء حساب المعلم حالياً.";
 }

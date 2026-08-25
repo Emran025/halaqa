@@ -20,6 +20,7 @@ public static class AuthFeatureModule
         services.AddSingleton<LoginViewModel>();
         services.AddTransient<ForgotPasswordViewModel>();
         services.AddTransient<StudentRegistrationViewModel>();
+        services.AddTransient<TeacherRegistrationViewModel>();
         return services;
     }
 }

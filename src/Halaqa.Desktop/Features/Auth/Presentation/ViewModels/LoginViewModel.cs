@@ -24,6 +24,9 @@ public sealed partial class LoginViewModel(LoginUseCase loginUseCase) : Observab
     private string? _statusMessage;
 
     public event EventHandler<AuthenticatedUser>? SignedIn;
+    public event EventHandler? StudentRegistrationRequested;
+    public event EventHandler? TeacherRegistrationRequested;
+    public event EventHandler? PasswordRecoveryRequested;
 
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
     public bool HasStatus => !string.IsNullOrWhiteSpace(StatusMessage);
@@ -58,6 +61,15 @@ public sealed partial class LoginViewModel(LoginUseCase loginUseCase) : Observab
             LoginCommand.NotifyCanExecuteChanged();
         }
     }
+
+    [RelayCommand]
+    private void OpenStudentRegistration() => StudentRegistrationRequested?.Invoke(this, EventArgs.Empty);
+
+    [RelayCommand]
+    private void OpenTeacherRegistration() => TeacherRegistrationRequested?.Invoke(this, EventArgs.Empty);
+
+    [RelayCommand]
+    private void OpenPasswordRecovery() => PasswordRecoveryRequested?.Invoke(this, EventArgs.Empty);
 
     private bool CanLogin() => !IsBusy && !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password);
 
