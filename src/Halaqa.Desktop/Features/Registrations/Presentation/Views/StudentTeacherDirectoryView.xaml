@@ -65,7 +65,7 @@
                                                     <TextBlock DockPanel.Dock="Left" Text="{Binding CapacityAvailable, StringFormat=مقاعد متاحة: {0}}" Style="{StaticResource BodyMuted}" />
                                                 </DockPanel>
                                                 <TextBlock Text="{Binding Qualification}" Style="{StaticResource BodyMuted}" />
-                                                <TextBlock Text="{Binding Country, StringFormat={0} · }" Style="{StaticResource BodyMuted}" />
+                                                <TextBlock Text="{Binding Country}" Style="{StaticResource BodyMuted}" />
                                                 <TextBlock Text="{Binding City}" Style="{StaticResource BodyMuted}" />
                                                 <TextBlock Text="{Binding ExperienceYears, StringFormat=سنوات الخبرة: {0}}" Style="{StaticResource BodyMuted}" />
                                             </StackPanel>
