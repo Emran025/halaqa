@@ -35,6 +35,9 @@
         <DataTemplate DataType="{x:Type profileVm:GeneralProfileViewModel}">
             <profileViews:GeneralProfileView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type profileVm:StudentProfileViewModel}">
+            <profileViews:StudentProfileView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type sessionsVm:LiveSessionViewModel}">
             <sessionsViews:LiveSessionView />
         </DataTemplate>

@@ -5,8 +5,11 @@ namespace Halaqa.Desktop.Presentation;
 
 public sealed partial class DashboardViewModel
 {
+    private readonly bool _isStudent;
+
     public DashboardViewModel(AuthUser user)
     {
+        _isStudent = user.Role == UserRole.Student;
         UserName = user.Name;
         RoleLabel = user.Role == UserRole.Teacher ? "المعلم" : "الطالب";
         PrimaryActionTitle = user.Role == UserRole.Teacher ? "إدارة الحلقات" : "متابعة خطتي";
@@ -16,6 +19,7 @@ public sealed partial class DashboardViewModel
     }
 
     public event EventHandler? ProfileRequested;
+    public event EventHandler? StudentProfileRequested;
 
     public string UserName { get; }
     public string RoleLabel { get; }
@@ -23,5 +27,14 @@ public sealed partial class DashboardViewModel
     public string PrimaryActionDescription { get; }
 
     [RelayCommand]
-    private void OpenProfile() => ProfileRequested?.Invoke(this, EventArgs.Empty);
+    private void OpenProfile()
+    {
+        if (_isStudent)
+        {
+            StudentProfileRequested?.Invoke(this, EventArgs.Empty);
+            return;
+        }
+
+        ProfileRequested?.Invoke(this, EventArgs.Empty);
+    }
 }
