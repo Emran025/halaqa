@@ -6,6 +6,8 @@
         xmlns:local="clr-namespace:Halaqa.Desktop.Presentation"
         xmlns:halaqasVm="clr-namespace:Halaqa.Desktop.Features.Halaqas.Presentation.ViewModels"
         xmlns:halaqasViews="clr-namespace:Halaqa.Desktop.Features.Halaqas.Presentation.Views"
+        xmlns:membershipsVm="clr-namespace:Halaqa.Desktop.Features.Memberships.Presentation.ViewModels"
+        xmlns:membershipsViews="clr-namespace:Halaqa.Desktop.Features.Memberships.Presentation.Views"
         xmlns:profileVm="clr-namespace:Halaqa.Desktop.Features.Profile.Presentation.ViewModels"
         xmlns:profileViews="clr-namespace:Halaqa.Desktop.Features.Profile.Presentation.Views"
         xmlns:teacherDocumentsVm="clr-namespace:Halaqa.Desktop.Features.TeacherDocuments.Presentation.ViewModels"
@@ -50,6 +52,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type halaqasVm:HalaqasViewModel}">
             <halaqasViews:HalaqasView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type membershipsVm:HalaqaMembershipsViewModel}">
+            <membershipsViews:HalaqaMembershipsView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type sessionsVm:LiveSessionViewModel}">
             <sessionsViews:LiveSessionView />
