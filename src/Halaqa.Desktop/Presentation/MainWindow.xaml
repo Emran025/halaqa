@@ -12,6 +12,15 @@
         <DataTemplate DataType="{x:Type authVm:LoginViewModel}">
             <authViews:LoginView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type authVm:StudentRegistrationViewModel}">
+            <authViews:StudentRegistrationView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type authVm:TeacherRegistrationViewModel}">
+            <authViews:TeacherRegistrationView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type authVm:ForgotPasswordViewModel}">
+            <authViews:ForgotPasswordView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:DashboardViewModel}">
             <local:DashboardView />
         </DataTemplate>
