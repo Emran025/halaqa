@@ -28,6 +28,10 @@
                     <materialDesign:PackIcon Kind="AccountGroupOutline" Foreground="{StaticResource AppInfoBrush}" Width="28" Height="28" />
                     <TextBlock Text="{Binding PrimaryActionTitle}" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="{Binding PrimaryActionDescription}" Style="{StaticResource BodyMuted}" />
+                    <Button Content="{Binding PrimaryActionTitle}"
+                            Command="{Binding OpenPrimaryActionCommand}"
+                            HorizontalAlignment="Right"
+                            Margin="0,16,0,0" />
                 </StackPanel>
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">

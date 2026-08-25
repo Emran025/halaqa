@@ -21,11 +21,21 @@ public sealed partial class DashboardViewModel
     public event EventHandler? ProfileRequested;
     public event EventHandler? StudentProfileRequested;
     public event EventHandler? TeacherProfileRequested;
+    public event EventHandler? HalaqasRequested;
 
     public string UserName { get; }
     public string RoleLabel { get; }
     public string PrimaryActionTitle { get; }
     public string PrimaryActionDescription { get; }
+
+    [RelayCommand]
+    private void OpenPrimaryAction()
+    {
+        if (!_isStudent)
+        {
+            HalaqasRequested?.Invoke(this, EventArgs.Empty);
+        }
+    }
 
     [RelayCommand]
     private void OpenProfile()

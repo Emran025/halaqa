@@ -4,6 +4,8 @@
         xmlns:authVm="clr-namespace:Halaqa.Desktop.Features.Auth.Presentation.ViewModels"
         xmlns:authViews="clr-namespace:Halaqa.Desktop.Features.Auth.Presentation.Views"
         xmlns:local="clr-namespace:Halaqa.Desktop.Presentation"
+        xmlns:halaqasVm="clr-namespace:Halaqa.Desktop.Features.Halaqas.Presentation.ViewModels"
+        xmlns:halaqasViews="clr-namespace:Halaqa.Desktop.Features.Halaqas.Presentation.Views"
         xmlns:profileVm="clr-namespace:Halaqa.Desktop.Features.Profile.Presentation.ViewModels"
         xmlns:profileViews="clr-namespace:Halaqa.Desktop.Features.Profile.Presentation.Views"
         xmlns:teacherDocumentsVm="clr-namespace:Halaqa.Desktop.Features.TeacherDocuments.Presentation.ViewModels"
@@ -45,6 +47,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type teacherDocumentsVm:TeacherDocumentsViewModel}">
             <teacherDocumentsViews:TeacherDocumentsView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type halaqasVm:HalaqasViewModel}">
+            <halaqasViews:HalaqasView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type sessionsVm:LiveSessionViewModel}">
             <sessionsViews:LiveSessionView />
