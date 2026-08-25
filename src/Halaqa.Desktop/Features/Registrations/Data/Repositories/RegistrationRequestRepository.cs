@@ -9,6 +9,21 @@ namespace Halaqa.Desktop.Features.Registrations.Data.Repositories;
 internal sealed class RegistrationRequestRepository(
     IRegistrationRequestRemoteDataSource remoteDataSource) : IRegistrationRequestRepository
 {
+    public async Task<Result<RegistrationRequestPage>> ListMineAsync(
+        RegistrationState? state = null,
+        int page = 1,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await remoteDataSource.ListMineAsync(
+            state is null ? null : RegistrationRequestMapper.ToContractValue(state.Value),
+            page,
+            cancellationToken);
+
+        return response.IsSuccess && response.Value is not null
+            ? RegistrationRequestMapper.ToDomain(response.Value)
+            : Result<RegistrationRequestPage>.Failure(response.Error!);
+    }
+
     public async Task<Result<RegistrationRequestPage>> ListForHalaqaAsync(
         Guid halaqaId,
         RegistrationState? state = null,
@@ -55,6 +70,11 @@ internal sealed class RegistrationRequestRepository(
             cancellationToken);
         return ToDomain(response);
     }
+
+    public Task<Result> CancelAsync(
+        Guid registrationId,
+        CancellationToken cancellationToken = default) =>
+        remoteDataSource.CancelAsync(registrationId, cancellationToken);
 
     private static Result<RegistrationRequest> ToDomain(Result<Data.Models.RegistrationResponseDto> response) =>
         response.IsSuccess && response.Value?.RegistrationRequest is not null

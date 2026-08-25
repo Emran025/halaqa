@@ -22,9 +22,12 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <DockPanel>
-                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى لوحة التحكم">
-                        <materialDesign:PackIcon Kind="ArrowRight" />
-                    </Button>
+                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                        <Button Content="طلباتي" Command="{Binding OpenMyRequestsCommand}" Margin="0,0,8,0" />
+                        <Button Command="{Binding BackCommand}" ToolTip="العودة إلى لوحة التحكم">
+                            <materialDesign:PackIcon Kind="ArrowRight" />
+                        </Button>
+                    </StackPanel>
                     <StackPanel>
                         <TextBlock Text="البحث عن معلم" Style="{StaticResource PageTitle}" />
                         <TextBlock Text="تظهر البطاقات العامة فقط؛ لا تظهر وسائل الاتصال أو البيانات التفصيلية للمعلم قبل قبول الطلب." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,0" />

@@ -64,6 +64,9 @@
         <DataTemplate DataType="{x:Type registrationsVm:StudentTeacherDirectoryViewModel}">
             <registrationsViews:StudentTeacherDirectoryView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type registrationsVm:StudentRegistrationRequestsViewModel}">
+            <registrationsViews:StudentRegistrationRequestsView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type sessionsVm:LiveSessionViewModel}">
             <sessionsViews:LiveSessionView />
         </DataTemplate>

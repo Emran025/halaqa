@@ -4,6 +4,17 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Registrations.Domain.UseCases;
 
+public sealed class ListMyRegistrationRequestsUseCase(IRegistrationRequestRepository repository)
+{
+    public Task<Result<RegistrationRequestPage>> ExecuteAsync(
+        RegistrationState? state = null,
+        int page = 1,
+        CancellationToken cancellationToken = default) =>
+        page < 1
+            ? Task.FromResult(Result<RegistrationRequestPage>.Failure(RegistrationRequestValidationErrors.InvalidPage()))
+            : repository.ListMineAsync(state, page, cancellationToken);
+}
+
 public sealed class ListHalaqaRegistrationRequestsUseCase(IRegistrationRequestRepository repository)
 {
     public Task<Result<RegistrationRequestPage>> ExecuteAsync(
@@ -45,6 +56,16 @@ public sealed class RejectRegistrationRequestUseCase(IRegistrationRequestReposit
     }
 }
 
+public sealed class CancelRegistrationRequestUseCase(IRegistrationRequestRepository repository)
+{
+    public Task<Result> ExecuteAsync(
+        Guid registrationId,
+        CancellationToken cancellationToken = default) =>
+        registrationId == Guid.Empty
+            ? Task.FromResult(Result.Failure(RegistrationRequestValidationErrors.InvalidRegistration()))
+            : repository.CancelAsync(registrationId, cancellationToken);
+}
+
 public sealed class RequestRegistrationCompletionUseCase(IRegistrationRequestRepository repository)
 {
     public Task<Result<RegistrationRequest>> ExecuteAsync(
@@ -82,4 +103,8 @@ file static class RegistrationRequestValidationErrors
     public static AppError InvalidHalaqaOrPage() => new(
         AppErrorKind.Validation,
         "معرّف الحلقة أو رقم الصفحة غير صالح.");
+
+    public static AppError InvalidPage() => new(
+        AppErrorKind.Validation,
+        "رقم الصفحة غير صالح.");
 }

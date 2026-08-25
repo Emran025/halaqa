@@ -58,6 +58,12 @@ public sealed class HalaqaRegistrationRequestsViewModelTests
         public Guid? ListHalaqaId { get; private set; }
         public RequestRegistrationCompletionCommand? CompletionRequest { get; private set; }
 
+        public Task<Result<RegistrationRequestPage>> ListMineAsync(
+            RegistrationState? state = null,
+            int page = 1,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([_request], 1, 1, 20, 1)));
+
         public Task<Result<RegistrationRequestPage>> ListForHalaqaAsync(
             Guid halaqaId,
             RegistrationState? state = null,
@@ -83,6 +89,9 @@ public sealed class HalaqaRegistrationRequestsViewModelTests
             CompletionRequest = command;
             return Task.FromResult(Result<RegistrationRequest>.Success(_request with { State = RegistrationState.CompletionRequested }));
         }
+
+        public Task<Result> CancelAsync(Guid registrationId, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result.Success());
 
         private static RegistrationRequest CreateRequest() => new(
             Guid.NewGuid(),

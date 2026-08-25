@@ -54,6 +54,7 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
         : "ستُرسل بيانات ملفك المحدثة مع الطلب دون تخزين محلي.";
 
     public event EventHandler? BackRequested;
+    public event EventHandler? MyRequestsRequested;
 
     public void Initialize()
     {
@@ -160,6 +161,9 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
 
     [RelayCommand(CanExecute = nameof(CanNavigateBack))]
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
+
+    [RelayCommand(CanExecute = nameof(CanLoad))]
+    private void OpenMyRequests() => MyRequestsRequested?.Invoke(this, EventArgs.Empty);
 
     partial void OnSelectedTeacherChanged(AvailableTeacher? value)
     {
@@ -286,6 +290,7 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
         LoadNextPageCommand.NotifyCanExecuteChanged();
         LoadPreviousPageCommand.NotifyCanExecuteChanged();
         RefreshProfileCommand.NotifyCanExecuteChanged();
+        OpenMyRequestsCommand.NotifyCanExecuteChanged();
         SubmitCommand.NotifyCanExecuteChanged();
         BackCommand.NotifyCanExecuteChanged();
     }

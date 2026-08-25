@@ -5,6 +5,11 @@ namespace Halaqa.Desktop.Features.Registrations.Domain.Repositories;
 
 public interface IRegistrationRequestRepository
 {
+    Task<Result<RegistrationRequestPage>> ListMineAsync(
+        RegistrationState? state = null,
+        int page = 1,
+        CancellationToken cancellationToken = default);
+
     Task<Result<RegistrationRequestPage>> ListForHalaqaAsync(
         Guid halaqaId,
         RegistrationState? state = null,
@@ -21,5 +26,9 @@ public interface IRegistrationRequestRepository
 
     Task<Result<RegistrationRequest>> RequestCompletionAsync(
         RequestRegistrationCompletionCommand command,
+        CancellationToken cancellationToken = default);
+
+    Task<Result> CancelAsync(
+        Guid registrationId,
         CancellationToken cancellationToken = default);
 }
