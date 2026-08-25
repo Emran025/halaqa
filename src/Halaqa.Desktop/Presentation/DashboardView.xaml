@@ -32,9 +32,13 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="CalendarClockOutline" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28" />
-                    <TextBlock Text="الجلسات والمتابعة" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
-                    <TextBlock Text="عرض الجلسات القادمة وعناصر المتابعة اليومية من العقد الرسمي." Style="{StaticResource BodyMuted}" />
+                    <materialDesign:PackIcon Kind="AccountEditOutline" Foreground="{StaticResource AppPrimaryBrush}" Width="28" Height="28" />
+                    <TextBlock Text="الملف الشخصي" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
+                    <TextBlock Text="راجع الاسم ورقم الهاتف ومستوى الحفظ والمراجعة المرتبط بحسابك." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                    <Button Content="فتح الملف الشخصي"
+                            Command="{Binding OpenProfileCommand}"
+                            HorizontalAlignment="Right"
+                            Margin="0,16,0,0" />
                 </StackPanel>
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">

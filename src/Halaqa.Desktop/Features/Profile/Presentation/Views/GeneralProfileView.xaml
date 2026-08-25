@@ -1,0 +1,95 @@
+<UserControl x:Class="Halaqa.Desktop.Features.Profile.Presentation.Views.GeneralProfileView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             FlowDirection="RightToLeft">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+    </UserControl.Resources>
+
+    <Grid Background="{StaticResource AppCanvasBrush}">
+        <Border Style="{StaticResource AppCard}" Width="620" MaxHeight="620" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+
+                <DockPanel LastChildFill="True">
+                    <Button DockPanel.Dock="Left"
+                            Command="{Binding BackCommand}"
+                            ToolTip="العودة إلى لوحة التحكم"
+                            Margin="0,0,0,0">
+                        <materialDesign:PackIcon Kind="ArrowRight" />
+                    </Button>
+                    <StackPanel>
+                        <TextBlock Text="الملف الشخصي" Style="{StaticResource PageTitle}" />
+                        <TextBlock Text="حدّث بياناتك العامة المرتبطة بحسابك." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                    </StackPanel>
+                </DockPanel>
+
+                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,20,0,0">
+                    <StackPanel>
+                        <ProgressBar Height="4"
+                                     Margin="0,0,0,12"
+                                     IsIndeterminate="True"
+                                     Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}"
+                                 IsReadOnly="{Binding IsBusy}"
+                                 materialDesign:HintAssist.Hint="الاسم" />
+                        <TextBlock Text="{Binding NameError}"
+                                   Foreground="{StaticResource AppErrorBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,8" />
+                        <TextBox Text="{Binding Email}"
+                                 IsReadOnly="True"
+                                 FlowDirection="LeftToRight"
+                                 materialDesign:HintAssist.Hint="البريد الإلكتروني" />
+                        <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}"
+                                 IsReadOnly="{Binding IsBusy}"
+                                 FlowDirection="LeftToRight"
+                                 materialDesign:HintAssist.Hint="رقم الهاتف" />
+                        <TextBlock Text="{Binding PhoneError}"
+                                   Foreground="{StaticResource AppErrorBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,8" />
+                        <TextBox Text="{Binding MemorizationLevel, UpdateSourceTrigger=PropertyChanged}"
+                                 IsReadOnly="{Binding IsBusy}"
+                                 materialDesign:HintAssist.Hint="مستوى الحفظ" />
+                        <CheckBox Content="مسح مستوى الحفظ المحفوظ"
+                                  IsChecked="{Binding ClearMemorizationLevel}"
+                                  Margin="0,0,0,8" />
+                        <TextBlock Text="{Binding MemorizationLevelError}"
+                                   Foreground="{StaticResource AppErrorBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,8" />
+                        <TextBox Text="{Binding ReviewLevel, UpdateSourceTrigger=PropertyChanged}"
+                                 IsReadOnly="{Binding IsBusy}"
+                                 materialDesign:HintAssist.Hint="مستوى المراجعة" />
+                        <CheckBox Content="مسح مستوى المراجعة المحفوظ"
+                                  IsChecked="{Binding ClearReviewLevel}"
+                                  Margin="0,0,0,8" />
+                        <TextBlock Text="{Binding ReviewLevelError}"
+                                   Foreground="{StaticResource AppErrorBrush}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,0,0,8" />
+                        <TextBlock Text="{Binding Message}"
+                                   Foreground="{StaticResource AppMutedInkBrush}"
+                                   Style="{StaticResource BodyMuted}"
+                                   TextWrapping="Wrap"
+                                   Margin="0,4,0,0" />
+                    </StackPanel>
+                </ScrollViewer>
+
+                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,16,0,0">
+                    <Button Content="تحديث البيانات"
+                            Command="{Binding LoadCommand}"
+                            Margin="0,0,8,0" />
+                    <Button Content="حفظ التغييرات"
+                            Command="{Binding SaveCommand}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>
