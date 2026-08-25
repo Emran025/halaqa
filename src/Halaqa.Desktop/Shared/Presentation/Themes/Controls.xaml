@@ -5,18 +5,58 @@
         <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
         <Setter Property="FlowDirection" Value="RightToLeft" />
         <Setter Property="Background" Value="{StaticResource AppCanvasBrush}" />
+        <Setter Property="TextElement.Foreground" Value="{StaticResource AppInkBrush}" />
+    </Style>
+
+    <Style x:Key="AppCard" TargetType="{x:Type Border}">
+        <Setter Property="Background" Value="{StaticResource AppSurfaceBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource AppBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="14" />
+        <Setter Property="Padding" Value="20" />
+        <Setter Property="SnapsToDevicePixels" Value="True" />
     </Style>
 
     <Style TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignRaisedButton}">
         <Setter Property="Margin" Value="4" />
-        <Setter Property="Padding" Value="16,8" />
+        <Setter Property="Padding" Value="16,9" />
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="Background" Value="{StaticResource AppPrimaryBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="BorderBrush" Value="{StaticResource AppPrimaryBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="AppSecondaryButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="Padding" Value="16,9" />
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="Foreground" Value="{StaticResource AppPrimaryBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource AppPrimaryBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+
+    <Style x:Key="AppDangerButton" TargetType="{x:Type Button}" BasedOn="{StaticResource MaterialDesignOutlinedButton}">
+        <Setter Property="Margin" Value="4" />
+        <Setter Property="Padding" Value="16,9" />
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="Foreground" Value="{StaticResource AppErrorBrush}" />
+        <Setter Property="BorderBrush" Value="{StaticResource AppErrorBrush}" />
+        <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
 
     <Style TargetType="{x:Type TextBox}" BasedOn="{StaticResource MaterialDesignOutlinedTextBox}">
         <Setter Property="Margin" Value="0,4,0,12" />
+        <Setter Property="MinHeight" Value="46" />
     </Style>
 
     <Style TargetType="{x:Type PasswordBox}" BasedOn="{StaticResource MaterialDesignOutlinedPasswordBox}">
         <Setter Property="Margin" Value="0,4,0,12" />
+        <Setter Property="MinHeight" Value="46" />
+    </Style>
+
+    <Style TargetType="{x:Type ComboBox}" BasedOn="{StaticResource MaterialDesignOutlinedComboBox}">
+        <Setter Property="Margin" Value="0,4,0,12" />
+        <Setter Property="MinHeight" Value="46" />
     </Style>
 </ResourceDictionary>
