@@ -1,4 +1,5 @@
 using Halaqa.Desktop.Features.Auth;
+using Halaqa.Desktop.Features.Halaqas;
 using Halaqa.Desktop.Features.Mistakes;
 using Halaqa.Desktop.Features.Profile;
 using Halaqa.Desktop.Features.Quran;
@@ -30,6 +31,7 @@ public static class Bootstrapper
         services.AddAuthFeature();
         services.AddProfileFeature();
         services.AddTeacherDocumentsFeature();
+        services.AddHalaqasFeature();
         services.AddQuranFeature();
         services.AddMistakesFeature();
         services.AddSessionsFeature();

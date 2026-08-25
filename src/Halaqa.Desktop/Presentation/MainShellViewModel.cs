@@ -2,6 +2,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 using Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
+using Halaqa.Desktop.Features.Halaqas.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Profile.Domain.Entities;
 using Halaqa.Desktop.Features.Profile.Presentation.ViewModels;
 using Halaqa.Desktop.Features.TeacherDocuments.Presentation.ViewModels;
@@ -19,6 +20,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly StudentProfileViewModel _studentProfileViewModel;
     private readonly TeacherProfileViewModel _teacherProfileViewModel;
     private readonly TeacherDocumentsViewModel _teacherDocumentsViewModel;
+    private readonly HalaqasViewModel _halaqasViewModel;
     private readonly RestoreSessionUseCase _restoreSessionUseCase;
     private AuthenticatedUser? _authenticatedUser;
 
@@ -35,6 +37,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         StudentProfileViewModel studentProfileViewModel,
         TeacherProfileViewModel teacherProfileViewModel,
         TeacherDocumentsViewModel teacherDocumentsViewModel,
+        HalaqasViewModel halaqasViewModel,
         RestoreSessionUseCase restoreSessionUseCase)
     {
         _loginViewModel = loginViewModel;
@@ -46,6 +49,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _studentProfileViewModel = studentProfileViewModel;
         _teacherProfileViewModel = teacherProfileViewModel;
         _teacherDocumentsViewModel = teacherDocumentsViewModel;
+        _halaqasViewModel = halaqasViewModel;
         _restoreSessionUseCase = restoreSessionUseCase;
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
@@ -67,6 +71,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _teacherProfileViewModel.DocumentsRequested += async (_, _) => await ShowTeacherDocumentsAsync();
         _teacherProfileViewModel.ProfileUpdated += (_, profile) => UpdateAuthenticatedUser(profile);
         _teacherDocumentsViewModel.BackRequested += (_, _) => CurrentPage = _teacherProfileViewModel;
+        _halaqasViewModel.BackRequested += (_, _) => ShowDashboard();
 
         CurrentPage = _loginViewModel;
     }
@@ -98,6 +103,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         dashboardViewModel.ProfileRequested += async (_, _) => await ShowProfileAsync();
         dashboardViewModel.StudentProfileRequested += async (_, _) => await ShowStudentProfileAsync();
         dashboardViewModel.TeacherProfileRequested += async (_, _) => await ShowTeacherProfileAsync();
+        dashboardViewModel.HalaqasRequested += async (_, _) => await ShowHalaqasAsync();
         CurrentPage = dashboardViewModel;
     }
 
@@ -123,6 +129,12 @@ public sealed partial class MainShellViewModel : ObservableObject
     {
         CurrentPage = _teacherDocumentsViewModel;
         await _teacherDocumentsViewModel.LoadCommand.ExecuteAsync(null);
+    }
+
+    private async Task ShowHalaqasAsync()
+    {
+        CurrentPage = _halaqasViewModel;
+        await _halaqasViewModel.LoadCommand.ExecuteAsync(null);
     }
 
     private void UpdateAuthenticatedUser(UserProfile profile)
