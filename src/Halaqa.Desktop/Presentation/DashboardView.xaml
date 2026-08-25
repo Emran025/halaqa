@@ -1,0 +1,49 @@
+<UserControl x:Class="Halaqa.Desktop.Presentation.DashboardView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             FlowDirection="RightToLeft">
+    <Grid Margin="40">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <StackPanel>
+            <TextBlock Text="{Binding UserName, StringFormat=مرحباً {0}}" Style="{StaticResource PageTitle}" />
+            <TextBlock Text="{Binding RoleLabel, StringFormat=لوحة {0}}" Style="{StaticResource BodyMuted}" Margin="0,6,0,0" />
+        </StackPanel>
+
+        <Border Grid.Row="1" Background="#0D155EEF" Padding="16" CornerRadius="12" Margin="0,28,0,20">
+            <DockPanel>
+                <materialDesign:PackIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0" />
+                <TextBlock Text="البيانات التعليمية الرسمية تُحمّل من الخادم. تتوفر فقط صفحات المصحف وعمليات الأخطاء غير المتزامنة للاستخدام المحلي." />
+            </DockPanel>
+        </Border>
+
+        <UniformGrid Grid.Row="2" Columns="3" HorizontalAlignment="Stretch" VerticalAlignment="Top">
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
+                <StackPanel>
+                    <materialDesign:PackIcon Kind="AccountGroupOutline" Foreground="{StaticResource AppInfoBrush}" Width="28" Height="28" />
+                    <TextBlock Text="{Binding PrimaryActionTitle}" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
+                    <TextBlock Text="{Binding PrimaryActionDescription}" Style="{StaticResource BodyMuted}" />
+                </StackPanel>
+            </Border>
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
+                <StackPanel>
+                    <materialDesign:PackIcon Kind="CalendarClockOutline" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28" />
+                    <TextBlock Text="الجلسات والمتابعة" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
+                    <TextBlock Text="عرض الجلسات القادمة وعناصر المتابعة اليومية من العقد الرسمي." Style="{StaticResource BodyMuted}" />
+                </StackPanel>
+            </Border>
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
+                <StackPanel>
+                    <materialDesign:PackIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppWarningBrush}" Width="28" Height="28" />
+                    <TextBlock Text="المصحف والأخطاء" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
+                    <TextBlock Text="صفحات المصحف محفوظة محلياً عند تحميلها، والأخطاء تنتظر المزامنة عند الحاجة." Style="{StaticResource BodyMuted}" />
+                </StackPanel>
+            </Border>
+        </UniformGrid>
+    </Grid>
+</UserControl>

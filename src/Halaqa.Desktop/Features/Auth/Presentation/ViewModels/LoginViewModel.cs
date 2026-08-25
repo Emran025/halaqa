@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
 
@@ -21,6 +22,8 @@ public sealed partial class LoginViewModel(LoginUseCase loginUseCase) : Observab
 
     [ObservableProperty]
     private string? _statusMessage;
+
+    public event EventHandler<AuthenticatedUser>? SignedIn;
 
     public bool HasError => !string.IsNullOrWhiteSpace(ErrorMessage);
     public bool HasStatus => !string.IsNullOrWhiteSpace(StatusMessage);
@@ -47,6 +50,7 @@ public sealed partial class LoginViewModel(LoginUseCase loginUseCase) : Observab
 
             StatusMessage = $"تم تسجيل الدخول بنجاح. مرحباً {result.Value.User.Name}.";
             Password = string.Empty;
+            SignedIn?.Invoke(this, result.Value);
         }
         finally
         {

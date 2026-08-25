@@ -10,6 +10,8 @@ public sealed partial class MainShellViewModel : ObservableObject
 
     public MainShellViewModel(LoginViewModel loginViewModel)
     {
+        loginViewModel.SignedIn += (_, authenticatedUser) =>
+            CurrentPage = new DashboardViewModel(authenticatedUser.User);
         CurrentPage = loginViewModel;
     }
 }
