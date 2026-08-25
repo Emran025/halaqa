@@ -12,16 +12,17 @@ public sealed partial class DashboardViewModel
         _isStudent = user.Role == UserRole.Student;
         UserName = user.Name;
         RoleLabel = user.Role == UserRole.Teacher ? "المعلم" : "الطالب";
-        PrimaryActionTitle = user.Role == UserRole.Teacher ? "إدارة الحلقات" : "متابعة خطتي";
+        PrimaryActionTitle = user.Role == UserRole.Teacher ? "إدارة الحلقات" : "البحث عن معلم";
         PrimaryActionDescription = user.Role == UserRole.Teacher
             ? "أنشئ حلقة، راجع طلبات الانضمام، ونظّم طلابك."
-            : "راجع عناصر الحفظ والمراجعة والتلاوة لليوم.";
+            : "تصفح المعلمين المتاحين وقدّم طلب تسجيل موجهاً بالبيانات الرسمية من ملفك.";
     }
 
     public event EventHandler? ProfileRequested;
     public event EventHandler? StudentProfileRequested;
     public event EventHandler? TeacherProfileRequested;
     public event EventHandler? HalaqasRequested;
+    public event EventHandler? StudentRegistrationsRequested;
 
     public string UserName { get; }
     public string RoleLabel { get; }
@@ -31,10 +32,13 @@ public sealed partial class DashboardViewModel
     [RelayCommand]
     private void OpenPrimaryAction()
     {
-        if (!_isStudent)
+        if (_isStudent)
         {
-            HalaqasRequested?.Invoke(this, EventArgs.Empty);
+            StudentRegistrationsRequested?.Invoke(this, EventArgs.Empty);
+            return;
         }
+
+        HalaqasRequested?.Invoke(this, EventArgs.Empty);
     }
 
     [RelayCommand]

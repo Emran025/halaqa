@@ -61,6 +61,9 @@
         <DataTemplate DataType="{x:Type registrationsVm:HalaqaRegistrationRequestsViewModel}">
             <registrationsViews:HalaqaRegistrationRequestsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type registrationsVm:StudentTeacherDirectoryViewModel}">
+            <registrationsViews:StudentTeacherDirectoryView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type sessionsVm:LiveSessionViewModel}">
             <sessionsViews:LiveSessionView />
         </DataTemplate>

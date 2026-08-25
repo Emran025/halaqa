@@ -13,11 +13,17 @@ public static class RegistrationsFeatureModule
     {
         services.AddSingleton<IRegistrationRequestRemoteDataSource, RegistrationRequestRemoteDataSource>();
         services.AddSingleton<IRegistrationRequestRepository, RegistrationRequestRepository>();
+        services.AddSingleton<IStudentRegistrationRemoteDataSource, StudentRegistrationRemoteDataSource>();
+        services.AddSingleton<IStudentRegistrationRepository, StudentRegistrationRepository>();
         services.AddSingleton<ListHalaqaRegistrationRequestsUseCase>();
         services.AddSingleton<AcceptRegistrationRequestUseCase>();
         services.AddSingleton<RejectRegistrationRequestUseCase>();
         services.AddSingleton<RequestRegistrationCompletionUseCase>();
+        services.AddSingleton<ListAvailableTeachersUseCase>();
+        services.AddSingleton<GetPublicTeacherUseCase>();
+        services.AddSingleton<CreateStudentRegistrationRequestUseCase>();
         services.AddSingleton<HalaqaRegistrationRequestsViewModel>();
+        services.AddSingleton<StudentTeacherDirectoryViewModel>();
         return services;
     }
 }
