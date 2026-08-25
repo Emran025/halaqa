@@ -7,6 +7,7 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <shared:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <shared:QuranPageFontFamilyConverter x:Key="QuranPageFontFamilyConverter" />
         <Style x:Key="MushafAyahItem" TargetType="ListBoxItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch" />
             <Setter Property="Padding" Value="12,8" />
@@ -116,22 +117,29 @@
                             </StackPanel>
                         </DockPanel>
                         <Grid Grid.Row="1" Margin="0,10,0,8">
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                             <TextBlock Text="{Binding QuranMessage}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
-                            <ProgressBar Grid.Column="1" Width="90" Height="4" IsIndeterminate="True" Visibility="{Binding IsQuranLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
+                            <ComboBox Grid.Column="1"
+                                      ItemsSource="{Binding QuranPage.Ayahs}"
+                                      SelectedItem="{Binding SelectedAyah}"
+                                      DisplayMemberPath="Number"
+                                      Width="74"
+                                      Margin="8,0"
+                                      materialDesign:HintAssist.Hint="آية" />
+                            <ProgressBar Grid.Column="2" Width="90" Height="4" IsIndeterminate="True" Visibility="{Binding IsQuranLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
                         </Grid>
-                        <ListBox Grid.Row="2" ItemsSource="{Binding QuranPage.Ayahs}" SelectedItem="{Binding SelectedAyah}" ItemContainerStyle="{StaticResource MushafAyahItem}" BorderThickness="0" Background="Transparent" ScrollViewer.VerticalScrollBarVisibility="Auto">
-                            <ListBox.ItemTemplate>
-                                <DataTemplate>
-                                    <DockPanel LastChildFill="True">
-                                        <Border DockPanel.Dock="Left" Background="#11000000" CornerRadius="10" Padding="7,2" Margin="12,0,0,0" VerticalAlignment="Center">
-                                            <TextBlock Text="{Binding Number}" Style="{StaticResource CaptionText}" />
-                                        </Border>
-                                        <TextBlock Text="{Binding Text}" Style="{StaticResource QuranText}" TextAlignment="Right" />
-                                    </DockPanel>
-                                </DataTemplate>
-                            </ListBox.ItemTemplate>
-                        </ListBox>
+                        <Border Grid.Row="2" Background="#FFFDFBF5" BorderBrush="#14000000" BorderThickness="1" CornerRadius="8" Padding="16">
+                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                <TextBlock Text="{Binding QuranPage.PageGlyphText}"
+                                           FontFamily="{Binding QuranPage.PageNumber, Converter={StaticResource QuranPageFontFamilyConverter}}"
+                                           FontSize="34"
+                                           LineHeight="54"
+                                           TextAlignment="Center"
+                                           TextWrapping="Wrap"
+                                           TextOptions.TextFormattingMode="Display"
+                                           TextOptions.TextRenderingMode="ClearType" />
+                            </ScrollViewer>
+                        </Border>
                         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
                             <Button Content="مشاركة الموضع" Command="{Binding PublishMushafPresenceCommand}" />
                             <Button Content="متابعة الطرف الآخر" Command="{Binding FollowPeerMushafCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="10,0,0,0" />

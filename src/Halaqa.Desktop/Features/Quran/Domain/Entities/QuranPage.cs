@@ -9,6 +9,7 @@ public sealed record QuranAyah(
     int Number,
     int PageNumber,
     string Text,
+    string PageGlyphText,
     int? Juz,
     IReadOnlyList<QuranWord> Words);
 
@@ -25,4 +26,7 @@ public sealed record QuranPage(
     int PageNumber,
     IReadOnlyList<QuranSurah> Surahs,
     IReadOnlyList<QuranAyah> Ayahs,
-    bool IsFromLocalCache);
+    bool IsFromLocalCache)
+{
+    public string PageGlyphText => string.Concat(Ayahs.Select(ayah => ayah.PageGlyphText));
+}
