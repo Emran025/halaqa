@@ -13,9 +13,14 @@ public static class ProfileFeatureModule
     {
         services.AddSingleton<IProfileRemoteDataSource, ProfileRemoteDataSource>();
         services.AddSingleton<IProfileRepository, ProfileRepository>();
+        services.AddSingleton<IStudentProfileRemoteDataSource, StudentProfileRemoteDataSource>();
+        services.AddSingleton<IStudentProfileRepository, StudentProfileRepository>();
         services.AddSingleton<GetCurrentProfileUseCase>();
         services.AddSingleton<UpdateCurrentProfileUseCase>();
+        services.AddSingleton<GetCurrentStudentProfileUseCase>();
+        services.AddSingleton<UpdateCurrentStudentProfileUseCase>();
         services.AddSingleton<GeneralProfileViewModel>();
+        services.AddSingleton<StudentProfileViewModel>();
         return services;
     }
 }
