@@ -23,6 +23,7 @@ public sealed class LiveSessionViewModelTests
         Assert.NotNull(viewModel.QuranPage);
         Assert.Equal(1, viewModel.QuranPage!.PageNumber);
         Assert.True(viewModel.QuranPage.IsFromLocalCache);
+        Assert.Equal("ﱁﱂﱃﱄﱅ", Assert.Single(viewModel.QuranPage.Ayahs).PageGlyphText);
         Assert.Equal(1, viewModel.Store.LocalMushafPresence.PageNumber);
         Assert.Contains("المحلية", viewModel.QuranMessage);
     }
@@ -74,7 +75,7 @@ public sealed class LiveSessionViewModelTests
                 editionId,
                 pageNumber,
                 [new QuranSurah(1, editionId, 1, "الفاتحة", 7, "مكية")],
-                [new QuranAyah(1, editionId, 1, 1, pageNumber, "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ", 1, [new QuranWord(1, "بِسْمِ")])],
+                [new QuranAyah(1, editionId, 1, 1, pageNumber, "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ", "ﱁﱂﱃﱄﱅ", 1, [new QuranWord(0, "ﱁ")])],
                 true)));
     }
 

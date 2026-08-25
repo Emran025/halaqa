@@ -28,6 +28,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Resource Include="Assets\Fonts\*.ttf" />
+    <Resource Include="Assets\Fonts\QuranPages\*.ttf" />
     <None Include="Assets\Fonts\Cairo-OFL.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

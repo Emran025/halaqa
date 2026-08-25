@@ -131,7 +131,7 @@ internal sealed class SqliteQuranLocalDataSource : IQuranLocalDataSource
     {
         var command = connection.CreateCommand();
         command.CommandText = """
-            SELECT ID, SoraNum, AyaNum, PageNum, AyaDiac, PartNum
+            SELECT ID, SoraNum, AyaNum, PageNum, AyaDiac, Uthomanic_text, PartNum
             FROM Quran
             WHERE PageNum = $pageNumber
             ORDER BY ID;
@@ -144,6 +144,9 @@ internal sealed class SqliteQuranLocalDataSource : IQuranLocalDataSource
         {
             var ayahId = reader.GetInt32(0);
             var text = reader.IsDBNull(4) ? string.Empty : reader.GetString(4);
+            var pageGlyphText = reader.IsDBNull(5)
+                ? string.Empty
+                : DecodePageGlyphText(reader.GetString(5));
             result.Add(new QuranAyah(
                 ayahId,
                 editionId,
@@ -151,15 +154,19 @@ internal sealed class SqliteQuranLocalDataSource : IQuranLocalDataSource
                 reader.GetInt32(2),
                 reader.GetInt32(3),
                 text,
-                reader.IsDBNull(5) ? null : reader.GetInt32(5),
-                ToWords(text)));
+                pageGlyphText,
+                reader.IsDBNull(6) ? null : reader.GetInt32(6),
+                ToWords(pageGlyphText)));
         }
 
         return result;
     }
 
-    private static IReadOnlyList<QuranWord> ToWords(string text) =>
-        text.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-            .Select((word, index) => new QuranWord(index + 1, word))
+    private static string DecodePageGlyphText(string encodedGlyphText) =>
+        encodedGlyphText.Replace("\\n", "\n", StringComparison.Ordinal);
+
+    private static IReadOnlyList<QuranWord> ToWords(string pageGlyphText) =>
+        pageGlyphText
+            .Select((glyph, index) => new QuranWord(index, glyph.ToString()))
             .ToArray();
 }

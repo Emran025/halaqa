@@ -23,6 +23,7 @@ internal static class QuranMapper
                 ayah.Number,
                 ayah.PageNumber,
                 ayah.Text,
+                ayah.Text,
                 ayah.Juz,
                 ayah.Words.Select(word => new QuranWord(word.Index, word.Text)).ToArray())).ToArray(),
             isFromLocalCache);
