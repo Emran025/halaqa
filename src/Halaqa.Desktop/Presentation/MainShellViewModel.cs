@@ -25,6 +25,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly HalaqasViewModel _halaqasViewModel;
     private readonly HalaqaMembershipsViewModel _halaqaMembershipsViewModel;
     private readonly HalaqaRegistrationRequestsViewModel _halaqaRegistrationRequestsViewModel;
+    private readonly StudentTeacherDirectoryViewModel _studentTeacherDirectoryViewModel;
     private readonly RestoreSessionUseCase _restoreSessionUseCase;
     private AuthenticatedUser? _authenticatedUser;
 
@@ -44,6 +45,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         HalaqasViewModel halaqasViewModel,
         HalaqaMembershipsViewModel halaqaMembershipsViewModel,
         HalaqaRegistrationRequestsViewModel halaqaRegistrationRequestsViewModel,
+        StudentTeacherDirectoryViewModel studentTeacherDirectoryViewModel,
         RestoreSessionUseCase restoreSessionUseCase)
     {
         _loginViewModel = loginViewModel;
@@ -58,6 +60,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _halaqasViewModel = halaqasViewModel;
         _halaqaMembershipsViewModel = halaqaMembershipsViewModel;
         _halaqaRegistrationRequestsViewModel = halaqaRegistrationRequestsViewModel;
+        _studentTeacherDirectoryViewModel = studentTeacherDirectoryViewModel;
         _restoreSessionUseCase = restoreSessionUseCase;
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
@@ -84,6 +87,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _halaqasViewModel.RegistrationRequestsRequested += async (_, halaqa) => await ShowHalaqaRegistrationRequestsAsync(halaqa.Id, halaqa.Name);
         _halaqaMembershipsViewModel.BackRequested += (_, _) => CurrentPage = _halaqasViewModel;
         _halaqaRegistrationRequestsViewModel.BackRequested += (_, _) => CurrentPage = _halaqasViewModel;
+        _studentTeacherDirectoryViewModel.BackRequested += (_, _) => ShowDashboard();
 
         CurrentPage = _loginViewModel;
     }
@@ -116,6 +120,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         dashboardViewModel.StudentProfileRequested += async (_, _) => await ShowStudentProfileAsync();
         dashboardViewModel.TeacherProfileRequested += async (_, _) => await ShowTeacherProfileAsync();
         dashboardViewModel.HalaqasRequested += async (_, _) => await ShowHalaqasAsync();
+        dashboardViewModel.StudentRegistrationsRequested += async (_, _) => await ShowStudentTeacherDirectoryAsync();
         CurrentPage = dashboardViewModel;
     }
 
@@ -147,6 +152,13 @@ public sealed partial class MainShellViewModel : ObservableObject
     {
         CurrentPage = _halaqasViewModel;
         await _halaqasViewModel.LoadCommand.ExecuteAsync(null);
+    }
+
+    private async Task ShowStudentTeacherDirectoryAsync()
+    {
+        _studentTeacherDirectoryViewModel.Initialize();
+        CurrentPage = _studentTeacherDirectoryViewModel;
+        await _studentTeacherDirectoryViewModel.LoadCommand.ExecuteAsync(null);
     }
 
     private async Task ShowHalaqaMembershipsAsync(Guid halaqaId, string halaqaName)
