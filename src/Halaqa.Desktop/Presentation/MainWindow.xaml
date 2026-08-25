@@ -21,6 +21,12 @@
         <DataTemplate DataType="{x:Type authVm:ForgotPasswordViewModel}">
             <authViews:ForgotPasswordView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type authVm:ResetPasswordViewModel}">
+            <authViews:ResetPasswordView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type authVm:ChangePasswordViewModel}">
+            <authViews:ChangePasswordView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:DashboardViewModel}">
             <local:DashboardView />
         </DataTemplate>
