@@ -19,6 +19,7 @@ public static class AuthFeatureModule
         services.AddSingleton<RequestPasswordResetUseCase>();
         services.AddSingleton<LoginViewModel>();
         services.AddTransient<ForgotPasswordViewModel>();
+        services.AddTransient<StudentRegistrationViewModel>();
         return services;
     }
 }
