@@ -1,0 +1,100 @@
+<UserControl x:Class="Halaqa.Desktop.Features.Registrations.Presentation.Views.HalaqaRegistrationRequestsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:shared="clr-namespace:Halaqa.Desktop.Shared.Presentation.Converters"
+             FlowDirection="RightToLeft">
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <shared:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <Style x:Key="FieldError" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource AppErrorBrush}" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="Margin" Value="0,4,0,8" />
+        </Style>
+    </UserControl.Resources>
+    <Grid Background="{StaticResource AppCanvasBrush}">
+        <Border Style="{StaticResource AppCard}" MaxWidth="1080" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="28">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
+                    <RowDefinition Height="Auto" />
+                </Grid.RowDefinitions>
+                <DockPanel>
+                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى الحلقات">
+                        <materialDesign:PackIcon Kind="ArrowRight" />
+                    </Button>
+                    <StackPanel>
+                        <TextBlock Text="طلبات التسجيل الواردة" Style="{StaticResource PageTitle}" />
+                        <TextBlock Text="{Binding HalaqaName, StringFormat=الحلقة: {0}}" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                    </StackPanel>
+                </DockPanel>
+                <Grid Grid.Row="1" Margin="0,16,0,0">
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="1.25*" /><ColumnDefinition Width="1*" /></Grid.ColumnDefinitions>
+                    <Border Background="#0A000000" CornerRadius="10" Padding="12" Margin="0,0,12,0">
+                        <Grid>
+                            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                            <DockPanel>
+                                <TextBlock Text="الطلبات" Style="{StaticResource SectionTitle}" />
+                                <TextBlock DockPanel.Dock="Left" Text="{Binding Total, StringFormat=الإجمالي: {0}}" Style="{StaticResource BodyMuted}" />
+                            </DockPanel>
+                            <ListBox Grid.Row="1" ItemsSource="{Binding Requests}" SelectedItem="{Binding SelectedRequest}" Margin="0,12,0,8" BorderThickness="0" Background="Transparent">
+                                <ListBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,3">
+                                            <StackPanel>
+                                                <DockPanel>
+                                                    <TextBlock Text="{Binding Applicant.DisplayName}" FontWeight="SemiBold" />
+                                                    <TextBlock DockPanel.Dock="Left" Text="{Binding State}" Style="{StaticResource BodyMuted}" />
+                                                </DockPanel>
+                                                <TextBlock Text="{Binding Applicant.SubmittedAt, StringFormat=قُدّم في: {0:yyyy-MM-dd}}" Style="{StaticResource BodyMuted}" />
+                                                <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ListBox.ItemTemplate>
+                            </ListBox>
+                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="السابق" Command="{Binding LoadPreviousPageCommand}" />
+                                <TextBlock Text="{Binding CurrentPage, StringFormat=الصفحة {0}}" VerticalAlignment="Center" Margin="12,0" />
+                                <Button Content="التالي" Command="{Binding LoadNextPageCommand}" />
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <ProgressBar Height="4" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,12" />
+                            <DockPanel>
+                                <TextBlock Text="{Binding EditorTitle}" Style="{StaticResource SectionTitle}" />
+                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                                    <ComboBox ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding FilterState}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Width="160" FlowDirection="LeftToRight" materialDesign:HintAssist.Hint="تصفية الحالة" />
+                                    <Button Content="تطبيق" Command="{Binding ApplyFilterCommand}" Margin="8,0,0,0" />
+                                </StackPanel>
+                            </DockPanel>
+                            <TextBlock Text="يعرض الصندوق الملخص العام للمتقدم فقط؛ لا تظهر وسائل الاتصال أو الخطة أو بيانات الحفظ قبل نشوء العلاقة التعليمية." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,6,0,12" />
+
+                            <TextBlock Text="قبول الطلب" Style="{StaticResource SectionTitle}" />
+                            <TextBlock Text="ينفذ الخادم التحقق من الصلاحيات وحالة الطلب، ثم يعيد حالة الطلب الرسمية." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,6" />
+                            <Button Content="قبول الطلب المحدد" Command="{Binding AcceptCommand}" HorizontalAlignment="Left" />
+
+                            <TextBlock Text="رفض الطلب" Style="{StaticResource SectionTitle}" Margin="0,20,0,0" />
+                            <TextBox Text="{Binding RejectionNote, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="58" TextWrapping="Wrap" materialDesign:HintAssist.Hint="ملاحظة الرفض (اختيارية)" />
+                            <TextBlock Text="{Binding RejectionNoteError}" Style="{StaticResource FieldError}" />
+                            <Button Content="رفض الطلب المحدد" Command="{Binding RejectCommand}" Style="{StaticResource AppDangerButton}" HorizontalAlignment="Left" />
+
+                            <TextBlock Text="طلب استكمال بيانات" Style="{StaticResource SectionTitle}" Margin="0,20,0,0" />
+                            <TextBox Text="{Binding RequiredFields, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="58" TextWrapping="Wrap" materialDesign:HintAssist.Hint="الحقول المطلوبة، مفصولة بفواصل" />
+                            <TextBlock Text="{Binding RequiredFieldsError}" Style="{StaticResource FieldError}" />
+                            <TextBox Text="{Binding CompletionNote, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="58" TextWrapping="Wrap" materialDesign:HintAssist.Hint="ملاحظة الاستكمال (اختيارية)" />
+                            <TextBlock Text="{Binding CompletionNoteError}" Style="{StaticResource FieldError}" />
+                            <Button Content="إرسال طلب الاستكمال" Command="{Binding RequestCompletionCommand}" HorizontalAlignment="Left" />
+                            <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,12,0,0" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+                <Button Grid.Row="2" Content="إعادة تحميل الطلبات" Command="{Binding LoadCommand}" HorizontalAlignment="Left" Margin="0,16,0,0" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

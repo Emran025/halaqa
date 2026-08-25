@@ -9,6 +9,7 @@ public interface IApiClient
 {
     Task<Result<TResponse>> GetAsync<TResponse>(string relativePath, CancellationToken cancellationToken = default);
     Task<Result<TResponse>> PostAsync<TRequest, TResponse>(string relativePath, TRequest request, CancellationToken cancellationToken = default);
+    Task<Result<TResponse>> PostEmptyAsync<TResponse>(string relativePath, CancellationToken cancellationToken = default);
     Task<Result> PostAsync<TRequest>(string relativePath, TRequest request, CancellationToken cancellationToken = default);
     Task<Result<TResponse>> PostMultipartAsync<TResponse>(string relativePath, MultipartFormDataContent content, CancellationToken cancellationToken = default);
     Task<Result> DeleteAsync(string relativePath, CancellationToken cancellationToken = default);
@@ -50,6 +51,25 @@ public sealed class ApiClient(HttpClient httpClient) : IApiClient
         try
         {
             using var response = await httpClient.PostAsJsonAsync(relativePath, request, JsonOptions, cancellationToken);
+            return await DeserializeAsync<TResponse>(response, cancellationToken);
+        }
+        catch (HttpRequestException)
+        {
+            return Result<TResponse>.Failure(AppError.Network("تعذر الاتصال بالخادم. تحقق من الشبكة ثم أعد المحاولة."));
+        }
+        catch (TaskCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            return Result<TResponse>.Failure(AppError.Network("انتهت مهلة الاتصال بالخادم."));
+        }
+    }
+
+    public async Task<Result<TResponse>> PostEmptyAsync<TResponse>(
+        string relativePath,
+        CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            using var response = await httpClient.PostAsync(relativePath, content: null, cancellationToken: cancellationToken);
             return await DeserializeAsync<TResponse>(response, cancellationToken);
         }
         catch (HttpRequestException)
