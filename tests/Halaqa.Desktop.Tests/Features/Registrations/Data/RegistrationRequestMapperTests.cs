@@ -17,7 +17,7 @@ public sealed class RegistrationRequestMapperTests
             "  لا يتوفر مقعد حالياً  "));
         var completion = RegistrationRequestMapper.ToDto(new RequestRegistrationCompletionCommand(
             Guid.NewGuid(),
-            [" phone ", "country", "phone"],
+            new[] {" phone ", "country", "phone"},
             "  يرجى الاستكمال  "));
 
         var rejectionJson = JsonSerializer.Serialize(rejection, new JsonSerializerOptions(JsonSerializerDefaults.Web));
@@ -34,9 +34,9 @@ public sealed class RegistrationRequestMapperTests
     public void ToDomain_MapsPublicApplicantCollectionWithoutPrivateProfileFields()
     {
         var response = new RegistrationCollectionResponseDto(
-        [
+        new[] {
             CreateValidRequest()
-        ],
+        },
         new RegistrationPaginationMetaDto(1, 1, 20, 1));
 
         var result = RegistrationRequestMapper.ToDomain(response);
@@ -52,9 +52,9 @@ public sealed class RegistrationRequestMapperTests
     public void ToDomain_MapsTeacherApplicantInboxWrapper()
     {
         var response = new ApplicantCollectionResponseDto(
-        [
+        new[] {
             CreateValidRequest()
-        ],
+        },
         new RegistrationPaginationMetaDto(1, 2, 20, 21));
 
         var result = RegistrationRequestMapper.ToDomain(response);

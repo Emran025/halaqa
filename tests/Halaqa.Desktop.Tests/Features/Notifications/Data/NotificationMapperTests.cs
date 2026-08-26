@@ -31,7 +31,7 @@ public sealed class NotificationMapperTests
     }
 
     private static NotificationCollectionResponseDto CreateValidResponse(string type = "follow_up_due") => new(
-        [new NotificationDto(
+        new[] {new NotificationDto(
             Guid.NewGuid(),
             type,
             "متابعة مستحقة",
@@ -45,6 +45,6 @@ public sealed class NotificationMapperTests
                 "reschedule",
                 "/follow-up-items/123"),
             null,
-            DateTimeOffset.Parse("2026-08-26T09:00:00Z"))],
+            DateTimeOffset.Parse("2026-08-26T09:00:00Z"))},
         new NotificationPaginationMetaDto(1, 1, 20, 1));
 }

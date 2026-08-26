@@ -157,7 +157,7 @@ public sealed class CreateStudentRegistrationRequestUseCase
     private static bool IsPlanUnit(string value) => value is "juz" or "hizb" or "halfHizb" or "quarterHizb" or "page";
 }
 
-file static class StudentRegistrationUseCaseText
+internal static class StudentRegistrationUseCaseText
 {
     public static string? NormalizeOptional(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();

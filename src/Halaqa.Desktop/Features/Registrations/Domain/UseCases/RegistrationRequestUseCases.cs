@@ -229,7 +229,7 @@ public sealed class RequestRegistrationCompletionUseCase
     }
 }
 
-file static class RegistrationRequestValidationErrors
+internal static class RegistrationRequestValidationErrors
 {
     public static AppError InvalidRegistration() => new(
         AppErrorKind.Validation,

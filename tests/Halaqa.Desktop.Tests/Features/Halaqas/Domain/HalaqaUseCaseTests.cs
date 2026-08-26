@@ -68,7 +68,7 @@ public sealed class HalaqaUseCaseTests
         public Guid? ActivatedId { get; private set; }
 
         public Task<Result<HalaqaPage>> ListAsync(int page = 1, CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<HalaqaPage>.Success(new HalaqaPage(Array.Empty<Halaqa>(), 1, 1, 20, 0)));
+            Task.FromResult(Result<HalaqaPage>.Success(new HalaqaPage(Array.Empty<HalaqaItem>(), 1, 1, 20, 0)));
 
         public Task<Result<HalaqaItem>> CreateAsync(CreateHalaqaCommand command, CancellationToken cancellationToken = default)
         {

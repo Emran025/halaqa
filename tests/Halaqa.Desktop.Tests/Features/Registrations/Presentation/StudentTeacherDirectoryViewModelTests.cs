@@ -52,7 +52,7 @@ public sealed class StudentTeacherDirectoryViewModelTests
             true,
             null,
             1,
-            [new PublicHalaqa(Guid.NewGuid(), "حلقة الفجر", "active", RegistrationGender.Male, "السعودية", "الرياض", 8)]);
+            new[] {new PublicHalaqa(Guid.NewGuid(), "حلقة الفجر", "active", RegistrationGender.Male, "السعودية", "الرياض", 8)});
 
         public CreateStudentRegistrationRequestCommand? CreatedCommand { get; private set; }
 
@@ -99,7 +99,7 @@ public sealed class StudentTeacherDirectoryViewModelTests
         {
             var attendance = new StudentAttendancePreferences(
                 "Asia/Riyadh",
-                [new StudentWeeklyAvailabilitySlot(0, new TimeOnly(18, 0), new TimeOnly(18, 30), true)],
+                new[] {new StudentWeeklyAvailabilitySlot(0, new TimeOnly(18, 0), new TimeOnly(18, 30), true)},
                 30);
             var plan = new StudentFollowUpPlan(
                 Guid.NewGuid(),
@@ -109,7 +109,7 @@ public sealed class StudentTeacherDirectoryViewModelTests
                 FollowUpFrequency.OnceAWeek,
                 "active",
                 "Asia/Riyadh",
-                [new StudentPlanDetail(
+                new[] {new StudentPlanDetail(
                     Guid.NewGuid(),
                     QuranTaskType.Memorization,
                     QuranPlanUnit.Page,
@@ -117,7 +117,7 @@ public sealed class StudentTeacherDirectoryViewModelTests
                     null,
                     1,
                     DateTimeOffset.UtcNow,
-                    DateTimeOffset.UtcNow)],
+                    DateTimeOffset.UtcNow)},
                 attendance,
                 null,
                 null,

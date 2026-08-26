@@ -107,7 +107,7 @@ public sealed class FollowUpViewModelTests
         {
             LastTrackingsStudentId = studentId;
             return Task.FromResult(Result<TrackingPage>.Success(new TrackingPage(
-                [new TrackingItem(Guid.NewGuid(), studentId, null, new DateOnly(2026, 8, 25), AttendanceType.Present, "مراجعة", 90, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)],
+                new[] {new TrackingItem(Guid.NewGuid(), studentId, null, new DateOnly(2026, 8, 25), AttendanceType.Present, "مراجعة", 90, DateTimeOffset.UtcNow, DateTimeOffset.UtcNow)},
                 1, 1, 20, 1)));
         }
 
@@ -119,7 +119,7 @@ public sealed class FollowUpViewModelTests
             FollowUpFrequency.Daily,
             "active",
             "Asia/Riyadh",
-            [CreateDetail()],
+            new[] {CreateDetail()},
             CreateAvailability(),
             new DateOnly(2026, 8, 1),
             null,
@@ -131,7 +131,7 @@ public sealed class FollowUpViewModelTests
 
         private AttendancePreferences CreateAvailability() => new(
             "Asia/Riyadh",
-            [new WeeklyAvailabilitySlot(0, new TimeOnly(18, 0), new TimeOnly(18, 30), true)],
+            new[] {new WeeklyAvailabilitySlot(0, new TimeOnly(18, 0), new TimeOnly(18, 30), true)},
             30);
 
         private FollowUpPlanDetail CreateDetail() => new(

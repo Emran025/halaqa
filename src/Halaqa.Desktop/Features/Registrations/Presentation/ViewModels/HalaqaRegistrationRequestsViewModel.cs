@@ -28,8 +28,8 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
     }
 
     public ObservableCollection<RegistrationRequest> Requests { get; } = new();
-    public IReadOnlyList<string> FilterOptions { get; } =
-    [
+    public IReadOnlyList<string> FilterOptions { get; } = new[]
+    {
         "",
         "pending",
         "completion_requested",
@@ -37,7 +37,7 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
         "rejected",
         "withdrawn",
         "cancelled"
-    ];
+    };
 
     [ObservableProperty] private string _halaqaName = string.Empty;
     [ObservableProperty] private RegistrationRequest? _selectedRequest;

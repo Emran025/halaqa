@@ -71,7 +71,7 @@ public sealed class StudentRegistrationRequestsViewModelTests
         {
             var currentState = CancelledRegistrationId is null ? InitialState : RegistrationState.Withdrawn;
             return Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(
-                [Request with { State = currentState }],
+                new[] {Request with { State = currentState }},
                 1,
                 1,
                 20,
