@@ -59,6 +59,17 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
+                    <materialDesign:PackIcon Kind="BellOutline" Foreground="{StaticResource AppInfoBrush}" Width="28" Height="28" />
+                    <TextBlock Text="الإشعارات" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
+                    <TextBlock Text="راجع الإشعارات الرسمية وحدد المقروء منها دون تنفيذ أي إجراء مرتبط تلقائياً." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                    <Button Content="فتح الإشعارات"
+                            Command="{Binding OpenNotificationsCommand}"
+                            HorizontalAlignment="Right"
+                            Margin="0,16,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
+                <StackPanel>
                     <materialDesign:PackIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppWarningBrush}" Width="28" Height="28" />
                     <TextBlock Text="المصحف والأخطاء" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="اقرأ صفحات المصحف محلياً بخط الصفحة المخصص، مع تمييز صريح عند استخدام بديل الخادم." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
