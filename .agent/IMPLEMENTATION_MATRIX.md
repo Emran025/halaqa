@@ -18,7 +18,7 @@
 | SE-01 | الجلسات والمهام | `GET /sessions/{id}/realtime`, `POST /realtime/channels/authorize`, `PUT /sessions/{id}/mushaf-state` | Partial | يوجد عميل REST لإعداد realtime وتفويض القناة وحفظ حالة المصحف، وViewModel/View للجلسة، لكن `LiveSessionViewModel` غير مسجل في DI ولا ينشئه الغلاف أو لوحة التطبيق. `IPeerMediaConnection` و`IMushafRealtimeChannel` و`ILocalVideoRecorder` و`IRealtimeSignalingClient` عقود فقط بلا فئات تنفيذ أو WebSocket/WebRTC أو تسجيل. لا توجد إدارة جلسات أو مهام أو مسودات أو نقل مباشر عامل؛ لا وسائط عبر الخادم أو relay أو STUN/TURN. |
 | MI-01 | الأخطاء والملاحظات والتقييم | `POST /sessions/{id}/tasks/{taskId}/mistakes` | Partial | يوجد outbox محلي وعميل HTTP وrepository وخدمة مزامنة وحالة استخدام للأخطاء فقط، وجميعها مسجلة؛ لا توجد طبقة Presentation أو وصول من الغلاف أو اختبارات Mistakes. لا توجد طبقات للملاحظات أو التقييم، ولا يصح ادعاء CRUD أو اختبار 409/422 قبل تنفيذها والتحقق الحي. |
 | RP-01 | التقرير والتقدم والسجل | report, progress, reports, historical mistakes | Planned | اعتماد الطرفين، reopen، pagination، صلاحيات العلاقة التعليمية. |
-| NO-01 | الإشعارات | `/notifications`, read, read-all | Planned | قائمة المستخدم فقط، unread/read-all، empty/error states. |
+| NO-01 | الإشعارات | `/notifications`, `POST /notifications/{notificationId}/read`, `POST /notifications/read-all` | Partial | نُفذت طبقات Data/Domain/Presentation مسجلة لقائمة المستخدم المرقمة وتصفية غير المقروء وتعليم إشعار واحد أو الجميع كمقروء، مع إعادة التحميل من الخادم بعد 204 واختبارات mapper/ViewModel ووصول من لوحة التطبيق. تعرض الواجهة حمولة الإجراء فقط ولا تنفذ `action_path` أو تقبل/ترفض/تنضم تلقائياً؛ يلزم Windows CI والتحقق الحي من 404 وقائمة فارغة وترقيم وصلاحية الحساب. |
 
 ## سياسة الفروع والمراجعة
 

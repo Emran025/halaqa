@@ -3,6 +3,7 @@ using Halaqa.Desktop.Features.FollowUp;
 using Halaqa.Desktop.Features.Halaqas;
 using Halaqa.Desktop.Features.Memberships;
 using Halaqa.Desktop.Features.Mistakes;
+using Halaqa.Desktop.Features.Notifications;
 using Halaqa.Desktop.Features.Profile;
 using Halaqa.Desktop.Features.Registrations;
 using Halaqa.Desktop.Features.Quran;
@@ -40,6 +41,7 @@ public static class Bootstrapper
         services.AddFollowUpFeature();
         services.AddQuranFeature();
         services.AddMistakesFeature();
+        services.AddNotificationsFeature();
         services.AddSessionsFeature();
 
         services.AddSingleton<MainWindow>();

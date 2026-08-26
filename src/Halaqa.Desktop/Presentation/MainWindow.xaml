@@ -6,6 +6,8 @@
         xmlns:followUpViews="clr-namespace:Halaqa.Desktop.Features.FollowUp.Presentation.Views"
         xmlns:quranVm="clr-namespace:Halaqa.Desktop.Features.Quran.Presentation.ViewModels"
         xmlns:quranViews="clr-namespace:Halaqa.Desktop.Features.Quran.Presentation.Views"
+        xmlns:notificationsVm="clr-namespace:Halaqa.Desktop.Features.Notifications.Presentation.ViewModels"
+        xmlns:notificationsViews="clr-namespace:Halaqa.Desktop.Features.Notifications.Presentation.Views"
         xmlns:authViews="clr-namespace:Halaqa.Desktop.Features.Auth.Presentation.Views"
         xmlns:local="clr-namespace:Halaqa.Desktop.Presentation"
         xmlns:halaqasVm="clr-namespace:Halaqa.Desktop.Features.Halaqas.Presentation.ViewModels"
@@ -76,6 +78,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type quranVm:QuranReaderViewModel}">
             <quranViews:QuranReaderView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type notificationsVm:NotificationsViewModel}">
+            <notificationsViews:NotificationsView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type sessionsVm:LiveSessionViewModel}">
             <sessionsViews:LiveSessionView />
