@@ -74,6 +74,13 @@ public sealed class HalaqaRegistrationRequestsViewModelTests
             return Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([_request], 1, 1, 20, 1)));
         }
 
+        public Task<Result<RegistrationRequestPage>> ListTeacherInboxAsync(
+            RegistrationState? state = null,
+            string? search = null,
+            int page = 1,
+            CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([_request], 1, 1, 20, 1)));
+
         public Task<Result<RegistrationRequest>> AcceptAsync(Guid registrationId, CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<RegistrationRequest>.Success(_request with { State = RegistrationState.Accepted }));
 

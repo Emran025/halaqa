@@ -27,6 +27,10 @@ internal sealed record RegistrationCollectionResponseDto(
     [property: JsonPropertyName("registration_requests")] IReadOnlyList<RegistrationRequestDto> RegistrationRequests,
     [property: JsonPropertyName("meta")] RegistrationPaginationMetaDto Meta);
 
+internal sealed record ApplicantCollectionResponseDto(
+    [property: JsonPropertyName("applicants")] IReadOnlyList<RegistrationRequestDto> Applicants,
+    [property: JsonPropertyName("meta")] RegistrationPaginationMetaDto Meta);
+
 internal sealed record RegistrationPaginationMetaDto(
     [property: JsonPropertyName("current_page")] int CurrentPage,
     [property: JsonPropertyName("last_page")] int LastPage,

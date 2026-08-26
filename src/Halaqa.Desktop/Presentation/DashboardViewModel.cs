@@ -22,6 +22,7 @@ public sealed partial class DashboardViewModel
     public event EventHandler? StudentProfileRequested;
     public event EventHandler? TeacherProfileRequested;
     public event EventHandler? HalaqasRequested;
+    public event EventHandler? TeacherApplicationsRequested;
     public event EventHandler? StudentRegistrationsRequested;
     public event EventHandler? FollowUpRequested;
     public event EventHandler? QuranReaderRequested;
@@ -43,6 +44,15 @@ public sealed partial class DashboardViewModel
         }
 
         HalaqasRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    [RelayCommand]
+    private void OpenTeacherApplications()
+    {
+        if (!_isStudent)
+        {
+            TeacherApplicationsRequested?.Invoke(this, EventArgs.Empty);
+        }
     }
 
     [RelayCommand]

@@ -47,6 +47,27 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
+                    <materialDesign:PackIcon Kind="AccountMultipleCheckOutline" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28" />
+                    <TextBlock Text="طلبات الطلاب" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
+                    <TextBlock Text="راجع الملخصات العامة للمتقدمين واتخذ القرار المعلن بعد المراجعة." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                    <Button Content="فتح صندوق الطلبات"
+                            Command="{Binding OpenTeacherApplicationsCommand}"
+                            HorizontalAlignment="Right"
+                            Margin="0,16,0,0">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsStudent}" Value="True">
+                                        <Setter Property="IsEnabled" Value="False" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                    </Button>
+                </StackPanel>
+            </Border>
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
+                <StackPanel>
                     <materialDesign:PackIcon Kind="CalendarCheckOutline" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28" />
                     <TextBlock Text="خطة المتابعة والحضور" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="راجع خطتك الرسمية وأوقات حضورك وعناصر المتابعة اليومية." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
