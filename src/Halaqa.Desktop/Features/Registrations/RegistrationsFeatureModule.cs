@@ -17,6 +17,7 @@ public static class RegistrationsFeatureModule
         services.AddSingleton<IStudentRegistrationRepository, StudentRegistrationRepository>();
         services.AddSingleton<ListMyRegistrationRequestsUseCase>();
         services.AddSingleton<ListHalaqaRegistrationRequestsUseCase>();
+        services.AddSingleton<ListTeacherApplicationInboxUseCase>();
         services.AddSingleton<CancelRegistrationRequestUseCase>();
         services.AddSingleton<AcceptRegistrationRequestUseCase>();
         services.AddSingleton<RejectRegistrationRequestUseCase>();
@@ -25,6 +26,7 @@ public static class RegistrationsFeatureModule
         services.AddSingleton<GetPublicTeacherUseCase>();
         services.AddSingleton<CreateStudentRegistrationRequestUseCase>();
         services.AddSingleton<HalaqaRegistrationRequestsViewModel>();
+        services.AddSingleton<TeacherApplicationInboxViewModel>();
         services.AddSingleton<StudentTeacherDirectoryViewModel>();
         services.AddSingleton<StudentRegistrationRequestsViewModel>();
         return services;

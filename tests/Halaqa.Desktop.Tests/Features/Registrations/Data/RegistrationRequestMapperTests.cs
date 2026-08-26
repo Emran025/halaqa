@@ -49,6 +49,23 @@ public sealed class RegistrationRequestMapperTests
     }
 
     [Fact]
+    public void ToDomain_MapsTeacherApplicantInboxWrapper()
+    {
+        var response = new ApplicantCollectionResponseDto(
+        [
+            CreateValidRequest()
+        ],
+        new RegistrationPaginationMetaDto(1, 2, 20, 21));
+
+        var result = RegistrationRequestMapper.ToDomain(response);
+
+        Assert.True(result.IsSuccess);
+        Assert.Single(result.Value!.Requests);
+        Assert.Equal(2, result.Value.LastPage);
+        Assert.Equal(21, result.Value.Total);
+    }
+
+    [Fact]
     public void ToDomain_RejectsApplicantWhenServerDoesNotConfirmSensitiveFieldsAreHidden()
     {
         var request = CreateValidRequest(sensitiveFieldsHidden: false);

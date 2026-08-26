@@ -27,6 +27,29 @@ public sealed class ListHalaqaRegistrationRequestsUseCase(IRegistrationRequestRe
             : repository.ListForHalaqaAsync(halaqaId, state, page, cancellationToken);
 }
 
+public sealed class ListTeacherApplicationInboxUseCase(IRegistrationRequestRepository repository)
+{
+    public Task<Result<RegistrationRequestPage>> ExecuteAsync(
+        RegistrationState? state = null,
+        string? search = null,
+        int page = 1,
+        CancellationToken cancellationToken = default)
+    {
+        if (page < 1)
+        {
+            return Task.FromResult(Result<RegistrationRequestPage>.Failure(RegistrationRequestValidationErrors.InvalidPage()));
+        }
+        if (search?.Trim().Length > 120)
+        {
+            return Task.FromResult(Result<RegistrationRequestPage>.Failure(new AppError(
+                AppErrorKind.Validation,
+                "نص البحث لا يتجاوز 120 حرفاً.")));
+        }
+
+        return repository.ListTeacherInboxAsync(state, search, page, cancellationToken);
+    }
+}
+
 public sealed class AcceptRegistrationRequestUseCase(IRegistrationRequestRepository repository)
 {
     public Task<Result<RegistrationRequest>> ExecuteAsync(

@@ -41,6 +41,23 @@ internal sealed class RegistrationRequestRepository(
             : Result<RegistrationRequestPage>.Failure(response.Error!);
     }
 
+    public async Task<Result<RegistrationRequestPage>> ListTeacherInboxAsync(
+        RegistrationState? state = null,
+        string? search = null,
+        int page = 1,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await remoteDataSource.ListTeacherInboxAsync(
+            state is null ? null : RegistrationRequestMapper.ToContractValue(state.Value),
+            string.IsNullOrWhiteSpace(search) ? null : search.Trim(),
+            page,
+            cancellationToken);
+
+        return response.IsSuccess && response.Value is not null
+            ? RegistrationRequestMapper.ToDomain(response.Value)
+            : Result<RegistrationRequestPage>.Failure(response.Error!);
+    }
+
     public async Task<Result<RegistrationRequest>> AcceptAsync(
         Guid registrationId,
         CancellationToken cancellationToken = default)

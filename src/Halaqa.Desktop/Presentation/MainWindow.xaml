@@ -73,6 +73,9 @@
         <DataTemplate DataType="{x:Type registrationsVm:StudentRegistrationRequestsViewModel}">
             <registrationsViews:StudentRegistrationRequestsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type registrationsVm:TeacherApplicationInboxViewModel}">
+            <registrationsViews:TeacherApplicationInboxView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type followUpVm:FollowUpViewModel}">
             <followUpViews:FollowUpView />
         </DataTemplate>

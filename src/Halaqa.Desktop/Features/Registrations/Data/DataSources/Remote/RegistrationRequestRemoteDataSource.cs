@@ -17,6 +17,12 @@ internal interface IRegistrationRequestRemoteDataSource
         int page,
         CancellationToken cancellationToken = default);
 
+    Task<Result<ApplicantCollectionResponseDto>> ListTeacherInboxAsync(
+        string? state,
+        string? search,
+        int page,
+        CancellationToken cancellationToken = default);
+
     Task<Result<RegistrationResponseDto>> AcceptAsync(
         Guid registrationId,
         CancellationToken cancellationToken = default);
@@ -65,6 +71,25 @@ internal sealed class RegistrationRequestRemoteDataSource(IApiClient apiClient) 
         }
 
         return apiClient.GetAsync<RegistrationCollectionResponseDto>(query, cancellationToken);
+    }
+
+    public Task<Result<ApplicantCollectionResponseDto>> ListTeacherInboxAsync(
+        string? state,
+        string? search,
+        int page,
+        CancellationToken cancellationToken = default)
+    {
+        var query = $"student-applications?page={page}";
+        if (!string.IsNullOrWhiteSpace(state))
+        {
+            query += $"&state={Uri.EscapeDataString(state)}";
+        }
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query += $"&search={Uri.EscapeDataString(search)}";
+        }
+
+        return apiClient.GetAsync<ApplicantCollectionResponseDto>(query, cancellationToken);
     }
 
     public Task<Result<RegistrationResponseDto>> AcceptAsync(

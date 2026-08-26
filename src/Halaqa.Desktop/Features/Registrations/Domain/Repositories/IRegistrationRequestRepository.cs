@@ -16,6 +16,12 @@ public interface IRegistrationRequestRepository
         int page = 1,
         CancellationToken cancellationToken = default);
 
+    Task<Result<RegistrationRequestPage>> ListTeacherInboxAsync(
+        RegistrationState? state = null,
+        string? search = null,
+        int page = 1,
+        CancellationToken cancellationToken = default);
+
     Task<Result<RegistrationRequest>> AcceptAsync(
         Guid registrationId,
         CancellationToken cancellationToken = default);

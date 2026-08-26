@@ -55,6 +55,30 @@ internal static class RegistrationRequestMapper
             dto.Meta.Total));
     }
 
+    public static Result<RegistrationRequestPage> ToDomain(ApplicantCollectionResponseDto dto)
+    {
+        if (dto.Applicants is null || dto.Meta is null ||
+            dto.Meta.CurrentPage < 1 || dto.Meta.LastPage < 1 ||
+            dto.Meta.PerPage < 1 || dto.Meta.Total < 0)
+        {
+            return Result<RegistrationRequestPage>.Failure(UnexpectedResponseError());
+        }
+
+        var requests = dto.Applicants.Select(ToDomain).ToArray();
+        var error = requests.Select(result => result.Error).FirstOrDefault(value => value is not null);
+        if (error is not null)
+        {
+            return Result<RegistrationRequestPage>.Failure(error);
+        }
+
+        return Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(
+            requests.Select(result => result.Value!).ToArray(),
+            dto.Meta.CurrentPage,
+            dto.Meta.LastPage,
+            dto.Meta.PerPage,
+            dto.Meta.Total));
+    }
+
     public static DecisionNoteRequestDto ToDto(RejectRegistrationRequestCommand command) =>
         new(NormalizeOptional(command.Note));
 

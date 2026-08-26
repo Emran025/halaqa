@@ -28,6 +28,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly HalaqasViewModel _halaqasViewModel;
     private readonly HalaqaMembershipsViewModel _halaqaMembershipsViewModel;
     private readonly HalaqaRegistrationRequestsViewModel _halaqaRegistrationRequestsViewModel;
+    private readonly TeacherApplicationInboxViewModel _teacherApplicationInboxViewModel;
     private readonly StudentTeacherDirectoryViewModel _studentTeacherDirectoryViewModel;
     private readonly StudentRegistrationRequestsViewModel _studentRegistrationRequestsViewModel;
     private readonly FollowUpViewModel _followUpViewModel;
@@ -52,6 +53,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         HalaqasViewModel halaqasViewModel,
         HalaqaMembershipsViewModel halaqaMembershipsViewModel,
         HalaqaRegistrationRequestsViewModel halaqaRegistrationRequestsViewModel,
+        TeacherApplicationInboxViewModel teacherApplicationInboxViewModel,
         StudentTeacherDirectoryViewModel studentTeacherDirectoryViewModel,
         StudentRegistrationRequestsViewModel studentRegistrationRequestsViewModel,
         FollowUpViewModel followUpViewModel,
@@ -71,6 +73,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _halaqasViewModel = halaqasViewModel;
         _halaqaMembershipsViewModel = halaqaMembershipsViewModel;
         _halaqaRegistrationRequestsViewModel = halaqaRegistrationRequestsViewModel;
+        _teacherApplicationInboxViewModel = teacherApplicationInboxViewModel;
         _studentTeacherDirectoryViewModel = studentTeacherDirectoryViewModel;
         _studentRegistrationRequestsViewModel = studentRegistrationRequestsViewModel;
         _followUpViewModel = followUpViewModel;
@@ -102,6 +105,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _halaqasViewModel.RegistrationRequestsRequested += async (_, halaqa) => await ShowHalaqaRegistrationRequestsAsync(halaqa.Id, halaqa.Name);
         _halaqaMembershipsViewModel.BackRequested += (_, _) => CurrentPage = _halaqasViewModel;
         _halaqaRegistrationRequestsViewModel.BackRequested += (_, _) => CurrentPage = _halaqasViewModel;
+        _teacherApplicationInboxViewModel.BackRequested += (_, _) => ShowDashboard();
         _studentTeacherDirectoryViewModel.BackRequested += (_, _) => ShowDashboard();
         _studentTeacherDirectoryViewModel.MyRequestsRequested += async (_, _) => await ShowStudentRegistrationRequestsAsync();
         _studentRegistrationRequestsViewModel.BackRequested += (_, _) => CurrentPage = _studentTeacherDirectoryViewModel;
@@ -140,6 +144,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         dashboardViewModel.StudentProfileRequested += async (_, _) => await ShowStudentProfileAsync();
         dashboardViewModel.TeacherProfileRequested += async (_, _) => await ShowTeacherProfileAsync();
         dashboardViewModel.HalaqasRequested += async (_, _) => await ShowHalaqasAsync();
+        dashboardViewModel.TeacherApplicationsRequested += async (_, _) => await ShowTeacherApplicationInboxAsync();
         dashboardViewModel.StudentRegistrationsRequested += async (_, _) => await ShowStudentTeacherDirectoryAsync();
         dashboardViewModel.FollowUpRequested += async (_, _) => await ShowFollowUpAsync();
         dashboardViewModel.QuranReaderRequested += async (_, _) => await ShowQuranReaderAsync();
@@ -175,6 +180,18 @@ public sealed partial class MainShellViewModel : ObservableObject
     {
         CurrentPage = _halaqasViewModel;
         await _halaqasViewModel.LoadCommand.ExecuteAsync(null);
+    }
+
+    private async Task ShowTeacherApplicationInboxAsync()
+    {
+        if (_authenticatedUser?.User.Role != UserRole.Teacher)
+        {
+            return;
+        }
+
+        _teacherApplicationInboxViewModel.Initialize();
+        CurrentPage = _teacherApplicationInboxViewModel;
+        await _teacherApplicationInboxViewModel.LoadCommand.ExecuteAsync(null);
     }
 
     private async Task ShowNotificationsAsync()
