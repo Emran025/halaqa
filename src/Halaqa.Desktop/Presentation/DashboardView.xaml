@@ -61,7 +61,11 @@
                 <StackPanel>
                     <materialDesign:PackIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppWarningBrush}" Width="28" Height="28" />
                     <TextBlock Text="المصحف والأخطاء" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
-                    <TextBlock Text="صفحات المصحف محفوظة محلياً عند تحميلها، والأخطاء تنتظر المزامنة عند الحاجة." Style="{StaticResource BodyMuted}" />
+                    <TextBlock Text="اقرأ صفحات المصحف محلياً بخط الصفحة المخصص، مع تمييز صريح عند استخدام بديل الخادم." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                    <Button Content="فتح قارئ المصحف"
+                            Command="{Binding OpenQuranReaderCommand}"
+                            HorizontalAlignment="Right"
+                            Margin="0,16,0,0" />
                 </StackPanel>
             </Border>
         </UniformGrid>

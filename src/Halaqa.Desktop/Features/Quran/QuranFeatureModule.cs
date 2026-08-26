@@ -3,6 +3,7 @@ using Halaqa.Desktop.Features.Quran.Data.DataSources.Remote;
 using Halaqa.Desktop.Features.Quran.Data.Repositories;
 using Halaqa.Desktop.Features.Quran.Domain.Repositories;
 using Halaqa.Desktop.Features.Quran.Domain.UseCases;
+using Halaqa.Desktop.Features.Quran.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Halaqa.Desktop.Features.Quran;
@@ -15,6 +16,7 @@ public static class QuranFeatureModule
         services.AddSingleton<IQuranLocalDataSource, SqliteQuranLocalDataSource>();
         services.AddSingleton<IQuranRepository, QuranRepository>();
         services.AddSingleton<GetQuranPageUseCase>();
+        services.AddSingleton<QuranReaderViewModel>();
         return services;
     }
 }
