@@ -4,8 +4,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Auth.Domain.UseCases;
 
-public sealed class RegisterStudentUseCase(IAuthRepository repository)
+public sealed class RegisterStudentUseCase
 {
+
+    private readonly IAuthRepository repository;
+
+
+    public RegisterStudentUseCase(
+
+        IAuthRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<AuthenticatedUser>> ExecuteAsync(StudentRegistrationCommand command, CancellationToken cancellationToken = default)
     {
         var validationError = ValidateStudent(command);
@@ -37,8 +53,24 @@ public sealed class RegisterStudentUseCase(IAuthRepository repository)
     }
 }
 
-public sealed class RegisterTeacherUseCase(IAuthRepository repository)
+public sealed class RegisterTeacherUseCase
 {
+
+    private readonly IAuthRepository repository;
+
+
+    public RegisterTeacherUseCase(
+
+        IAuthRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<AuthenticatedUser>> ExecuteAsync(TeacherRegistrationCommand command, CancellationToken cancellationToken = default)
     {
         if (command.ClientOperationId == Guid.Empty || string.IsNullOrWhiteSpace(command.Name) || string.IsNullOrWhiteSpace(command.Email) ||
@@ -54,16 +86,48 @@ public sealed class RegisterTeacherUseCase(IAuthRepository repository)
     }
 }
 
-public sealed class RequestPasswordResetUseCase(IAuthRepository repository)
+public sealed class RequestPasswordResetUseCase
 {
+
+    private readonly IAuthRepository repository;
+
+
+    public RequestPasswordResetUseCase(
+
+        IAuthRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result> ExecuteAsync(string email, CancellationToken cancellationToken = default) =>
         string.IsNullOrWhiteSpace(email) || !email.Contains('@')
             ? Task.FromResult(Result.Failure(new AppError(AppErrorKind.Validation, "أدخل بريداً إلكترونياً صالحاً.")))
             : repository.RequestPasswordResetAsync(email, cancellationToken);
 }
 
-public sealed class ResetPasswordUseCase(IAuthRepository repository)
+public sealed class ResetPasswordUseCase
 {
+
+    private readonly IAuthRepository repository;
+
+
+    public ResetPasswordUseCase(
+
+        IAuthRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result> ExecuteAsync(string email, string token, string password, string passwordConfirmation, CancellationToken cancellationToken = default)
     {
         var validationError = ValidatePasswordReset(email, token, password, passwordConfirmation);
@@ -83,8 +147,24 @@ public sealed class ResetPasswordUseCase(IAuthRepository repository)
             : null;
 }
 
-public sealed class ChangePasswordUseCase(IAuthRepository repository)
+public sealed class ChangePasswordUseCase
 {
+
+    private readonly IAuthRepository repository;
+
+
+    public ChangePasswordUseCase(
+
+        IAuthRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result> ExecuteAsync(string currentPassword, string password, string passwordConfirmation, CancellationToken cancellationToken = default)
     {
         var validationError = string.IsNullOrWhiteSpace(currentPassword)

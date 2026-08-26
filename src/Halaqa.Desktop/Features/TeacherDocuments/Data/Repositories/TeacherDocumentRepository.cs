@@ -7,8 +7,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.TeacherDocuments.Data.Repositories;
 
-internal sealed class TeacherDocumentRepository(ITeacherDocumentRemoteDataSource remoteDataSource) : ITeacherDocumentRepository
+internal sealed class TeacherDocumentRepository : ITeacherDocumentRepository
 {
+
+    private readonly ITeacherDocumentRemoteDataSource remoteDataSource;
+
+
+    public TeacherDocumentRepository(
+
+        ITeacherDocumentRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<TeacherDocumentPage>> ListAsync(
         int page = 1,
         CancellationToken cancellationToken = default)

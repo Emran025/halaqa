@@ -7,8 +7,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Profile.Data.Repositories;
 
-internal sealed class ProfileRepository(IProfileRemoteDataSource remoteDataSource) : IProfileRepository
+internal sealed class ProfileRepository : IProfileRepository
 {
+
+    private readonly IProfileRemoteDataSource remoteDataSource;
+
+
+    public ProfileRepository(
+
+        IProfileRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<UserProfile>> GetCurrentAsync(CancellationToken cancellationToken = default)
     {
         var result = await remoteDataSource.GetCurrentAsync(cancellationToken);

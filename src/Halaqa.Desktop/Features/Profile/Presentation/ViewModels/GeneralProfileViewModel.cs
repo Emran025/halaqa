@@ -6,10 +6,30 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Profile.Presentation.ViewModels;
 
-public sealed partial class GeneralProfileViewModel(
-    GetCurrentProfileUseCase getCurrentProfileUseCase,
-    UpdateCurrentProfileUseCase updateCurrentProfileUseCase) : ObservableObject
+public sealed partial class GeneralProfileViewModel : ObservableObject
 {
+
+    private readonly GetCurrentProfileUseCase getCurrentProfileUseCase;
+
+    private readonly UpdateCurrentProfileUseCase updateCurrentProfileUseCase;
+
+
+    public GeneralProfileViewModel(
+
+        GetCurrentProfileUseCase getCurrentProfileUseCase,
+
+        UpdateCurrentProfileUseCase updateCurrentProfileUseCase
+
+    )
+
+    {
+
+        this.getCurrentProfileUseCase = getCurrentProfileUseCase;
+
+        this.updateCurrentProfileUseCase = updateCurrentProfileUseCase;
+
+    }
+
     private string _loadedName = string.Empty;
     private string? _loadedPhone;
 

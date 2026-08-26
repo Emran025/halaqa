@@ -35,7 +35,7 @@ public sealed class TeacherDocumentMapperTests
     public void ToDomain_MapsPaginatedDocumentCollection()
     {
         var response = new TeacherDocumentCollectionResponseDto(
-        [
+        new[] {
             new TeacherDocumentDto(
                 7,
                 "إجازة حفص",
@@ -46,7 +46,7 @@ public sealed class TeacherDocumentMapperTests
                 new DateOnly(2021, 5, 1),
                 "https://example.test/7",
                 true)
-        ],
+        },
         new PaginationMetaDto(1, 2, 20, 21));
 
         var result = TeacherDocumentMapper.ToDomain(response);

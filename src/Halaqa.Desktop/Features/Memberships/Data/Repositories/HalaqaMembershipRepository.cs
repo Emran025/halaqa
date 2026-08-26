@@ -7,8 +7,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Memberships.Data.Repositories;
 
-internal sealed class HalaqaMembershipRepository(IHalaqaMembershipRemoteDataSource remoteDataSource) : IHalaqaMembershipRepository
+internal sealed class HalaqaMembershipRepository : IHalaqaMembershipRepository
 {
+
+    private readonly IHalaqaMembershipRemoteDataSource remoteDataSource;
+
+
+    public HalaqaMembershipRepository(
+
+        IHalaqaMembershipRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<MembershipPage>> ListAsync(
         Guid halaqaId,
         string? status = null,

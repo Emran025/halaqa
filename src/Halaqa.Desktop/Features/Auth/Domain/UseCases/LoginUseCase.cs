@@ -4,8 +4,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Auth.Domain.UseCases;
 
-public sealed class LoginUseCase(IAuthRepository repository)
+public sealed class LoginUseCase
 {
+
+    private readonly IAuthRepository repository;
+
+
+    public LoginUseCase(
+
+        IAuthRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<AuthenticatedUser>> ExecuteAsync(
         string email,
         string password,

@@ -26,8 +26,8 @@ public sealed partial class TeacherApplicationInboxViewModel : ObservableObject
         _requestCompletionUseCase = requestCompletionUseCase;
     }
 
-    public ObservableCollection<RegistrationRequest> Requests { get; } = [];
-    public IReadOnlyList<string> FilterOptions { get; } = ["", "pending", "completion_requested", "accepted", "rejected", "withdrawn", "cancelled"];
+    public ObservableCollection<RegistrationRequest> Requests { get; } = new();
+    public IReadOnlyList<string> FilterOptions { get; } = new[] { "", "pending", "completion_requested", "accepted", "rejected", "withdrawn", "cancelled" };
 
     [ObservableProperty] private RegistrationRequest? _selectedRequest;
     [ObservableProperty] private string _filterState = "pending";
@@ -165,7 +165,7 @@ public sealed partial class TeacherApplicationInboxViewModel : ObservableObject
         var existing = Requests.Select((value, index) => (value, index)).FirstOrDefault(item => item.value.Id == request.Id);
         if (existing.value is null) Requests.Insert(0, request); else Requests[existing.index] = request;
     }
-    private IReadOnlyList<string> ParseRequiredFields() => RequiredFields.Split([',', '،', ';', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Distinct(StringComparer.Ordinal).ToArray();
+    private IReadOnlyList<string> ParseRequiredFields() => RequiredFields.Split(new[] { ',', '،', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries).Distinct(StringComparer.Ordinal).ToArray();
     private static bool TryParseState(string? value, out RegistrationState? state)
     {
         state = value switch { "" or null => null, "pending" => RegistrationState.Pending, "completion_requested" => RegistrationState.CompletionRequested, "accepted" => RegistrationState.Accepted, "rejected" => RegistrationState.Rejected, "withdrawn" => RegistrationState.Withdrawn, "cancelled" => RegistrationState.Cancelled, _ => null };

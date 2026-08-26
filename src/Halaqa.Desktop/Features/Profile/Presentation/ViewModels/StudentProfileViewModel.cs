@@ -98,13 +98,13 @@ public sealed partial class StudentProfileViewModel : ObservableObject
         PlanDetails.CollectionChanged += OnEditorCollectionChanged;
     }
 
-    public ObservableCollection<StudentWeeklySlotEditor> WeeklySlots { get; } = [];
-    public ObservableCollection<StudentPlanDetailEditor> PlanDetails { get; } = [];
-    public IReadOnlyList<string> GenderOptions { get; } = ["male", "female"];
-    public IReadOnlyList<string> FrequencyOptions { get; } = ["daily", "onceAWeek", "twiceAWeek", "thriceAWeek"];
-    public IReadOnlyList<string> TaskTypeOptions { get; } = ["memorization", "review", "recitation"];
-    public IReadOnlyList<string> PlanUnitOptions { get; } = ["juz", "hizb", "halfHizb", "quarterHizb", "page"];
-    public IReadOnlyList<int> WeekDays { get; } = [0, 1, 2, 3, 4, 5, 6];
+    public ObservableCollection<StudentWeeklySlotEditor> WeeklySlots { get; } = new();
+    public ObservableCollection<StudentPlanDetailEditor> PlanDetails { get; } = new();
+    public IReadOnlyList<string> GenderOptions { get; } = new[] { "male", "female" };
+    public IReadOnlyList<string> FrequencyOptions { get; } = new[] { "daily", "onceAWeek", "twiceAWeek", "thriceAWeek" };
+    public IReadOnlyList<string> TaskTypeOptions { get; } = new[] { "memorization", "review", "recitation" };
+    public IReadOnlyList<string> PlanUnitOptions { get; } = new[] { "juz", "hizb", "halfHizb", "quarterHizb", "page" };
+    public IReadOnlyList<int> WeekDays { get; } = new[] { 0, 1, 2, 3, 4, 5, 6 };
 
     [ObservableProperty] private string _name = string.Empty;
     [ObservableProperty] private string _email = string.Empty;
@@ -300,13 +300,13 @@ public sealed partial class StudentProfileViewModel : ObservableObject
         var attendance = profile.AttendancePreferences ?? profile.FollowUpPlan?.AttendancePreferences;
         Timezone = attendance?.Timezone;
         PreferredSessionDurationMinutes = attendance?.PreferredSessionDurationMinutes?.ToString(CultureInfo.InvariantCulture);
-        ReplaceEditors(WeeklySlots, attendance?.WeeklySlots.Select(StudentWeeklySlotEditor.FromDomain) ?? []);
+        ReplaceEditors(WeeklySlots, attendance?.WeeklySlots.Select(StudentWeeklySlotEditor.FromDomain) ?? Array.Empty<StudentWeeklySlotEditor>());
 
         var followUpPlan = profile.FollowUpPlan;
         PlanFrequency = followUpPlan is null ? "onceAWeek" : ToContractValue(followUpPlan.Frequency);
         PlanStartsOn = followUpPlan?.StartsOn?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         PlanEndsOn = followUpPlan?.EndsOn?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        ReplaceEditors(PlanDetails, followUpPlan?.Details.Select(StudentPlanDetailEditor.FromDomain) ?? []);
+        ReplaceEditors(PlanDetails, followUpPlan?.Details.Select(StudentPlanDetailEditor.FromDomain) ?? Array.Empty<StudentPlanDetailEditor>());
     }
 
     private bool TryCreateUpdateCommand(out UpdateStudentProfileCommand? command, out string? error)
@@ -431,7 +431,7 @@ public sealed partial class StudentProfileViewModel : ObservableObject
         int? duration = null;
         if (!string.IsNullOrWhiteSpace(PreferredSessionDurationMinutes))
         {
-            if (!int.TryParse(PreferredSessionDurationMinutes, CultureInfo.InvariantCulture, out var parsedDuration) || parsedDuration is < 10 or > 180)
+            if (!int.TryParse(PreferredSessionDurationMinutes, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsedDuration) || parsedDuration is < 10 or > 180)
             {
                 error = "مدة الجلسة المفضلة يجب أن تكون بين 10 و180 دقيقة.";
                 return false;

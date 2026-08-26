@@ -42,8 +42,8 @@ public sealed partial class FollowUpViewModel : ObservableObject
         _listTrackingsUseCase = listTrackingsUseCase;
     }
 
-    public ObservableCollection<FollowUpItem> Items { get; } = [];
-    public ObservableCollection<TrackingItem> Trackings { get; } = [];
+    public ObservableCollection<FollowUpItem> Items { get; } = new();
+    public ObservableCollection<TrackingItem> Trackings { get; } = new();
     public IReadOnlyList<FollowUpFrequency> FrequencyOptions { get; } = Enum.GetValues<FollowUpFrequency>();
     public IReadOnlyList<FollowUpTaskType> TaskTypeOptions { get; } = Enum.GetValues<FollowUpTaskType>();
     public IReadOnlyList<FollowUpUnit> UnitOptions { get; } = Enum.GetValues<FollowUpUnit>();
@@ -386,7 +386,7 @@ public sealed partial class FollowUpViewModel : ObservableObject
         }
 
         command = new UpdateFollowUpPlanCommand(StudentId, Frequency,
-            [new PlanDetailDraft(TaskType, Unit, amount, NormalizeOptional(PlanNotes))], startsOn, endsOn);
+            new[] { new PlanDetailDraft(TaskType, Unit, amount, NormalizeOptional(PlanNotes)) }, startsOn, endsOn);
         return true;
     }
 
@@ -394,7 +394,7 @@ public sealed partial class FollowUpViewModel : ObservableObject
     {
         command = default!;
         error = null;
-        if (string.IsNullOrWhiteSpace(Timezone) || !int.TryParse(AvailabilityDayOfWeek, CultureInfo.InvariantCulture, out var day) || day is < 0 or > 6 ||
+        if (string.IsNullOrWhiteSpace(Timezone) || !int.TryParse(AvailabilityDayOfWeek, NumberStyles.Integer, CultureInfo.InvariantCulture, out var day) || day is < 0 or > 6 ||
             !TimeOnly.TryParseExact(AvailabilityFrom, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var from) ||
             !TimeOnly.TryParseExact(AvailabilityTo, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var to) || from >= to ||
             !TryReadDuration(out var duration))
@@ -403,7 +403,7 @@ public sealed partial class FollowUpViewModel : ObservableObject
             return false;
         }
 
-        command = new UpdateAvailabilityCommand(StudentId, new AttendancePreferences(Timezone.Trim(), [new WeeklyAvailabilitySlot(day, from, to, AvailabilityPreferred)], duration));
+        command = new UpdateAvailabilityCommand(StudentId, new AttendancePreferences(Timezone.Trim(), new[] { new WeeklyAvailabilitySlot(day, from, to, AvailabilityPreferred) }, duration));
         return true;
     }
 
@@ -426,7 +426,7 @@ public sealed partial class FollowUpViewModel : ObservableObject
             duration = null;
             return true;
         }
-        if (int.TryParse(PreferredSessionDurationMinutes, CultureInfo.InvariantCulture, out var value) && value is >= 10 and <= 180)
+        if (int.TryParse(PreferredSessionDurationMinutes, NumberStyles.Integer, CultureInfo.InvariantCulture, out var value) && value is >= 10 and <= 180)
         {
             duration = value;
             return true;

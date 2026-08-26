@@ -27,9 +27,9 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
         _removeHalaqaMembershipUseCase = removeHalaqaMembershipUseCase;
     }
 
-    public ObservableCollection<HalaqaMembership> Memberships { get; } = [];
-    public IReadOnlyList<string> MembershipStatusOptions { get; } = ["active", "inactive"];
-    public IReadOnlyList<string> FilterOptions { get; } = ["", "active", "inactive", "removed"];
+    public ObservableCollection<HalaqaMembership> Memberships { get; } = new();
+    public IReadOnlyList<string> MembershipStatusOptions { get; } = new[] { "active", "inactive" };
+    public IReadOnlyList<string> FilterOptions { get; } = new[] { "", "active", "inactive", "removed" };
 
     [ObservableProperty] private string _halaqaName = string.Empty;
     [ObservableProperty] private HalaqaMembership? _selectedMembership;

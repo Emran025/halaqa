@@ -12,8 +12,24 @@ internal interface IStudentProfileRemoteDataSource
         CancellationToken cancellationToken = default);
 }
 
-internal sealed class StudentProfileRemoteDataSource(IApiClient apiClient) : IStudentProfileRemoteDataSource
+internal sealed class StudentProfileRemoteDataSource : IStudentProfileRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public StudentProfileRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<StudentProfileResponseDto>> GetCurrentAsync(CancellationToken cancellationToken = default) =>
         apiClient.GetAsync<StudentProfileResponseDto>("me/student-profile", cancellationToken);
 

@@ -11,19 +11,35 @@ internal interface IMistakeOutbox
     Task UpsertAsync(PendingMistakeOperation operation, CancellationToken cancellationToken = default);
 }
 
-internal sealed class SqliteMistakeOutbox(ILocalDatabase localDatabase) : IMistakeOutbox
+internal sealed class SqliteMistakeOutbox : IMistakeOutbox
 {
+
+    private readonly ILocalDatabase localDatabase;
+
+
+    public SqliteMistakeOutbox(
+
+        ILocalDatabase localDatabase
+
+    )
+
+    {
+
+        this.localDatabase = localDatabase;
+
+    }
+
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web);
 
     public async Task<IReadOnlyList<PendingMistakeOperation>> ReadAsync(CancellationToken cancellationToken = default)
     {
         await using var connection = await localDatabase.OpenConnectionAsync(cancellationToken);
         var command = connection.CreateCommand();
-        command.CommandText = """
+        command.CommandText = @"
             SELECT local_id, payload_json, sync_state, created_at_utc, last_error
             FROM mistake_outbox
             ORDER BY created_at_utc ASC;
-            """;
+            ";
 
         var operations = new List<PendingMistakeOperation>();
         await using var reader = await command.ExecuteReaderAsync(cancellationToken);
@@ -52,7 +68,7 @@ internal sealed class SqliteMistakeOutbox(ILocalDatabase localDatabase) : IMista
     {
         await using var connection = await localDatabase.OpenConnectionAsync(cancellationToken);
         var command = connection.CreateCommand();
-        command.CommandText = """
+        command.CommandText = @"
             INSERT INTO mistake_outbox (
                 local_id, client_operation_id, session_id, task_id, operation_type,
                 payload_json, sync_state, created_at_utc, last_error)
@@ -63,7 +79,7 @@ internal sealed class SqliteMistakeOutbox(ILocalDatabase localDatabase) : IMista
                 payload_json = excluded.payload_json,
                 sync_state = excluded.sync_state,
                 last_error = excluded.last_error;
-            """;
+            ";
         command.Parameters.AddWithValue("$localId", operation.LocalId.ToString());
         command.Parameters.AddWithValue("$clientOperationId", operation.Draft.ClientOperationId.ToString());
         command.Parameters.AddWithValue("$sessionId", operation.Draft.SessionId.ToString());

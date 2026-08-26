@@ -50,11 +50,11 @@ public sealed class StudentRegistrationMapperTests
             null,
             new RegistrationAttendancePreferences(
                 "Asia/Riyadh",
-                [new RegistrationWeeklyAvailabilitySlot(0, new TimeOnly(18, 0), new TimeOnly(18, 30), true)],
+                new[] {new RegistrationWeeklyAvailabilitySlot(0, new TimeOnly(18, 0), new TimeOnly(18, 30), true)},
                 30),
             new RegistrationFollowUpPlan(
                 "onceAWeek",
-                [new RegistrationPlanDetail("memorization", "page", 1, null)],
+                new[] {new RegistrationPlanDetail("memorization", "page", 1, null)},
                 null,
                 null),
             operationId);
@@ -85,12 +85,12 @@ public sealed class StudentRegistrationMapperTests
         true,
         "معلّم متاح",
         1,
-        [new PublicHalaqaDto(
+        new[] {new PublicHalaqaDto(
             Guid.NewGuid(),
             "حلقة الفجر",
             "active",
             "male",
             "السعودية",
             "الرياض",
-            8)]);
+            8)});
 }

@@ -4,14 +4,46 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Profile.Domain.UseCases;
 
-public sealed class GetCurrentProfileUseCase(IProfileRepository repository)
+public sealed class GetCurrentProfileUseCase
 {
+
+    private readonly IProfileRepository repository;
+
+
+    public GetCurrentProfileUseCase(
+
+        IProfileRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<UserProfile>> ExecuteAsync(CancellationToken cancellationToken = default) =>
         repository.GetCurrentAsync(cancellationToken);
 }
 
-public sealed class UpdateCurrentProfileUseCase(IProfileRepository repository)
+public sealed class UpdateCurrentProfileUseCase
 {
+
+    private readonly IProfileRepository repository;
+
+
+    public UpdateCurrentProfileUseCase(
+
+        IProfileRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<UserProfile>> ExecuteAsync(UpdateUserProfileCommand command, CancellationToken cancellationToken = default)
     {
         if (!command.HasChanges)

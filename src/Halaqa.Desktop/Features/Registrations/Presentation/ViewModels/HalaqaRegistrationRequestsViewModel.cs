@@ -27,9 +27,9 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
         _requestCompletionUseCase = requestCompletionUseCase;
     }
 
-    public ObservableCollection<RegistrationRequest> Requests { get; } = [];
-    public IReadOnlyList<string> FilterOptions { get; } =
-    [
+    public ObservableCollection<RegistrationRequest> Requests { get; } = new();
+    public IReadOnlyList<string> FilterOptions { get; } = new[]
+    {
         "",
         "pending",
         "completion_requested",
@@ -37,7 +37,7 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
         "rejected",
         "withdrawn",
         "cancelled"
-    ];
+    };
 
     [ObservableProperty] private string _halaqaName = string.Empty;
     [ObservableProperty] private RegistrationRequest? _selectedRequest;
@@ -286,7 +286,7 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
     }
 
     private IReadOnlyList<string> ParseRequiredFields() => RequiredFields
-        .Split([',', '،', ';', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Split(new[] { ',', '،', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
         .Distinct(StringComparer.Ordinal)
         .ToArray();
 

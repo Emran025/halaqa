@@ -97,13 +97,13 @@ internal sealed class SqliteQuranLocalDataSource : IQuranLocalDataSource
         CancellationToken cancellationToken)
     {
         var command = connection.CreateCommand();
-        command.CommandText = """
+        command.CommandText = @"
             SELECT DISTINCT s.Id, s.Name_ar, s.AyatCount, s.TypeText_ar
             FROM Quran q
             INNER JOIN Sora s ON s.Id = q.SoraNum
             WHERE q.PageNum = $pageNumber
             ORDER BY s.Id;
-            """;
+            ";
         command.Parameters.AddWithValue("$pageNumber", pageNumber);
 
         var result = new List<QuranSurah>();
@@ -130,12 +130,12 @@ internal sealed class SqliteQuranLocalDataSource : IQuranLocalDataSource
         CancellationToken cancellationToken)
     {
         var command = connection.CreateCommand();
-        command.CommandText = """
+        command.CommandText = @"
             SELECT ID, SoraNum, AyaNum, PageNum, AyaDiac, Uthomanic_text, PartNum
             FROM Quran
             WHERE PageNum = $pageNumber
             ORDER BY ID;
-            """;
+            ";
         command.Parameters.AddWithValue("$pageNumber", pageNumber);
 
         var result = new List<QuranAyah>();

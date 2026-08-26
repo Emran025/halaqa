@@ -7,8 +7,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.FollowUp.Data.Repositories;
 
-internal sealed class FollowUpRepository(IFollowUpRemoteDataSource remoteDataSource) : IFollowUpRepository
+internal sealed class FollowUpRepository : IFollowUpRepository
 {
+
+    private readonly IFollowUpRemoteDataSource remoteDataSource;
+
+
+    public FollowUpRepository(
+
+        IFollowUpRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<FollowUpPlan>> GetPlanAsync(Guid studentId, CancellationToken cancellationToken = default)
     {
         var response = await remoteDataSource.GetPlanAsync(studentId, cancellationToken);

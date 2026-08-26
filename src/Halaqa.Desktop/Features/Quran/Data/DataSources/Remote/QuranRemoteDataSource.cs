@@ -9,8 +9,24 @@ internal interface IQuranRemoteDataSource
     Task<Result<QuranPageResponseDto>> GetPageAsync(int editionId, int pageNumber, CancellationToken cancellationToken = default);
 }
 
-internal sealed class QuranRemoteDataSource(IApiClient apiClient) : IQuranRemoteDataSource
+internal sealed class QuranRemoteDataSource : IQuranRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public QuranRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<QuranPageResponseDto>> GetPageAsync(int editionId, int pageNumber, CancellationToken cancellationToken = default) =>
         apiClient.GetAsync<QuranPageResponseDto>($"quran/pages/{pageNumber}?edition_id={editionId}", cancellationToken);
 }

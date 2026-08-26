@@ -61,7 +61,7 @@ public sealed class SqliteLocalDatabase : ILocalDatabase
             await connection.OpenAsync(cancellationToken);
 
             var command = connection.CreateCommand();
-            command.CommandText = """
+            command.CommandText = @"
                 CREATE TABLE IF NOT EXISTS mistake_outbox (
                     local_id TEXT PRIMARY KEY NOT NULL,
                     client_operation_id TEXT NOT NULL UNIQUE,
@@ -79,7 +79,7 @@ public sealed class SqliteLocalDatabase : ILocalDatabase
                     entity_type TEXT PRIMARY KEY NOT NULL,
                     last_server_sync_utc TEXT NULL
                 );
-                """;
+                ";
             await command.ExecuteNonQueryAsync(cancellationToken);
             _isInitialized = true;
         }

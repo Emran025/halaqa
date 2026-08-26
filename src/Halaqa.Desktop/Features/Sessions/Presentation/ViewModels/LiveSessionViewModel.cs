@@ -270,7 +270,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     }
 
     private static int? ParsePageNumber(string? value) =>
-        int.TryParse(value, System.Globalization.CultureInfo.InvariantCulture, out var pageNumber) &&
+        int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var pageNumber) &&
         pageNumber is >= 1 and <= 604
             ? pageNumber
             : null;

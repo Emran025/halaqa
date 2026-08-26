@@ -7,10 +7,30 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Quran.Data.Repositories;
 
-internal sealed class QuranRepository(
-    IQuranLocalDataSource localDataSource,
-    IQuranRemoteDataSource remoteDataSource) : IQuranRepository
+internal sealed class QuranRepository : IQuranRepository
 {
+
+    private readonly IQuranLocalDataSource localDataSource;
+
+    private readonly IQuranRemoteDataSource remoteDataSource;
+
+
+    public QuranRepository(
+
+        IQuranLocalDataSource localDataSource,
+
+        IQuranRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.localDataSource = localDataSource;
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<QuranPage>> GetPageAsync(int editionId, int pageNumber, CancellationToken cancellationToken = default)
     {
         var local = await localDataSource.GetPageAsync(editionId, pageNumber, cancellationToken);

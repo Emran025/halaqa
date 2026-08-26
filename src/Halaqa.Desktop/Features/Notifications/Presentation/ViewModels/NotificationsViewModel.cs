@@ -24,7 +24,7 @@ public sealed partial class NotificationsViewModel : ObservableObject
         _markAllNotificationsReadUseCase = markAllNotificationsReadUseCase;
     }
 
-    public ObservableCollection<HalaqaNotification> Notifications { get; } = [];
+    public ObservableCollection<HalaqaNotification> Notifications { get; } = new();
 
     [ObservableProperty] private HalaqaNotification? _selectedNotification;
     [ObservableProperty] private bool _unreadOnly;

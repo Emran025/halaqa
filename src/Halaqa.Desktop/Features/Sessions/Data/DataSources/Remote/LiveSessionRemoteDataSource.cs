@@ -13,8 +13,24 @@ internal interface ILiveSessionRemoteDataSource
     Task<Result> SaveMushafStateAsync(Guid sessionId, SaveMushafStateRequestDto request, CancellationToken cancellationToken = default);
 }
 
-internal sealed class LiveSessionRemoteDataSource(IApiClient apiClient) : ILiveSessionRemoteDataSource
+internal sealed class LiveSessionRemoteDataSource : ILiveSessionRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public LiveSessionRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<RealtimeSessionResponseDto>> GetRealtimeConfigAsync(Guid sessionId, CancellationToken cancellationToken = default) =>
         apiClient.GetAsync<RealtimeSessionResponseDto>($"sessions/{sessionId}/realtime", cancellationToken);
 

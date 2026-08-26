@@ -23,9 +23,9 @@ public sealed partial class TeacherProfileViewModel : ObservableObject
         _updateCurrentTeacherProfileUseCase = updateCurrentTeacherProfileUseCase;
     }
 
-    public ObservableCollection<TeacherDocumentSummary> Documents { get; } = [];
-    public ObservableCollection<TeacherHalaqaSummary> PublicHalaqas { get; } = [];
-    public IReadOnlyList<string> GenderOptions { get; } = ["male", "female"];
+    public ObservableCollection<TeacherDocumentSummary> Documents { get; } = new();
+    public ObservableCollection<TeacherHalaqaSummary> PublicHalaqas { get; } = new();
+    public IReadOnlyList<string> GenderOptions { get; } = new[] { "male", "female" };
 
     [ObservableProperty] private string _name = string.Empty;
     [ObservableProperty] private string _teacherCode = string.Empty;

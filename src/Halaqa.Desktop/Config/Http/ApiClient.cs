@@ -19,8 +19,24 @@ public interface IApiClient
     Task<Result> PatchAsync<TRequest>(string relativePath, TRequest request, CancellationToken cancellationToken = default);
 }
 
-public sealed class ApiClient(HttpClient httpClient) : IApiClient
+public sealed class ApiClient : IApiClient
 {
+
+    private readonly HttpClient httpClient;
+
+
+    public ApiClient(
+
+        HttpClient httpClient
+
+    )
+
+    {
+
+        this.httpClient = httpClient;
+
+    }
+
     private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
     {
         PropertyNameCaseInsensitive = false

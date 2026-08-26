@@ -27,8 +27,8 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
         _getCurrentStudentProfileUseCase = getCurrentStudentProfileUseCase;
     }
 
-    public ObservableCollection<AvailableTeacher> Teachers { get; } = [];
-    public IReadOnlyList<PublicHalaqa> PublicHalaqas => SelectedTeacher?.PublicHalaqas ?? [];
+    public ObservableCollection<AvailableTeacher> Teachers { get; } = new();
+    public IReadOnlyList<PublicHalaqa> PublicHalaqas => SelectedTeacher?.PublicHalaqas ?? Array.Empty<PublicHalaqa>();
 
     [ObservableProperty] private AvailableTeacher? _selectedTeacher;
     [ObservableProperty] private PublicHalaqa? _selectedHalaqa;

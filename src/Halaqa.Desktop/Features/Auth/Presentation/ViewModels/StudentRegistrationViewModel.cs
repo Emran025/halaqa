@@ -6,8 +6,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
-public sealed partial class StudentRegistrationViewModel(RegisterStudentUseCase registerStudentUseCase) : ObservableObject
+public sealed partial class StudentRegistrationViewModel : ObservableObject
 {
+
+    private readonly RegisterStudentUseCase registerStudentUseCase;
+
+
+    public StudentRegistrationViewModel(
+
+        RegisterStudentUseCase registerStudentUseCase
+
+    )
+
+    {
+
+        this.registerStudentUseCase = registerStudentUseCase;
+
+    }
+
     private readonly Guid _clientOperationId = Guid.NewGuid();
 
     [ObservableProperty] private int _step = 1;
@@ -70,8 +86,8 @@ public sealed partial class StudentRegistrationViewModel(RegisterStudentUseCase 
             var command = new StudentRegistrationCommand(
                 _clientOperationId, Name, null, Email, Password, PasswordConfirmation, Gender, DateOnly.FromDateTime(BirthDate),
                 Country, City, null, Phone, PhoneZone, null, null, null, null,
-                new AttendancePreferences(Timezone, [new WeeklyAvailabilitySlot(AttendanceDay, AttendanceFrom, AttendanceTo, true)], 30),
-                new FollowUpPlan(Frequency, [new FollowUpPlanDetail(TaskType, PlanUnit, PlanAmount, null)], DateOnly.FromDateTime(DateTime.Today), null),
+                new AttendancePreferences(Timezone, new[] { new WeeklyAvailabilitySlot(AttendanceDay, AttendanceFrom, AttendanceTo, true) }, 30),
+                new FollowUpPlan(Frequency, new[] { new FollowUpPlanDetail(TaskType, PlanUnit, PlanAmount, null) }, DateOnly.FromDateTime(DateTime.Today), null),
                 TeacherCode, null);
             var result = await registerStudentUseCase.ExecuteAsync(command);
             IsError = !result.IsSuccess;

@@ -17,7 +17,7 @@ public sealed class RegistrationRequestMapperTests
             "  لا يتوفر مقعد حالياً  "));
         var completion = RegistrationRequestMapper.ToDto(new RequestRegistrationCompletionCommand(
             Guid.NewGuid(),
-            [" phone ", "country", "phone"],
+            new[] {" phone ", "country", "phone"},
             "  يرجى الاستكمال  "));
 
         var rejectionJson = JsonSerializer.Serialize(rejection, new JsonSerializerOptions(JsonSerializerDefaults.Web));
@@ -27,16 +27,16 @@ public sealed class RegistrationRequestMapperTests
         using var completionDocument = JsonDocument.Parse(completionJson);
         Assert.Equal("لا يتوفر مقعد حالياً", rejectionDocument.RootElement.GetProperty("note").GetString());
         Assert.Equal("يرجى الاستكمال", completionDocument.RootElement.GetProperty("note").GetString());
-        Assert.Equal(["phone", "country"], completionDocument.RootElement.GetProperty("required_fields").EnumerateArray().Select(item => item.GetString()).ToArray());
+        Assert.Equal(new[] { "phone", "country" }, completionDocument.RootElement.GetProperty("required_fields").EnumerateArray().Select(item => item.GetString()).ToArray());
     }
 
     [Fact]
     public void ToDomain_MapsPublicApplicantCollectionWithoutPrivateProfileFields()
     {
         var response = new RegistrationCollectionResponseDto(
-        [
+        new[] {
             CreateValidRequest()
-        ],
+        },
         new RegistrationPaginationMetaDto(1, 1, 20, 1));
 
         var result = RegistrationRequestMapper.ToDomain(response);
@@ -52,9 +52,9 @@ public sealed class RegistrationRequestMapperTests
     public void ToDomain_MapsTeacherApplicantInboxWrapper()
     {
         var response = new ApplicantCollectionResponseDto(
-        [
+        new[] {
             CreateValidRequest()
-        ],
+        },
         new RegistrationPaginationMetaDto(1, 2, 20, 21));
 
         var result = RegistrationRequestMapper.ToDomain(response);

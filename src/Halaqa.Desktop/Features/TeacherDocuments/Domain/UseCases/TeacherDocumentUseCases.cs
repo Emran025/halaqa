@@ -4,8 +4,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.TeacherDocuments.Domain.UseCases;
 
-public sealed class ListTeacherDocumentsUseCase(ITeacherDocumentRepository repository)
+public sealed class ListTeacherDocumentsUseCase
 {
+
+    private readonly ITeacherDocumentRepository repository;
+
+
+    public ListTeacherDocumentsUseCase(
+
+        ITeacherDocumentRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<TeacherDocumentPage>> ExecuteAsync(
         int page = 1,
         CancellationToken cancellationToken = default)
@@ -21,8 +37,24 @@ public sealed class ListTeacherDocumentsUseCase(ITeacherDocumentRepository repos
     }
 }
 
-public sealed class CreateTeacherDocumentUseCase(ITeacherDocumentRepository repository)
+public sealed class CreateTeacherDocumentUseCase
 {
+
+    private readonly ITeacherDocumentRepository repository;
+
+
+    public CreateTeacherDocumentUseCase(
+
+        ITeacherDocumentRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<TeacherDocument>> ExecuteAsync(
         CreateTeacherDocumentCommand command,
         CancellationToken cancellationToken = default)
@@ -70,8 +102,24 @@ public sealed class CreateTeacherDocumentUseCase(ITeacherDocumentRepository repo
     }
 }
 
-public sealed class DeleteTeacherDocumentUseCase(ITeacherDocumentRepository repository)
+public sealed class DeleteTeacherDocumentUseCase
 {
+
+    private readonly ITeacherDocumentRepository repository;
+
+
+    public DeleteTeacherDocumentUseCase(
+
+        ITeacherDocumentRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result> ExecuteAsync(int documentId, CancellationToken cancellationToken = default)
     {
         if (documentId <= 0)

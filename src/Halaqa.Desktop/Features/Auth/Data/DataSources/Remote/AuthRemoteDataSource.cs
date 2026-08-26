@@ -15,8 +15,24 @@ internal interface IAuthRemoteDataSource
     Task<Result> LogoutAsync(CancellationToken cancellationToken = default);
 }
 
-internal sealed class AuthRemoteDataSource(IApiClient apiClient) : IAuthRemoteDataSource
+internal sealed class AuthRemoteDataSource : IAuthRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public AuthRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<AuthResponseDto>> LoginAsync(LoginRequestDto request, CancellationToken cancellationToken = default) =>
         apiClient.PostAsync<LoginRequestDto, AuthResponseDto>("auth/login", request, cancellationToken);
 

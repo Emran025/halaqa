@@ -74,8 +74,8 @@ public sealed class LiveSessionViewModelTests
             Task.FromResult(Result<QuranPage>.Success(new QuranPage(
                 editionId,
                 pageNumber,
-                [new QuranSurah(1, editionId, 1, "الفاتحة", 7, "مكية")],
-                [new QuranAyah(1, editionId, 1, 1, pageNumber, "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ", "ﱁﱂﱃﱄﱅ", 1, [new QuranWord(0, "ﱁ")])],
+                new[] { new QuranSurah(1, editionId, 1, "الفاتحة", 7, "مكية") },
+                new[] { new QuranAyah(1, editionId, 1, 1, pageNumber, "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ", "ﱁﱂﱃﱄﱅ", 1, new[] { new QuranWord(0, "ﱁ") }) },
                 true)));
     }
 

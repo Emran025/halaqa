@@ -4,14 +4,46 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Profile.Domain.UseCases;
 
-public sealed class GetCurrentTeacherProfileUseCase(ITeacherProfileRepository repository)
+public sealed class GetCurrentTeacherProfileUseCase
 {
+
+    private readonly ITeacherProfileRepository repository;
+
+
+    public GetCurrentTeacherProfileUseCase(
+
+        ITeacherProfileRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<TeacherProfile>> ExecuteAsync(CancellationToken cancellationToken = default) =>
         repository.GetCurrentAsync(cancellationToken);
 }
 
-public sealed class UpdateCurrentTeacherProfileUseCase(ITeacherProfileRepository repository)
+public sealed class UpdateCurrentTeacherProfileUseCase
 {
+
+    private readonly ITeacherProfileRepository repository;
+
+
+    public UpdateCurrentTeacherProfileUseCase(
+
+        ITeacherProfileRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<TeacherProfile>> ExecuteAsync(
         UpdateTeacherProfileCommand command,
         CancellationToken cancellationToken = default)

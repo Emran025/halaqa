@@ -10,8 +10,24 @@ internal interface IProfileRemoteDataSource
     Task<Result<UserProfileResponseDto>> UpdateCurrentAsync(UpdateUserProfileRequestDto request, CancellationToken cancellationToken = default);
 }
 
-internal sealed class ProfileRemoteDataSource(IApiClient apiClient) : IProfileRemoteDataSource
+internal sealed class ProfileRemoteDataSource : IProfileRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public ProfileRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<UserProfileResponseDto>> GetCurrentAsync(CancellationToken cancellationToken = default) =>
         apiClient.GetAsync<UserProfileResponseDto>("me", cancellationToken);
 

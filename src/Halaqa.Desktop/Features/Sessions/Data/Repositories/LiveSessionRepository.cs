@@ -6,8 +6,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Sessions.Data.Repositories;
 
-internal sealed class LiveSessionRepository(ILiveSessionRemoteDataSource remoteDataSource) : ILiveSessionRepository
+internal sealed class LiveSessionRepository : ILiveSessionRepository
 {
+
+    private readonly ILiveSessionRemoteDataSource remoteDataSource;
+
+
+    public LiveSessionRepository(
+
+        ILiveSessionRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<RealtimeSessionConfig>> GetRealtimeConfigAsync(Guid sessionId, CancellationToken cancellationToken = default)
     {
         var result = await remoteDataSource.GetRealtimeConfigAsync(sessionId, cancellationToken);

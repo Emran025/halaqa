@@ -6,8 +6,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Notifications.Data.Repositories;
 
-internal sealed class NotificationRepository(INotificationRemoteDataSource remoteDataSource) : INotificationRepository
+internal sealed class NotificationRepository : INotificationRepository
 {
+
+    private readonly INotificationRemoteDataSource remoteDataSource;
+
+
+    public NotificationRepository(
+
+        INotificationRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<NotificationPage>> ListAsync(NotificationQuery query, CancellationToken cancellationToken = default)
     {
         var response = await remoteDataSource.ListAsync(query, cancellationToken);

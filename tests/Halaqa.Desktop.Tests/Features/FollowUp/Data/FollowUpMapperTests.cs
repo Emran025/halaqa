@@ -15,7 +15,7 @@ public sealed class FollowUpMapperTests
         var command = new UpdateFollowUpPlanCommand(
             Guid.NewGuid(),
             FollowUpFrequency.TwiceAWeek,
-            [new PlanDetailDraft(FollowUpTaskType.Review, FollowUpUnit.HalfHizb, 1.5m, "  مراجعة ثابتة  ")],
+            new[] {new PlanDetailDraft(FollowUpTaskType.Review, FollowUpUnit.HalfHizb, 1.5m, "  مراجعة ثابتة  ")},
             new DateOnly(2026, 8, 1),
             new DateOnly(2026, 8, 31));
 
@@ -62,8 +62,8 @@ public sealed class FollowUpMapperTests
             "daily",
             "active",
             "Asia/Riyadh",
-            [CreateDetail()],
-            new AttendancePreferencesDto("Asia/Riyadh", [new WeeklyAvailabilitySlotDto(0, "18:00", "18:30", true)], 30),
+            new[] {CreateDetail()},
+            new AttendancePreferencesDto("Asia/Riyadh", new[] { new WeeklyAvailabilitySlotDto(0, "18:00", "18:30", true) }, 30),
             "2026-08-01",
             "2026-08-31",
             1,

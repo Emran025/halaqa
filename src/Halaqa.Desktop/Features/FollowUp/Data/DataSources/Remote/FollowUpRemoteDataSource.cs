@@ -19,8 +19,24 @@ internal interface IFollowUpRemoteDataSource
     Task<Result<TrackingCollectionResponseDto>> ListTrackingsAsync(Guid studentId, DateOnly? from, DateOnly? to, int page, int perPage, CancellationToken cancellationToken = default);
 }
 
-internal sealed class FollowUpRemoteDataSource(IApiClient apiClient) : IFollowUpRemoteDataSource
+internal sealed class FollowUpRemoteDataSource : IFollowUpRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public FollowUpRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<FollowUpPlanResponseDto>> GetPlanAsync(Guid studentId, CancellationToken cancellationToken = default) =>
         apiClient.GetAsync<FollowUpPlanResponseDto>($"students/{studentId}/follow-up-plan", cancellationToken);
 

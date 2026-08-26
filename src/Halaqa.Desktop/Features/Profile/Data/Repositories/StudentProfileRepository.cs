@@ -7,8 +7,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Profile.Data.Repositories;
 
-internal sealed class StudentProfileRepository(IStudentProfileRemoteDataSource remoteDataSource) : IStudentProfileRepository
+internal sealed class StudentProfileRepository : IStudentProfileRepository
 {
+
+    private readonly IStudentProfileRemoteDataSource remoteDataSource;
+
+
+    public StudentProfileRepository(
+
+        IStudentProfileRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<StudentProfile>> GetCurrentAsync(CancellationToken cancellationToken = default)
     {
         var result = await remoteDataSource.GetCurrentAsync(cancellationToken);

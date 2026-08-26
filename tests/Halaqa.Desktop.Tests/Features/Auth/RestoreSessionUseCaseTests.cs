@@ -35,13 +35,27 @@ public sealed class RestoreSessionUseCaseTests
         Assert.True(store.Cleared);
     }
 
-    private sealed class FixedClock(DateTimeOffset utcNow) : IClock
+    private sealed class FixedClock : IClock
     {
+        private readonly DateTimeOffset utcNow;
+
+        public FixedClock(DateTimeOffset utcNow)
+        {
+            this.utcNow = utcNow;
+        }
+
         public DateTimeOffset UtcNow => utcNow;
     }
 
-    private sealed class FakeSessionStore(AuthSession? session) : IAuthSessionStore
+    private sealed class FakeSessionStore : IAuthSessionStore
     {
+        private readonly AuthSession? session;
+
+        public FakeSessionStore(AuthSession? session)
+        {
+            this.session = session;
+        }
+
         public bool Cleared { get; private set; }
 
         public Task<AuthSession?> ReadAsync(CancellationToken cancellationToken = default) => Task.FromResult(session);

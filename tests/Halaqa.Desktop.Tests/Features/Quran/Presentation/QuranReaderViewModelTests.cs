@@ -72,8 +72,8 @@ public sealed class QuranReaderViewModelTests
                 "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ",
                 "ﱁﱂﱃ",
                 1,
-                [new QuranWord(0, "ﱁ")]);
-            return Task.FromResult(Result<QuranPage>.Success(new QuranPage(editionId, pageNumber, [], [ayah], IsFromLocalCache: true)));
+                new[] { new QuranWord(0, "ﱁ") });
+            return Task.FromResult(Result<QuranPage>.Success(new QuranPage(editionId, pageNumber, Array.Empty<QuranSurah>(), new[] { ayah }, IsFromLocalCache: true)));
         }
     }
 }

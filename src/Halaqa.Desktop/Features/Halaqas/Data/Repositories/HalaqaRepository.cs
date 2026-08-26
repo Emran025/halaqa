@@ -7,8 +7,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Halaqas.Data.Repositories;
 
-internal sealed class HalaqaRepository(IHalaqaRemoteDataSource remoteDataSource) : IHalaqaRepository
+internal sealed class HalaqaRepository : IHalaqaRepository
 {
+
+    private readonly IHalaqaRemoteDataSource remoteDataSource;
+
+
+    public HalaqaRepository(
+
+        IHalaqaRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<HalaqaPage>> ListAsync(int page = 1, CancellationToken cancellationToken = default)
     {
         var result = await remoteDataSource.ListAsync(page, cancellationToken);

@@ -48,7 +48,8 @@ public sealed class TeacherProfileMapperTests
     public void ToDomain_MapsContractSupportedDocumentDetails()
     {
         var dto = CreateValidDto(documents:
-        [
+        new[]
+        {
             new TeacherDocumentSummaryDto(
                 4,
                 "إجازة حفص",
@@ -59,7 +60,7 @@ public sealed class TeacherProfileMapperTests
                 new DateOnly(2020, 1, 1),
                 "https://example.test/document/4",
                 true)
-        ]);
+        });
 
         var result = TeacherProfileMapper.ToDomain(dto);
 

@@ -76,7 +76,7 @@ public sealed class NotificationsViewModelTests
         {
             var isRead = MarkedReadId is not null || MarkAllReadCalled;
             return Task.FromResult(Result<NotificationPage>.Success(new NotificationPage(
-                [Notification with { ReadAt = isRead ? DateTimeOffset.UtcNow : null }],
+                new[] {Notification with { ReadAt = isRead ? DateTimeOffset.UtcNow : null }},
                 1, 1, 20, 1)));
         }
 

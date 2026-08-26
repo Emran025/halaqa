@@ -18,7 +18,7 @@ internal static class StudentRegistrationMapper
             return Result<AvailableTeacher>.Failure(UnexpectedResponseError());
         }
 
-        var halaqas = (dto.PublicHalaqas ?? []).Select(ToDomain).ToArray();
+        var halaqas = (dto.PublicHalaqas ?? Array.Empty<PublicHalaqaDto>()).Select(ToDomain).ToArray();
         var error = halaqas.Select(result => result.Error).FirstOrDefault(value => value is not null);
         if (error is not null)
         {

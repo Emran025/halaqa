@@ -21,8 +21,24 @@ internal interface IStudentRegistrationRemoteDataSource
         CancellationToken cancellationToken = default);
 }
 
-internal sealed class StudentRegistrationRemoteDataSource(IApiClient apiClient) : IStudentRegistrationRemoteDataSource
+internal sealed class StudentRegistrationRemoteDataSource : IStudentRegistrationRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public StudentRegistrationRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<TeacherPublicCollectionResponseDto>> ListAvailableTeachersAsync(
         string? code,
         string? search,

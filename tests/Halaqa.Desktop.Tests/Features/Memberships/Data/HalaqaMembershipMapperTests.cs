@@ -38,9 +38,9 @@ public sealed class HalaqaMembershipMapperTests
     public void ToDomain_MapsMembershipCollectionWithMembershipIdentifiers()
     {
         var response = new MembershipCollectionResponseDto(
-        [
+        new[] {
             CreateValidDto()
-        ],
+        },
         new MembershipPaginationMetaDto(1, 1, 20, 1));
 
         var result = HalaqaMembershipMapper.ToDomain(response);

@@ -4,8 +4,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Memberships.Domain.UseCases;
 
-public sealed class ListHalaqaMembershipsUseCase(IHalaqaMembershipRepository repository)
+public sealed class ListHalaqaMembershipsUseCase
 {
+
+    private readonly IHalaqaMembershipRepository repository;
+
+
+    public ListHalaqaMembershipsUseCase(
+
+        IHalaqaMembershipRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<MembershipPage>> ExecuteAsync(
         Guid halaqaId,
         string? status = null,
@@ -23,8 +39,24 @@ public sealed class ListHalaqaMembershipsUseCase(IHalaqaMembershipRepository rep
     }
 }
 
-public sealed class AssignStudentToHalaqaUseCase(IHalaqaMembershipRepository repository)
+public sealed class AssignStudentToHalaqaUseCase
 {
+
+    private readonly IHalaqaMembershipRepository repository;
+
+
+    public AssignStudentToHalaqaUseCase(
+
+        IHalaqaMembershipRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<HalaqaMembership>> ExecuteAsync(
         AssignStudentToHalaqaCommand command,
         CancellationToken cancellationToken = default) =>
@@ -35,8 +67,24 @@ public sealed class AssignStudentToHalaqaUseCase(IHalaqaMembershipRepository rep
             : repository.AssignAsync(command, cancellationToken);
 }
 
-public sealed class UpdateHalaqaMembershipUseCase(IHalaqaMembershipRepository repository)
+public sealed class UpdateHalaqaMembershipUseCase
 {
+
+    private readonly IHalaqaMembershipRepository repository;
+
+
+    public UpdateHalaqaMembershipUseCase(
+
+        IHalaqaMembershipRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<HalaqaMembership>> ExecuteAsync(
         UpdateHalaqaMembershipCommand command,
         CancellationToken cancellationToken = default)
@@ -58,8 +106,24 @@ public sealed class UpdateHalaqaMembershipUseCase(IHalaqaMembershipRepository re
     }
 }
 
-public sealed class RemoveHalaqaMembershipUseCase(IHalaqaMembershipRepository repository)
+public sealed class RemoveHalaqaMembershipUseCase
 {
+
+    private readonly IHalaqaMembershipRepository repository;
+
+
+    public RemoveHalaqaMembershipUseCase(
+
+        IHalaqaMembershipRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result> ExecuteAsync(Guid halaqaId, Guid membershipId, CancellationToken cancellationToken = default) =>
         halaqaId == Guid.Empty || membershipId == Guid.Empty
             ? Task.FromResult(Result.Failure(new AppError(

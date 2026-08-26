@@ -20,9 +20,9 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
         _cancelRequestUseCase = cancelRequestUseCase;
     }
 
-    public ObservableCollection<RegistrationRequest> Requests { get; } = [];
-    public IReadOnlyList<string> FilterOptions { get; } =
-    [
+    public ObservableCollection<RegistrationRequest> Requests { get; } = new();
+    public IReadOnlyList<string> FilterOptions { get; } = new[]
+    {
         "",
         "pending",
         "completion_requested",
@@ -30,7 +30,7 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
         "rejected",
         "withdrawn",
         "cancelled"
-    ];
+    };
 
     [ObservableProperty] private RegistrationRequest? _selectedRequest;
     [ObservableProperty] private string _filterState = string.Empty;

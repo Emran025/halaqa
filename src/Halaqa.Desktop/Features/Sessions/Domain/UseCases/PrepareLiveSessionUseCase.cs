@@ -4,8 +4,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Sessions.Domain.UseCases;
 
-public sealed class PrepareLiveSessionUseCase(ILiveSessionRepository repository)
+public sealed class PrepareLiveSessionUseCase
 {
+
+    private readonly ILiveSessionRepository repository;
+
+
+    public PrepareLiveSessionUseCase(
+
+        ILiveSessionRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public async Task<Result<(RealtimeSessionConfig Config, ChannelAuthorization Authorization)>> ExecuteAsync(
         Guid sessionId,
         string? clientConnectionId,
@@ -54,8 +70,24 @@ public sealed class PrepareLiveSessionUseCase(ILiveSessionRepository repository)
     }
 }
 
-public sealed class SaveOfficialMushafStateUseCase(ILiveSessionRepository repository)
+public sealed class SaveOfficialMushafStateUseCase
 {
+
+    private readonly ILiveSessionRepository repository;
+
+
+    public SaveOfficialMushafStateUseCase(
+
+        ILiveSessionRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result> ExecuteAsync(
         Guid sessionId,
         int editionId,

@@ -6,11 +6,36 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Mistakes.Data.Repositories;
 
-internal sealed class MistakeRepository(
-    IMistakeOutbox outbox,
-    IMistakeRemoteDataSource remoteDataSource,
-    Halaqa.Desktop.Shared.Domain.Time.IClock clock) : IMistakeRepository
+internal sealed class MistakeRepository : IMistakeRepository
 {
+
+    private readonly IMistakeOutbox outbox;
+
+    private readonly IMistakeRemoteDataSource remoteDataSource;
+
+    private readonly Halaqa.Desktop.Shared.Domain.Time.IClock clock;
+
+
+    public MistakeRepository(
+
+        IMistakeOutbox outbox,
+
+        IMistakeRemoteDataSource remoteDataSource,
+
+        Halaqa.Desktop.Shared.Domain.Time.IClock clock
+
+    )
+
+    {
+
+        this.outbox = outbox;
+
+        this.remoteDataSource = remoteDataSource;
+
+        this.clock = clock;
+
+    }
+
     public async Task<Result<PendingMistakeOperation>> QueueCreateAsync(
         MistakeDraft draft,
         CancellationToken cancellationToken = default)

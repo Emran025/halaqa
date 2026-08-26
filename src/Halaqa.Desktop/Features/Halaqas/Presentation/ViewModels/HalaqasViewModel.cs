@@ -30,8 +30,8 @@ public sealed partial class HalaqasViewModel : ObservableObject
         _deactivateHalaqaUseCase = deactivateHalaqaUseCase;
     }
 
-    public ObservableCollection<HalaqaItem> Halaqas { get; } = [];
-    public IReadOnlyList<string> GenderOptions { get; } = ["male", "female"];
+    public ObservableCollection<HalaqaItem> Halaqas { get; } = new();
+    public IReadOnlyList<string> GenderOptions { get; } = new[] { "male", "female" };
 
     [ObservableProperty] private HalaqaItem? _selectedHalaqa;
     [ObservableProperty] private string _name = string.Empty;
