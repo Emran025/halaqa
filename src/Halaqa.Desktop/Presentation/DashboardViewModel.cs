@@ -24,6 +24,7 @@ public sealed partial class DashboardViewModel
     public event EventHandler? HalaqasRequested;
     public event EventHandler? StudentRegistrationsRequested;
     public event EventHandler? FollowUpRequested;
+    public event EventHandler? QuranReaderRequested;
 
     public string UserName { get; }
     public string RoleLabel { get; }
@@ -42,6 +43,9 @@ public sealed partial class DashboardViewModel
 
         HalaqasRequested?.Invoke(this, EventArgs.Empty);
     }
+
+    [RelayCommand]
+    private void OpenQuranReader() => QuranReaderRequested?.Invoke(this, EventArgs.Empty);
 
     [RelayCommand]
     private void OpenFollowUp()
