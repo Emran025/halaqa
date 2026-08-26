@@ -71,6 +71,9 @@ public sealed partial class DashboardViewModel
     }
 
     [RelayCommand]
+    private void OpenGeneralProfile() => ProfileRequested?.Invoke(this, EventArgs.Empty);
+
+    [RelayCommand]
     private void OpenProfile()
     {
         if (_isStudent)
