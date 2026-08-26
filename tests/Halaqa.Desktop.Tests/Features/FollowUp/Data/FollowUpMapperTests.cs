@@ -63,7 +63,7 @@ public sealed class FollowUpMapperTests
             "active",
             "Asia/Riyadh",
             [CreateDetail()],
-            new AttendancePreferencesDto("Asia/Riyadh", [new WeeklyAvailabilitySlotDto(0, "18:00", "18:30", true)], 30),
+            new AttendancePreferencesDto("Asia/Riyadh", new[] { new WeeklyAvailabilitySlotDto(0, "18:00", "18:30", true) }, 30),
             "2026-08-01",
             "2026-08-31",
             1,

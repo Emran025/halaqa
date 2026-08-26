@@ -4,8 +4,24 @@ using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 
 namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
-public sealed partial class ForgotPasswordViewModel(RequestPasswordResetUseCase requestPasswordResetUseCase) : ObservableObject
+public sealed partial class ForgotPasswordViewModel : ObservableObject
 {
+
+    private readonly RequestPasswordResetUseCase requestPasswordResetUseCase;
+
+
+    public ForgotPasswordViewModel(
+
+        RequestPasswordResetUseCase requestPasswordResetUseCase
+
+    )
+
+    {
+
+        this.requestPasswordResetUseCase = requestPasswordResetUseCase;
+
+    }
+
     [ObservableProperty] private string _email = string.Empty;
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private string? _message;

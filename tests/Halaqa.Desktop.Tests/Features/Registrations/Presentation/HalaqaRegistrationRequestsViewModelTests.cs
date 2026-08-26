@@ -40,7 +40,7 @@ public sealed class HalaqaRegistrationRequestsViewModelTests
         await viewModel.RequestCompletionCommand.ExecuteAsync(null);
 
         Assert.NotNull(repository.CompletionRequest);
-        Assert.Equal(["phone", "country"], repository.CompletionRequest!.RequiredFields);
+        Assert.Equal(new[] { "phone", "country" }, repository.CompletionRequest!.RequiredFields);
         Assert.Equal("يرجى استكمال البيانات", repository.CompletionRequest.Note);
         Assert.Equal(RegistrationState.CompletionRequested, viewModel.SelectedRequest?.State);
     }
@@ -62,7 +62,7 @@ public sealed class HalaqaRegistrationRequestsViewModelTests
             RegistrationState? state = null,
             int page = 1,
             CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([_request], 1, 1, 20, 1)));
+            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(new[] { _request }, 1, 1, 20, 1)));
 
         public Task<Result<RegistrationRequestPage>> ListForHalaqaAsync(
             Guid halaqaId,
@@ -71,7 +71,7 @@ public sealed class HalaqaRegistrationRequestsViewModelTests
             CancellationToken cancellationToken = default)
         {
             ListHalaqaId = halaqaId;
-            return Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([_request], 1, 1, 20, 1)));
+            return Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(new[] { _request }, 1, 1, 20, 1)));
         }
 
         public Task<Result<RegistrationRequestPage>> ListTeacherInboxAsync(
@@ -79,7 +79,7 @@ public sealed class HalaqaRegistrationRequestsViewModelTests
             string? search = null,
             int page = 1,
             CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([_request], 1, 1, 20, 1)));
+            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(new[] { _request }, 1, 1, 20, 1)));
 
         public Task<Result<RegistrationRequest>> AcceptAsync(Guid registrationId, CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<RegistrationRequest>.Success(_request with { State = RegistrationState.Accepted }));

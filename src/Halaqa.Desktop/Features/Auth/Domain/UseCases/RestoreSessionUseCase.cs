@@ -4,8 +4,30 @@ using Halaqa.Desktop.Shared.Domain.Time;
 
 namespace Halaqa.Desktop.Features.Auth.Domain.UseCases;
 
-public sealed class RestoreSessionUseCase(IAuthSessionStore sessionStore, IClock clock)
+public sealed class RestoreSessionUseCase
 {
+
+    private readonly IAuthSessionStore sessionStore;
+
+    private readonly IClock clock;
+
+
+    public RestoreSessionUseCase(
+
+        IAuthSessionStore sessionStore,
+
+        IClock clock
+
+    )
+
+    {
+
+        this.sessionStore = sessionStore;
+
+        this.clock = clock;
+
+    }
+
     public async Task<AuthenticatedUser?> ExecuteAsync(CancellationToken cancellationToken = default)
     {
         var session = await sessionStore.ReadAsync(cancellationToken);

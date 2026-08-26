@@ -6,9 +6,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Registrations.Data.Repositories;
 
-internal sealed class RegistrationRequestRepository(
-    IRegistrationRequestRemoteDataSource remoteDataSource) : IRegistrationRequestRepository
+internal sealed class RegistrationRequestRepository : IRegistrationRequestRepository
 {
+
+    private readonly IRegistrationRequestRemoteDataSource remoteDataSource;
+
+
+    public RegistrationRequestRepository(
+
+        IRegistrationRequestRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<RegistrationRequestPage>> ListMineAsync(
         RegistrationState? state = null,
         int page = 1,

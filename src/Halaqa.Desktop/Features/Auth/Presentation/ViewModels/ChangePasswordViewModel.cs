@@ -4,8 +4,24 @@ using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 
 namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
-public sealed partial class ChangePasswordViewModel(ChangePasswordUseCase changePasswordUseCase) : ObservableObject
+public sealed partial class ChangePasswordViewModel : ObservableObject
 {
+
+    private readonly ChangePasswordUseCase changePasswordUseCase;
+
+
+    public ChangePasswordViewModel(
+
+        ChangePasswordUseCase changePasswordUseCase
+
+    )
+
+    {
+
+        this.changePasswordUseCase = changePasswordUseCase;
+
+    }
+
     [ObservableProperty] private string _currentPassword = string.Empty;
     [ObservableProperty] private string _password = string.Empty;
     [ObservableProperty] private string _passwordConfirmation = string.Empty;

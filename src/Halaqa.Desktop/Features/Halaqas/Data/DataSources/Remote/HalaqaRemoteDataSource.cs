@@ -13,8 +13,24 @@ internal interface IHalaqaRemoteDataSource
     Task<Result<HalaqaResponseDto>> DeactivateAsync(Guid id, CancellationToken cancellationToken = default);
 }
 
-internal sealed class HalaqaRemoteDataSource(IApiClient apiClient) : IHalaqaRemoteDataSource
+internal sealed class HalaqaRemoteDataSource : IHalaqaRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public HalaqaRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<HalaqaCollectionResponseDto>> ListAsync(int page, CancellationToken cancellationToken = default) =>
         apiClient.GetAsync<HalaqaCollectionResponseDto>($"halaqas?page={page}", cancellationToken);
 

@@ -3,8 +3,24 @@ using Halaqa.Desktop.Config.Persistence;
 
 namespace Halaqa.Desktop.Config.Http;
 
-public sealed class BearerTokenHandler(IAuthSessionStore sessionStore) : DelegatingHandler
+public sealed class BearerTokenHandler : DelegatingHandler
 {
+
+    private readonly IAuthSessionStore sessionStore;
+
+
+    public BearerTokenHandler(
+
+        IAuthSessionStore sessionStore
+
+    )
+
+    {
+
+        this.sessionStore = sessionStore;
+
+    }
+
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)

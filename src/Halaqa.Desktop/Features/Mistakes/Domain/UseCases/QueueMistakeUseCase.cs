@@ -4,8 +4,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Mistakes.Domain.UseCases;
 
-public sealed class QueueMistakeUseCase(IMistakeRepository repository)
+public sealed class QueueMistakeUseCase
 {
+
+    private readonly IMistakeRepository repository;
+
+
+    public QueueMistakeUseCase(
+
+        IMistakeRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<PendingMistakeOperation>> ExecuteAsync(
         Guid sessionId,
         Guid taskId,

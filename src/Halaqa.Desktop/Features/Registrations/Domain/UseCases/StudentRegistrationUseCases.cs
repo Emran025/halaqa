@@ -4,8 +4,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Registrations.Domain.UseCases;
 
-public sealed class ListAvailableTeachersUseCase(IStudentRegistrationRepository repository)
+public sealed class ListAvailableTeachersUseCase
 {
+
+    private readonly IStudentRegistrationRepository repository;
+
+
+    public ListAvailableTeachersUseCase(
+
+        IStudentRegistrationRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<AvailableTeacherPage>> ExecuteAsync(
         string? code = null,
         string? search = null,
@@ -27,8 +43,24 @@ public sealed class ListAvailableTeachersUseCase(IStudentRegistrationRepository 
     }
 }
 
-public sealed class GetPublicTeacherUseCase(IStudentRegistrationRepository repository)
+public sealed class GetPublicTeacherUseCase
 {
+
+    private readonly IStudentRegistrationRepository repository;
+
+
+    public GetPublicTeacherUseCase(
+
+        IStudentRegistrationRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<AvailableTeacher>> ExecuteAsync(
         Guid teacherId,
         CancellationToken cancellationToken = default) =>
@@ -39,8 +71,24 @@ public sealed class GetPublicTeacherUseCase(IStudentRegistrationRepository repos
             : repository.GetPublicTeacherAsync(teacherId, cancellationToken);
 }
 
-public sealed class CreateStudentRegistrationRequestUseCase(IStudentRegistrationRepository repository)
+public sealed class CreateStudentRegistrationRequestUseCase
 {
+
+    private readonly IStudentRegistrationRepository repository;
+
+
+    public CreateStudentRegistrationRequestUseCase(
+
+        IStudentRegistrationRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<RegistrationRequest>> ExecuteAsync(
         CreateStudentRegistrationRequestCommand command,
         CancellationToken cancellationToken = default)

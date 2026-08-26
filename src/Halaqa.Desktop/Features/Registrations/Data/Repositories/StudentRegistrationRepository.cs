@@ -7,9 +7,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Registrations.Data.Repositories;
 
-internal sealed class StudentRegistrationRepository(
-    IStudentRegistrationRemoteDataSource remoteDataSource) : IStudentRegistrationRepository
+internal sealed class StudentRegistrationRepository : IStudentRegistrationRepository
 {
+
+    private readonly IStudentRegistrationRemoteDataSource remoteDataSource;
+
+
+    public StudentRegistrationRepository(
+
+        IStudentRegistrationRemoteDataSource remoteDataSource
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+    }
+
     public async Task<Result<AvailableTeacherPage>> ListAvailableTeachersAsync(
         string? code = null,
         string? search = null,

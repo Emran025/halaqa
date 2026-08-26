@@ -27,7 +27,7 @@ public sealed class RegistrationRequestMapperTests
         using var completionDocument = JsonDocument.Parse(completionJson);
         Assert.Equal("لا يتوفر مقعد حالياً", rejectionDocument.RootElement.GetProperty("note").GetString());
         Assert.Equal("يرجى الاستكمال", completionDocument.RootElement.GetProperty("note").GetString());
-        Assert.Equal(["phone", "country"], completionDocument.RootElement.GetProperty("required_fields").EnumerateArray().Select(item => item.GetString()).ToArray());
+        Assert.Equal(new[] { "phone", "country" }, completionDocument.RootElement.GetProperty("required_fields").EnumerateArray().Select(item => item.GetString()).ToArray());
     }
 
     [Fact]

@@ -18,8 +18,24 @@ internal interface IMistakeRemoteDataSource
     Task<Result> CreateAsync(MistakeDraft draft, CancellationToken cancellationToken = default);
 }
 
-internal sealed class MistakeRemoteDataSource(IApiClient apiClient) : IMistakeRemoteDataSource
+internal sealed class MistakeRemoteDataSource : IMistakeRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public MistakeRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result> CreateAsync(MistakeDraft draft, CancellationToken cancellationToken = default)
     {
         var request = new CreateMistakeRequestDto(

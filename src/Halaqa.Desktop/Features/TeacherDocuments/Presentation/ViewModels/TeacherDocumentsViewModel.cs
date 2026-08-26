@@ -25,7 +25,7 @@ public sealed partial class TeacherDocumentsViewModel : ObservableObject
         _deleteTeacherDocumentUseCase = deleteTeacherDocumentUseCase;
     }
 
-    public ObservableCollection<TeacherDocument> Documents { get; } = [];
+    public ObservableCollection<TeacherDocument> Documents { get; } = new();
 
     [ObservableProperty] private string _name = string.Empty;
     [ObservableProperty] private string _certificateType = string.Empty;

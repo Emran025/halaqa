@@ -4,8 +4,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Quran.Domain.UseCases;
 
-public sealed class GetQuranPageUseCase(IQuranRepository repository)
+public sealed class GetQuranPageUseCase
 {
+
+    private readonly IQuranRepository repository;
+
+
+    public GetQuranPageUseCase(
+
+        IQuranRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<QuranPage>> ExecuteAsync(
         int editionId,
         int pageNumber,

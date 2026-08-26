@@ -4,8 +4,24 @@ using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 
 namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
-public sealed partial class ResetPasswordViewModel(ResetPasswordUseCase resetPasswordUseCase) : ObservableObject
+public sealed partial class ResetPasswordViewModel : ObservableObject
 {
+
+    private readonly ResetPasswordUseCase resetPasswordUseCase;
+
+
+    public ResetPasswordViewModel(
+
+        ResetPasswordUseCase resetPasswordUseCase
+
+    )
+
+    {
+
+        this.resetPasswordUseCase = resetPasswordUseCase;
+
+    }
+
     [ObservableProperty] private string _email = string.Empty;
     [ObservableProperty] private string _token = string.Empty;
     [ObservableProperty] private string _password = string.Empty;

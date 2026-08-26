@@ -6,8 +6,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
-public sealed partial class TeacherRegistrationViewModel(RegisterTeacherUseCase registerTeacherUseCase) : ObservableObject
+public sealed partial class TeacherRegistrationViewModel : ObservableObject
 {
+
+    private readonly RegisterTeacherUseCase registerTeacherUseCase;
+
+
+    public TeacherRegistrationViewModel(
+
+        RegisterTeacherUseCase registerTeacherUseCase
+
+    )
+
+    {
+
+        this.registerTeacherUseCase = registerTeacherUseCase;
+
+    }
+
     private readonly Guid _clientOperationId = Guid.NewGuid();
 
     [ObservableProperty] private int _step = 1;

@@ -14,7 +14,7 @@ public sealed class StudentRegistrationUseCaseTests
         var repository = new FakeStudentRegistrationRepository();
         var command = CreateValidCommand() with
         {
-            AttendancePreferences = new RegistrationAttendancePreferences("Asia/Riyadh", [], 30)
+            AttendancePreferences = new RegistrationAttendancePreferences("Asia/Riyadh", Array.Empty<RegistrationWeeklyAvailabilitySlot>(), 30)
         };
 
         var result = await new CreateStudentRegistrationRequestUseCase(repository).ExecuteAsync(command);
@@ -90,7 +90,7 @@ public sealed class StudentRegistrationUseCaseTests
             CancellationToken cancellationToken = default)
         {
             ListSearch = search;
-            return Task.FromResult(Result<AvailableTeacherPage>.Success(new AvailableTeacherPage([], 1, 1, 20, 0)));
+            return Task.FromResult(Result<AvailableTeacherPage>.Success(new AvailableTeacherPage(Array.Empty<AvailableTeacher>(), 1, 1, 20, 0)));
         }
 
         public Task<Result<AvailableTeacher>> GetPublicTeacherAsync(Guid teacherId, CancellationToken cancellationToken = default) =>
@@ -113,6 +113,6 @@ public sealed class StudentRegistrationUseCaseTests
         }
 
         private static AvailableTeacher CreateTeacher() => new(
-            Guid.NewGuid(), "المعلم", "CODE", null, RegistrationGender.Male, "السعودية", "الرياض", "إجازة", 5, true, null, 0, []);
+            Guid.NewGuid(), "المعلم", "CODE", null, RegistrationGender.Male, "السعودية", "الرياض", "إجازة", 5, true, null, 0, Array.Empty<PublicHalaqa>());
     }
 }

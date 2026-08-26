@@ -88,7 +88,7 @@ public sealed class FollowUpViewModelTests
             Task.FromResult(Result<AttendancePreferences>.Success(command.Preferences));
 
         public Task<Result<FollowUpItemPage>> ListItemsAsync(FollowUpItemQuery query, CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<FollowUpItemPage>.Success(new FollowUpItemPage([CreateItem(FollowUpItemState.Due)], 1, 1, 20, 1)));
+            Task.FromResult(Result<FollowUpItemPage>.Success(new FollowUpItemPage(new[] { CreateItem(FollowUpItemState.Due) }, 1, 1, 20, 1)));
 
         public Task<Result<FollowUpItem>> CompleteItemAsync(Guid itemId, Guid clientOperationId, CancellationToken cancellationToken = default)
         {

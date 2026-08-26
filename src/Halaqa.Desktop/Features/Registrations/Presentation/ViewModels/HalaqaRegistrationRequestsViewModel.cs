@@ -27,7 +27,7 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
         _requestCompletionUseCase = requestCompletionUseCase;
     }
 
-    public ObservableCollection<RegistrationRequest> Requests { get; } = [];
+    public ObservableCollection<RegistrationRequest> Requests { get; } = new();
     public IReadOnlyList<string> FilterOptions { get; } =
     [
         "",
@@ -286,7 +286,7 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
     }
 
     private IReadOnlyList<string> ParseRequiredFields() => RequiredFields
-        .Split([',', '،', ';', '\n'], StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
+        .Split(new[] { ',', '،', ';', '\n' }, StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries)
         .Distinct(StringComparer.Ordinal)
         .ToArray();
 

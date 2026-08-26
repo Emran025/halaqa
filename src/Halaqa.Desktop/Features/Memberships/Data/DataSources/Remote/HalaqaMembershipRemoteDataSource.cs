@@ -29,8 +29,24 @@ internal interface IHalaqaMembershipRemoteDataSource
         CancellationToken cancellationToken = default);
 }
 
-internal sealed class HalaqaMembershipRemoteDataSource(IApiClient apiClient) : IHalaqaMembershipRemoteDataSource
+internal sealed class HalaqaMembershipRemoteDataSource : IHalaqaMembershipRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public HalaqaMembershipRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<MembershipCollectionResponseDto>> ListAsync(
         Guid halaqaId,
         string? status,

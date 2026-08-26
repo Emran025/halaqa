@@ -6,8 +6,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
-public sealed partial class LoginViewModel(LoginUseCase loginUseCase) : ObservableObject
+public sealed partial class LoginViewModel : ObservableObject
 {
+
+    private readonly LoginUseCase loginUseCase;
+
+
+    public LoginViewModel(
+
+        LoginUseCase loginUseCase
+
+    )
+
+    {
+
+        this.loginUseCase = loginUseCase;
+
+    }
+
     [ObservableProperty]
     private string _email = string.Empty;
 

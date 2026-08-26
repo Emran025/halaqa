@@ -12,7 +12,7 @@ public sealed class RegistrationRequestUseCaseTests
     public async Task RequestCompletion_RejectsEmptyRequiredFieldsBeforeCallingRepository()
     {
         var repository = new FakeRegistrationRepository();
-        var command = new RequestRegistrationCompletionCommand(Guid.NewGuid(), [], "يرجى استكمال البيانات");
+        var command = new RequestRegistrationCompletionCommand(Guid.NewGuid(), Array.Empty<string>(), "يرجى استكمال البيانات");
 
         var result = await new RequestRegistrationCompletionUseCase(repository).ExecuteAsync(command);
 
@@ -84,7 +84,7 @@ public sealed class RegistrationRequestUseCaseTests
             CancellationToken cancellationToken = default)
         {
             MineListPage = page;
-            return Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([], 1, 1, 20, 0)));
+            return Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(Array.Empty<RegistrationRequest>(), 1, 1, 20, 0)));
         }
 
         public Task<Result<RegistrationRequestPage>> ListForHalaqaAsync(
@@ -92,14 +92,14 @@ public sealed class RegistrationRequestUseCaseTests
             RegistrationState? state = null,
             int page = 1,
             CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([], 1, 1, 20, 0)));
+            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(Array.Empty<RegistrationRequest>(), 1, 1, 20, 0)));
 
         public Task<Result<RegistrationRequestPage>> ListTeacherInboxAsync(
             RegistrationState? state = null,
             string? search = null,
             int page = 1,
             CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([], 1, 1, 20, 0)));
+            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(Array.Empty<RegistrationRequest>(), 1, 1, 20, 0)));
 
         public Task<Result<RegistrationRequest>> AcceptAsync(Guid registrationId, CancellationToken cancellationToken = default)
         {

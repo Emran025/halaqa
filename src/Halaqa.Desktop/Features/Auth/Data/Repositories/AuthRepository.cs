@@ -8,10 +8,30 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Auth.Data.Repositories;
 
-internal sealed class AuthRepository(
-    IAuthRemoteDataSource remoteDataSource,
-    IAuthSessionStore sessionStore) : IAuthRepository
+internal sealed class AuthRepository : IAuthRepository
 {
+
+    private readonly IAuthRemoteDataSource remoteDataSource;
+
+    private readonly IAuthSessionStore sessionStore;
+
+
+    public AuthRepository(
+
+        IAuthRemoteDataSource remoteDataSource,
+
+        IAuthSessionStore sessionStore
+
+    )
+
+    {
+
+        this.remoteDataSource = remoteDataSource;
+
+        this.sessionStore = sessionStore;
+
+    }
+
     public async Task<Result<AuthenticatedUser>> LoginAsync(string email, string password, CancellationToken cancellationToken = default) =>
         await PersistAuthenticationAsync(
             await remoteDataSource.LoginAsync(new LoginRequestDto(email, password), cancellationToken),

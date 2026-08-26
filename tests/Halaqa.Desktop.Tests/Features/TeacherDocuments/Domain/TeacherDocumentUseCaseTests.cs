@@ -60,7 +60,7 @@ public sealed class TeacherDocumentUseCaseTests
         public int? LastDeletedId { get; private set; }
 
         public Task<Result<TeacherDocumentPage>> ListAsync(int page = 1, CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<TeacherDocumentPage>.Success(new TeacherDocumentPage([], 1, 1, 20, 0)));
+            Task.FromResult(Result<TeacherDocumentPage>.Success(new TeacherDocumentPage(Array.Empty<TeacherDocument>(), 1, 1, 20, 0)));
 
         public Task<Result<TeacherDocument>> CreateAsync(
             CreateTeacherDocumentCommand command,

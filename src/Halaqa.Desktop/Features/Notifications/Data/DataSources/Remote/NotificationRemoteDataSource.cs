@@ -12,8 +12,24 @@ internal interface INotificationRemoteDataSource
     Task<Result> MarkAllReadAsync(CancellationToken cancellationToken = default);
 }
 
-internal sealed class NotificationRemoteDataSource(IApiClient apiClient) : INotificationRemoteDataSource
+internal sealed class NotificationRemoteDataSource : INotificationRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public NotificationRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<NotificationCollectionResponseDto>> ListAsync(NotificationQuery query, CancellationToken cancellationToken = default) =>
         apiClient.GetAsync<NotificationCollectionResponseDto>(
             $"notifications?unread_only={query.UnreadOnly.ToString().ToLowerInvariant()}&page={query.Page}&per_page={query.PerPage}",

@@ -56,13 +56,13 @@ public sealed class TeacherApplicationInboxViewModelTests
         {
             InboxState = state;
             InboxSearch = string.IsNullOrWhiteSpace(search) ? null : search.Trim();
-            return Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([_request], 1, 1, 20, 1)));
+            return Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(new[] { _request }, 1, 1, 20, 1)));
         }
 
         public Task<Result<RegistrationRequestPage>> ListMineAsync(RegistrationState? state = null, int page = 1, CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([], 1, 1, 20, 0)));
+            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(Array.Empty<RegistrationRequest>(), 1, 1, 20, 0)));
         public Task<Result<RegistrationRequestPage>> ListForHalaqaAsync(Guid halaqaId, RegistrationState? state = null, int page = 1, CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage([], 1, 1, 20, 0)));
+            Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(Array.Empty<RegistrationRequest>(), 1, 1, 20, 0)));
         public Task<Result<RegistrationRequest>> AcceptAsync(Guid registrationId, CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<RegistrationRequest>.Success(_request with { State = RegistrationState.Accepted }));
         public Task<Result<RegistrationRequest>> RejectAsync(RejectRegistrationRequestCommand command, CancellationToken cancellationToken = default) =>

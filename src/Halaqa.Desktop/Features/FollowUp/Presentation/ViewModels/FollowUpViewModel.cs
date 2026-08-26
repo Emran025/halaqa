@@ -42,8 +42,8 @@ public sealed partial class FollowUpViewModel : ObservableObject
         _listTrackingsUseCase = listTrackingsUseCase;
     }
 
-    public ObservableCollection<FollowUpItem> Items { get; } = [];
-    public ObservableCollection<TrackingItem> Trackings { get; } = [];
+    public ObservableCollection<FollowUpItem> Items { get; } = new();
+    public ObservableCollection<TrackingItem> Trackings { get; } = new();
     public IReadOnlyList<FollowUpFrequency> FrequencyOptions { get; } = Enum.GetValues<FollowUpFrequency>();
     public IReadOnlyList<FollowUpTaskType> TaskTypeOptions { get; } = Enum.GetValues<FollowUpTaskType>();
     public IReadOnlyList<FollowUpUnit> UnitOptions { get; } = Enum.GetValues<FollowUpUnit>();
@@ -403,7 +403,7 @@ public sealed partial class FollowUpViewModel : ObservableObject
             return false;
         }
 
-        command = new UpdateAvailabilityCommand(StudentId, new AttendancePreferences(Timezone.Trim(), [new WeeklyAvailabilitySlot(day, from, to, AvailabilityPreferred)], duration));
+        command = new UpdateAvailabilityCommand(StudentId, new AttendancePreferences(Timezone.Trim(), new[] { new WeeklyAvailabilitySlot(day, from, to, AvailabilityPreferred) }, duration));
         return true;
     }
 

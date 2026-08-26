@@ -61,7 +61,7 @@ public sealed class StudentTeacherDirectoryViewModelTests
             string? search = null,
             int page = 1,
             CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<AvailableTeacherPage>.Success(new AvailableTeacherPage([_teacher], 1, 1, 20, 1)));
+            Task.FromResult(Result<AvailableTeacherPage>.Success(new AvailableTeacherPage(new[] { _teacher }, 1, 1, 20, 1)));
 
         public Task<Result<AvailableTeacher>> GetPublicTeacherAsync(Guid teacherId, CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<AvailableTeacher>.Success(_teacher));

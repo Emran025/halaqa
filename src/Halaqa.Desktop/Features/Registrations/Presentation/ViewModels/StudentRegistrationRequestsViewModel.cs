@@ -20,7 +20,7 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
         _cancelRequestUseCase = cancelRequestUseCase;
     }
 
-    public ObservableCollection<RegistrationRequest> Requests { get; } = [];
+    public ObservableCollection<RegistrationRequest> Requests { get; } = new();
     public IReadOnlyList<string> FilterOptions { get; } =
     [
         "",

@@ -98,13 +98,13 @@ public sealed partial class StudentProfileViewModel : ObservableObject
         PlanDetails.CollectionChanged += OnEditorCollectionChanged;
     }
 
-    public ObservableCollection<StudentWeeklySlotEditor> WeeklySlots { get; } = [];
-    public ObservableCollection<StudentPlanDetailEditor> PlanDetails { get; } = [];
-    public IReadOnlyList<string> GenderOptions { get; } = ["male", "female"];
-    public IReadOnlyList<string> FrequencyOptions { get; } = ["daily", "onceAWeek", "twiceAWeek", "thriceAWeek"];
-    public IReadOnlyList<string> TaskTypeOptions { get; } = ["memorization", "review", "recitation"];
-    public IReadOnlyList<string> PlanUnitOptions { get; } = ["juz", "hizb", "halfHizb", "quarterHizb", "page"];
-    public IReadOnlyList<int> WeekDays { get; } = [0, 1, 2, 3, 4, 5, 6];
+    public ObservableCollection<StudentWeeklySlotEditor> WeeklySlots { get; } = new();
+    public ObservableCollection<StudentPlanDetailEditor> PlanDetails { get; } = new();
+    public IReadOnlyList<string> GenderOptions { get; } = new[] { "male", "female" };
+    public IReadOnlyList<string> FrequencyOptions { get; } = new[] { "daily", "onceAWeek", "twiceAWeek", "thriceAWeek" };
+    public IReadOnlyList<string> TaskTypeOptions { get; } = new[] { "memorization", "review", "recitation" };
+    public IReadOnlyList<string> PlanUnitOptions { get; } = new[] { "juz", "hizb", "halfHizb", "quarterHizb", "page" };
+    public IReadOnlyList<int> WeekDays { get; } = new[] { 0, 1, 2, 3, 4, 5, 6 };
 
     [ObservableProperty] private string _name = string.Empty;
     [ObservableProperty] private string _email = string.Empty;

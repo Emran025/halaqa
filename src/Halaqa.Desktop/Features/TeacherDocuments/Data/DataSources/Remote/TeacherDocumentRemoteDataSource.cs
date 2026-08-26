@@ -19,8 +19,24 @@ internal interface ITeacherDocumentRemoteDataSource
     Task<Result> DeleteAsync(int documentId, CancellationToken cancellationToken = default);
 }
 
-internal sealed class TeacherDocumentRemoteDataSource(IApiClient apiClient) : ITeacherDocumentRemoteDataSource
+internal sealed class TeacherDocumentRemoteDataSource : ITeacherDocumentRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public TeacherDocumentRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<TeacherDocumentCollectionResponseDto>> ListAsync(
         int page,
         CancellationToken cancellationToken = default) =>

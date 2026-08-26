@@ -4,8 +4,24 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Registrations.Domain.UseCases;
 
-public sealed class ListMyRegistrationRequestsUseCase(IRegistrationRequestRepository repository)
+public sealed class ListMyRegistrationRequestsUseCase
 {
+
+    private readonly IRegistrationRequestRepository repository;
+
+
+    public ListMyRegistrationRequestsUseCase(
+
+        IRegistrationRequestRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<RegistrationRequestPage>> ExecuteAsync(
         RegistrationState? state = null,
         int page = 1,
@@ -15,8 +31,24 @@ public sealed class ListMyRegistrationRequestsUseCase(IRegistrationRequestReposi
             : repository.ListMineAsync(state, page, cancellationToken);
 }
 
-public sealed class ListHalaqaRegistrationRequestsUseCase(IRegistrationRequestRepository repository)
+public sealed class ListHalaqaRegistrationRequestsUseCase
 {
+
+    private readonly IRegistrationRequestRepository repository;
+
+
+    public ListHalaqaRegistrationRequestsUseCase(
+
+        IRegistrationRequestRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<RegistrationRequestPage>> ExecuteAsync(
         Guid halaqaId,
         RegistrationState? state = null,
@@ -27,8 +59,24 @@ public sealed class ListHalaqaRegistrationRequestsUseCase(IRegistrationRequestRe
             : repository.ListForHalaqaAsync(halaqaId, state, page, cancellationToken);
 }
 
-public sealed class ListTeacherApplicationInboxUseCase(IRegistrationRequestRepository repository)
+public sealed class ListTeacherApplicationInboxUseCase
 {
+
+    private readonly IRegistrationRequestRepository repository;
+
+
+    public ListTeacherApplicationInboxUseCase(
+
+        IRegistrationRequestRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<RegistrationRequestPage>> ExecuteAsync(
         RegistrationState? state = null,
         string? search = null,
@@ -50,8 +98,24 @@ public sealed class ListTeacherApplicationInboxUseCase(IRegistrationRequestRepos
     }
 }
 
-public sealed class AcceptRegistrationRequestUseCase(IRegistrationRequestRepository repository)
+public sealed class AcceptRegistrationRequestUseCase
 {
+
+    private readonly IRegistrationRequestRepository repository;
+
+
+    public AcceptRegistrationRequestUseCase(
+
+        IRegistrationRequestRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<RegistrationRequest>> ExecuteAsync(
         Guid registrationId,
         CancellationToken cancellationToken = default) =>
@@ -60,8 +124,24 @@ public sealed class AcceptRegistrationRequestUseCase(IRegistrationRequestReposit
             : repository.AcceptAsync(registrationId, cancellationToken);
 }
 
-public sealed class RejectRegistrationRequestUseCase(IRegistrationRequestRepository repository)
+public sealed class RejectRegistrationRequestUseCase
 {
+
+    private readonly IRegistrationRequestRepository repository;
+
+
+    public RejectRegistrationRequestUseCase(
+
+        IRegistrationRequestRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<RegistrationRequest>> ExecuteAsync(
         RejectRegistrationRequestCommand command,
         CancellationToken cancellationToken = default)
@@ -79,8 +159,24 @@ public sealed class RejectRegistrationRequestUseCase(IRegistrationRequestReposit
     }
 }
 
-public sealed class CancelRegistrationRequestUseCase(IRegistrationRequestRepository repository)
+public sealed class CancelRegistrationRequestUseCase
 {
+
+    private readonly IRegistrationRequestRepository repository;
+
+
+    public CancelRegistrationRequestUseCase(
+
+        IRegistrationRequestRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result> ExecuteAsync(
         Guid registrationId,
         CancellationToken cancellationToken = default) =>
@@ -89,8 +185,24 @@ public sealed class CancelRegistrationRequestUseCase(IRegistrationRequestReposit
             : repository.CancelAsync(registrationId, cancellationToken);
 }
 
-public sealed class RequestRegistrationCompletionUseCase(IRegistrationRequestRepository repository)
+public sealed class RequestRegistrationCompletionUseCase
 {
+
+    private readonly IRegistrationRequestRepository repository;
+
+
+    public RequestRegistrationCompletionUseCase(
+
+        IRegistrationRequestRepository repository
+
+    )
+
+    {
+
+        this.repository = repository;
+
+    }
+
     public Task<Result<RegistrationRequest>> ExecuteAsync(
         RequestRegistrationCompletionCommand command,
         CancellationToken cancellationToken = default)

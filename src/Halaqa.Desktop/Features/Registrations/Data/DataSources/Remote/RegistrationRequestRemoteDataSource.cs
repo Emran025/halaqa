@@ -42,8 +42,24 @@ internal interface IRegistrationRequestRemoteDataSource
         CancellationToken cancellationToken = default);
 }
 
-internal sealed class RegistrationRequestRemoteDataSource(IApiClient apiClient) : IRegistrationRequestRemoteDataSource
+internal sealed class RegistrationRequestRemoteDataSource : IRegistrationRequestRemoteDataSource
 {
+
+    private readonly IApiClient apiClient;
+
+
+    public RegistrationRequestRemoteDataSource(
+
+        IApiClient apiClient
+
+    )
+
+    {
+
+        this.apiClient = apiClient;
+
+    }
+
     public Task<Result<RegistrationCollectionResponseDto>> ListMineAsync(
         string? state,
         int page,
