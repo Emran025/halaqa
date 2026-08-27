@@ -1,0 +1,65 @@
+<UserControl x:Class="Halaqa.Desktop.Features.Sessions.Presentation.Views.SessionsView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             FlowDirection="RightToLeft">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36" MaxWidth="1040">
+            <DockPanel Margin="0,0,0,20">
+                <Button Content="رجوع" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                <StackPanel>
+                    <TextBlock Text="جلساتي" Style="{StaticResource PageTitle}" />
+                    <TextBlock Text="تعرض هذه القائمة الجلسات التي يسمح الخادم للحساب الحالي برؤيتها." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                </StackPanel>
+            </DockPanel>
+
+            <Border Background="#0D155EEF" Padding="14" CornerRadius="10" Margin="0,0,0,16">
+                <DockPanel>
+                    <materialDesign:PackIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0" />
+                    <TextBlock Text="القائمة تقرأ بيانات الجلسة الرسمية فقط. لا يبدأ هذا العميل اتصال WebRTC أو وسائط أو relay؛ قيمة direct_p2p_only معروضة كمعلومة من الخادم." TextWrapping="Wrap" />
+                </DockPanel>
+            </Border>
+
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="20" CornerRadius="12" Margin="0,0,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <ComboBox ItemsSource="{Binding StateOptions}" SelectedItem="{Binding StateFilter}" materialDesign:HintAssist.Hint="الحالة" />
+                    <TextBox Grid.Column="1" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="من YYYY-MM-DD HH:mm +03:00" Margin="8,0" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Column="2" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="إلى YYYY-MM-DD HH:mm +03:00" Margin="8,0" FlowDirection="LeftToRight" />
+                    <Button Grid.Column="3" Content="تطبيق" Command="{Binding ApplyFilterCommand}" Margin="0,0,0,0" />
+                </Grid>
+            </Border>
+
+            <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,0,0,12" />
+            <ListBox ItemsSource="{Binding Sessions}" MinHeight="190" BorderThickness="0" Background="Transparent">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding TaskType}" Style="{StaticResource SectionTitle}" />
+                                    <TextBlock Text="{Binding Teacher.Name, StringFormat=المعلم: {0}}" Style="{StaticResource BodyMuted}" />
+                                    <TextBlock Text="{Binding Student.Name, StringFormat=الطالب: {0}}" Style="{StaticResource BodyMuted}" />
+                                    <TextBlock Text="{Binding ScheduledAt, StringFormat=الموعد: {0:g}}" Style="{StaticResource CaptionText}" />
+                                    <TextBlock Text="{Binding EndReason, StringFormat=سبب الإنهاء: {0}}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
+                                    <TextBlock Text="{Binding DirectP2POnly, StringFormat=اتصال مباشر فقط حسب الخادم: {0}}" Style="{StaticResource CaptionText}" />
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="#0D155EEF" Padding="10,6" CornerRadius="8" VerticalAlignment="Top">
+                                    <TextBlock Text="{Binding State}" FontWeight="SemiBold" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,12,0,0">
+                <Button Content="السابق" Command="{Binding LoadPreviousPageCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                <TextBlock Text="{Binding CurrentPage, StringFormat=صفحة {0}}" VerticalAlignment="Center" Margin="12,0" />
+                <TextBlock Text="{Binding Total, StringFormat=من إجمالي {0} جلسة}" VerticalAlignment="Center" Margin="0,0,12,0" Style="{StaticResource BodyMuted}" />
+                <Button Content="التالي" Command="{Binding LoadNextPageCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+            </StackPanel>
+            <ProgressBar IsIndeterminate="True" Height="3" Margin="0,16,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

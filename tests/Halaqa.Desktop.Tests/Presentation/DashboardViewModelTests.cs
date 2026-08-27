@@ -28,6 +28,25 @@ public sealed class DashboardViewModelTests
     [Theory]
     [InlineData(UserRole.Student)]
     [InlineData(UserRole.Teacher)]
+    public void OpenSessions_RaisesSessionsEventForEachRole(UserRole role)
+    {
+        var viewModel = new DashboardViewModel(new AuthUser(
+            Guid.NewGuid(),
+            role,
+            "مستخدم اختبار",
+            "user@example.test",
+            "active"));
+        var raised = false;
+        viewModel.SessionsRequested += (_, _) => raised = true;
+
+        viewModel.OpenSessionsCommand.Execute(null);
+
+        Assert.True(raised);
+    }
+
+    [Theory]
+    [InlineData(UserRole.Student)]
+    [InlineData(UserRole.Teacher)]
     public void OpenPasswordChange_RaisesPasswordChangeEventForEachRole(UserRole role)
     {
         var viewModel = new DashboardViewModel(new AuthUser(

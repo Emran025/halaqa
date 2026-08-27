@@ -43,6 +43,9 @@
         <DataTemplate DataType="{x:Type authVm:ChangePasswordViewModel}">
             <authViews:ChangePasswordView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type sessionsVm:SessionsViewModel}">
+            <sessionsViews:SessionsView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:DashboardViewModel}">
             <local:DashboardView />
         </DataTemplate>
