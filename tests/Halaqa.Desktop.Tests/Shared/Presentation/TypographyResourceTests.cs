@@ -1,5 +1,6 @@
 using System.Threading;
 using System.Windows;
+using System.Windows.Media;
 using Xunit;
 
 namespace Halaqa.Desktop.Tests.Shared.Presentation;
@@ -34,6 +35,6 @@ public sealed class TypographyResourceTests
         Assert.NotNull(fontFamily);
         Assert.Equal(
             "pack://application:,,,/Assets/Fonts/UthmanicHafs_V20.ttf#KFGQPC HAFS Uthmanic Script",
-            fontFamily.Source);
+            fontFamily.ToString());
     }
 }
