@@ -25,6 +25,25 @@ public sealed class DashboardViewModelTests
         Assert.True(raised);
     }
 
+    [Theory]
+    [InlineData(UserRole.Student)]
+    [InlineData(UserRole.Teacher)]
+    public void OpenPasswordChange_RaisesPasswordChangeEventForEachRole(UserRole role)
+    {
+        var viewModel = new DashboardViewModel(new AuthUser(
+            Guid.NewGuid(),
+            role,
+            "مستخدم اختبار",
+            "user@example.test",
+            "active"));
+        var raised = false;
+        viewModel.PasswordChangeRequested += (_, _) => raised = true;
+
+        viewModel.OpenPasswordChangeCommand.Execute(null);
+
+        Assert.True(raised);
+    }
+
     [Fact]
     public void OpenProfile_KeepsStudentSpecializedProfileRoute()
     {

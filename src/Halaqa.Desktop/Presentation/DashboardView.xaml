@@ -58,6 +58,17 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
+                    <materialDesign:PackIcon Kind="LockReset" Foreground="{StaticResource AppWarningBrush}" Width="28" Height="28" />
+                    <TextBlock Text="أمان الحساب" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
+                    <TextBlock Text="غيّر كلمة المرور الحالية من داخل حسابك. تُرسل العملية إلى الخادم ولا تُحفظ كلمة المرور محلياً." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                    <Button Content="تغيير كلمة المرور"
+                            Command="{Binding OpenPasswordChangeCommand}"
+                            HorizontalAlignment="Right"
+                            Margin="0,16,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
+                <StackPanel>
                     <materialDesign:PackIcon Kind="AccountMultipleCheckOutline" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28" />
                     <TextBlock Text="طلبات الطلاب" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="راجع الملخصات العامة للمتقدمين واتخذ القرار المعلن بعد المراجعة." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />

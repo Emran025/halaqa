@@ -21,6 +21,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly TeacherRegistrationViewModel _teacherRegistrationViewModel;
     private readonly ForgotPasswordViewModel _forgotPasswordViewModel;
     private readonly ResetPasswordViewModel _resetPasswordViewModel;
+    private readonly ChangePasswordViewModel _changePasswordViewModel;
     private readonly GeneralProfileViewModel _generalProfileViewModel;
     private readonly StudentProfileViewModel _studentProfileViewModel;
     private readonly TeacherProfileViewModel _teacherProfileViewModel;
@@ -46,6 +47,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         TeacherRegistrationViewModel teacherRegistrationViewModel,
         ForgotPasswordViewModel forgotPasswordViewModel,
         ResetPasswordViewModel resetPasswordViewModel,
+        ChangePasswordViewModel changePasswordViewModel,
         GeneralProfileViewModel generalProfileViewModel,
         StudentProfileViewModel studentProfileViewModel,
         TeacherProfileViewModel teacherProfileViewModel,
@@ -66,6 +68,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _teacherRegistrationViewModel = teacherRegistrationViewModel;
         _forgotPasswordViewModel = forgotPasswordViewModel;
         _resetPasswordViewModel = resetPasswordViewModel;
+        _changePasswordViewModel = changePasswordViewModel;
         _generalProfileViewModel = generalProfileViewModel;
         _studentProfileViewModel = studentProfileViewModel;
         _teacherProfileViewModel = teacherProfileViewModel;
@@ -90,6 +93,7 @@ public sealed partial class MainShellViewModel : ObservableObject
             _resetPasswordViewModel.Email = email;
             CurrentPage = _resetPasswordViewModel;
         };
+        _changePasswordViewModel.BackRequested += (_, _) => ShowDashboard();
         _studentRegistrationViewModel.Registered += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
         _teacherRegistrationViewModel.Registered += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
         _generalProfileViewModel.BackRequested += (_, _) => ShowDashboard();
@@ -149,7 +153,14 @@ public sealed partial class MainShellViewModel : ObservableObject
         dashboardViewModel.FollowUpRequested += async (_, _) => await ShowFollowUpAsync();
         dashboardViewModel.QuranReaderRequested += async (_, _) => await ShowQuranReaderAsync();
         dashboardViewModel.NotificationsRequested += async (_, _) => await ShowNotificationsAsync();
+        dashboardViewModel.PasswordChangeRequested += (_, _) => ShowChangePassword();
         CurrentPage = dashboardViewModel;
+    }
+
+    private void ShowChangePassword()
+    {
+        _changePasswordViewModel.Initialize();
+        CurrentPage = _changePasswordViewModel;
     }
 
     private async Task ShowProfileAsync()
