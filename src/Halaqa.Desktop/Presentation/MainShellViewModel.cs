@@ -37,6 +37,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly QuranReaderViewModel _quranReaderViewModel;
     private readonly NotificationsViewModel _notificationsViewModel;
     private readonly SessionsViewModel _sessionsViewModel;
+    private readonly SessionTasksViewModel _sessionTasksViewModel;
     private readonly RestoreSessionUseCase _restoreSessionUseCase;
     private AuthenticatedUser? _authenticatedUser;
 
@@ -64,6 +65,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         QuranReaderViewModel quranReaderViewModel,
         NotificationsViewModel notificationsViewModel,
         SessionsViewModel sessionsViewModel,
+        SessionTasksViewModel sessionTasksViewModel,
         RestoreSessionUseCase restoreSessionUseCase)
     {
         _loginViewModel = loginViewModel;
@@ -86,6 +88,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _quranReaderViewModel = quranReaderViewModel;
         _notificationsViewModel = notificationsViewModel;
         _sessionsViewModel = sessionsViewModel;
+        _sessionTasksViewModel = sessionTasksViewModel;
         _restoreSessionUseCase = restoreSessionUseCase;
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
@@ -121,6 +124,8 @@ public sealed partial class MainShellViewModel : ObservableObject
         _quranReaderViewModel.BackRequested += (_, _) => ShowDashboard();
         _notificationsViewModel.BackRequested += (_, _) => ShowDashboard();
         _sessionsViewModel.BackRequested += (_, _) => ShowDashboard();
+        _sessionsViewModel.TasksRequested += async (_, session) => await ShowSessionTasksAsync(session);
+        _sessionTasksViewModel.BackRequested += (_, _) => CurrentPage = _sessionsViewModel;
 
         CurrentPage = _loginViewModel;
     }
@@ -223,6 +228,13 @@ public sealed partial class MainShellViewModel : ObservableObject
         _sessionsViewModel.Initialize();
         CurrentPage = _sessionsViewModel;
         await _sessionsViewModel.LoadCommand.ExecuteAsync(null);
+    }
+
+    private async Task ShowSessionTasksAsync(Halaqa.Desktop.Features.Sessions.Domain.Entities.SessionListItem session)
+    {
+        _sessionTasksViewModel.Initialize(session);
+        CurrentPage = _sessionTasksViewModel;
+        await _sessionTasksViewModel.LoadCommand.ExecuteAsync(null);
     }
 
     private async Task ShowQuranReaderAsync()

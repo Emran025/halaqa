@@ -1,0 +1,25 @@
+using Halaqa.Desktop.Features.Sessions.Data.DataSources.Remote;
+using Halaqa.Desktop.Features.Sessions.Data.Mappers;
+using Halaqa.Desktop.Features.Sessions.Domain.Entities;
+using Halaqa.Desktop.Features.Sessions.Domain.Repositories;
+using Halaqa.Desktop.Shared.Domain.Common;
+
+namespace Halaqa.Desktop.Features.Sessions.Data.Repositories;
+
+internal sealed class SessionTaskDirectoryRepository : ISessionTaskDirectoryRepository
+{
+    private readonly ISessionTaskDirectoryRemoteDataSource remoteDataSource;
+
+    public SessionTaskDirectoryRepository(ISessionTaskDirectoryRemoteDataSource remoteDataSource)
+    {
+        this.remoteDataSource = remoteDataSource;
+    }
+
+    public async Task<Result<SessionTaskPage>> ListAsync(Guid sessionId, CancellationToken cancellationToken = default)
+    {
+        var result = await remoteDataSource.ListAsync(sessionId, cancellationToken);
+        return result.IsSuccess && result.Value is not null
+            ? Result<SessionTaskPage>.Success(SessionTaskDirectoryMapper.ToDomain(result.Value))
+            : Result<SessionTaskPage>.Failure(result.Error ?? new AppError(AppErrorKind.Unknown, "تعذر تحميل مهام الجلسة."));
+    }
+}

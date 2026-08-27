@@ -14,13 +14,17 @@ public static class SessionsFeatureModule
     {
         services.AddSingleton<ILiveSessionRemoteDataSource, LiveSessionRemoteDataSource>();
         services.AddSingleton<ISessionDirectoryRemoteDataSource, SessionDirectoryRemoteDataSource>();
+        services.AddSingleton<ISessionTaskDirectoryRemoteDataSource, SessionTaskDirectoryRemoteDataSource>();
         services.AddSingleton<ILiveSessionRepository, LiveSessionRepository>();
         services.AddSingleton<ISessionDirectoryRepository, SessionDirectoryRepository>();
+        services.AddSingleton<ISessionTaskDirectoryRepository, SessionTaskDirectoryRepository>();
         services.AddSingleton<PrepareLiveSessionUseCase>();
         services.AddSingleton<SaveOfficialMushafStateUseCase>();
         services.AddSingleton<ListSessionsUseCase>();
+        services.AddSingleton<ListSessionTasksUseCase>();
         services.AddTransient<LiveSessionStore>();
         services.AddTransient<SessionsViewModel>();
+        services.AddTransient<SessionTasksViewModel>();
         return services;
     }
 }

@@ -46,6 +46,9 @@
         <DataTemplate DataType="{x:Type sessionsVm:SessionsViewModel}">
             <sessionsViews:SessionsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type sessionsVm:SessionTasksViewModel}">
+            <sessionsViews:SessionTasksView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type local:DashboardViewModel}">
             <local:DashboardView />
         </DataTemplate>

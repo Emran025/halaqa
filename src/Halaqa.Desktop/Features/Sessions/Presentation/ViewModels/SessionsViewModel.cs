@@ -36,6 +36,7 @@ public sealed partial class SessionsViewModel : ObservableObject
         "rejected"
     };
 
+    [ObservableProperty] private SessionListItem? _selectedSession;
     [ObservableProperty] private string _stateFilter = string.Empty;
     [ObservableProperty] private string? _from;
     [ObservableProperty] private string? _to;
@@ -47,10 +48,12 @@ public sealed partial class SessionsViewModel : ObservableObject
     [ObservableProperty] private string? _message;
 
     public event EventHandler? BackRequested;
+    public event EventHandler<SessionListItem>? TasksRequested;
 
     public void Initialize()
     {
         Sessions.Clear();
+        SelectedSession = null;
         StateFilter = string.Empty;
         From = null;
         To = null;
@@ -72,6 +75,15 @@ public sealed partial class SessionsViewModel : ObservableObject
 
     [RelayCommand(CanExecute = nameof(CanLoadNext))]
     private async Task LoadNextPageAsync() => await LoadPageAsync(CurrentPage + 1);
+
+    [RelayCommand(CanExecute = nameof(CanOpenTasks))]
+    private void OpenTasks()
+    {
+        if (SelectedSession is not null)
+        {
+            TasksRequested?.Invoke(this, SelectedSession);
+        }
+    }
 
     [RelayCommand]
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
@@ -103,6 +115,7 @@ public sealed partial class SessionsViewModel : ObservableObject
             CurrentPage = result.Value.CurrentPage;
             LastPage = result.Value.LastPage;
             Total = result.Value.Total;
+            SelectedSession = Sessions.FirstOrDefault();
             if (Sessions.Count == 0)
             {
                 Message = "لا توجد جلسات مطابقة للمرشحات الحالية.";
@@ -169,6 +182,7 @@ public sealed partial class SessionsViewModel : ObservableObject
     }
 
     private bool CanLoad() => !IsBusy;
+    private bool CanOpenTasks() => CanLoad() && SelectedSession is not null;
     private bool CanLoadPrevious() => CanLoad() && CurrentPage > 1;
     private bool CanLoadNext() => CanLoad() && CurrentPage < LastPage;
 
@@ -194,7 +208,10 @@ public sealed partial class SessionsViewModel : ObservableObject
     {
         LoadCommand.NotifyCanExecuteChanged();
         ApplyFilterCommand.NotifyCanExecuteChanged();
+        OpenTasksCommand.NotifyCanExecuteChanged();
         LoadPreviousPageCommand.NotifyCanExecuteChanged();
         LoadNextPageCommand.NotifyCanExecuteChanged();
     }
+
+    partial void OnSelectedSessionChanged(SessionListItem? value) => OpenTasksCommand.NotifyCanExecuteChanged();
 }

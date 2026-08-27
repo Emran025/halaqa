@@ -31,7 +31,11 @@
             </Border>
 
             <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,0,0,12" />
-            <ListBox ItemsSource="{Binding Sessions}" MinHeight="190" BorderThickness="0" Background="Transparent">
+            <DockPanel Margin="0,0,0,10">
+                <TextBlock Text="اختر جلسة ثم اعرض مهامها الرسمية." Style="{StaticResource BodyMuted}" />
+                <Button Content="عرض المهام" Command="{Binding OpenTasksCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
+            </DockPanel>
+            <ListBox ItemsSource="{Binding Sessions}" SelectedItem="{Binding SelectedSession}" MinHeight="190" BorderThickness="0" Background="Transparent">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
                         <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,0,0,10">
