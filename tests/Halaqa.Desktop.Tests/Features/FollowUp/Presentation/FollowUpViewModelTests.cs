@@ -30,6 +30,60 @@ public sealed class FollowUpViewModelTests
     }
 
     [Fact]
+    public async Task SavePlan_SendsEveryConfiguredPlanDetail()
+    {
+        var repository = new FakeFollowUpRepository();
+        var viewModel = CreateViewModel(repository);
+        viewModel.Initialize(Guid.NewGuid());
+        viewModel.Frequency = FollowUpFrequency.TwiceAWeek;
+        viewModel.PlanDetails[0].TaskType = FollowUpTaskType.Memorization;
+        viewModel.PlanDetails[0].Unit = FollowUpUnit.Page;
+        viewModel.PlanDetails[0].Amount = "2";
+        viewModel.PlanDetails[0].Notes = "حفظ";
+        viewModel.AddPlanDetailCommand.Execute(null);
+        viewModel.PlanDetails[1].TaskType = FollowUpTaskType.Review;
+        viewModel.PlanDetails[1].Unit = FollowUpUnit.Hizb;
+        viewModel.PlanDetails[1].Amount = "0.5";
+        viewModel.PlanDetails[1].Notes = "مراجعة";
+
+        await viewModel.SavePlanCommand.ExecuteAsync(null);
+
+        var command = Assert.IsType<UpdateFollowUpPlanCommand>(repository.LastUpdatePlanCommand);
+        Assert.Equal(FollowUpFrequency.TwiceAWeek, command.Frequency);
+        Assert.Equal(2, command.Details.Count);
+        Assert.Collection(command.Details,
+            detail => Assert.Equal((FollowUpTaskType.Memorization, FollowUpUnit.Page, 2m, "حفظ"), (detail.TaskType, detail.Unit, detail.Amount, detail.Notes)),
+            detail => Assert.Equal((FollowUpTaskType.Review, FollowUpUnit.Hizb, 0.5m, "مراجعة"), (detail.TaskType, detail.Unit, detail.Amount, detail.Notes)));
+    }
+
+    [Fact]
+    public async Task SaveAvailability_SendsEveryConfiguredWeeklySlot()
+    {
+        var repository = new FakeFollowUpRepository();
+        var viewModel = CreateViewModel(repository);
+        viewModel.Initialize(Guid.NewGuid());
+        viewModel.Timezone = "Asia/Riyadh";
+        viewModel.PreferredSessionDurationMinutes = "45";
+        viewModel.WeeklySlots[0].DayOfWeek = 0;
+        viewModel.WeeklySlots[0].From = "18:00";
+        viewModel.WeeklySlots[0].To = "18:30";
+        viewModel.AddAvailabilitySlotCommand.Execute(null);
+        viewModel.WeeklySlots[1].DayOfWeek = 4;
+        viewModel.WeeklySlots[1].From = "20:00";
+        viewModel.WeeklySlots[1].To = "20:45";
+        viewModel.WeeklySlots[1].Preferred = false;
+
+        await viewModel.SaveAvailabilityCommand.ExecuteAsync(null);
+
+        var command = Assert.IsType<UpdateAvailabilityCommand>(repository.LastUpdateAvailabilityCommand);
+        Assert.Equal("Asia/Riyadh", command.Preferences.Timezone);
+        Assert.Equal(45, command.Preferences.PreferredSessionDurationMinutes);
+        Assert.Collection(command.Preferences.WeeklySlots,
+            slot => Assert.Equal((0, new TimeOnly(18, 0), new TimeOnly(18, 30), true), (slot.DayOfWeek, slot.From, slot.To, slot.Preferred)),
+            slot => Assert.Equal((4, new TimeOnly(20, 0), new TimeOnly(20, 45), false), (slot.DayOfWeek, slot.From, slot.To, slot.Preferred)));
+    }
+
+    [Fact]
     public async Task CompleteSelectedItem_UsesFreshClientOperationIdAndUpdatesItem()
     {
         var repository = new FakeFollowUpRepository();
@@ -68,6 +122,8 @@ public sealed class FollowUpViewModelTests
         public Guid LastTrackingsStudentId { get; private set; }
         public Guid? CompletedItemId { get; private set; }
         public Guid CompleteOperationId { get; private set; }
+        public UpdateFollowUpPlanCommand? LastUpdatePlanCommand { get; private set; }
+        public UpdateAvailabilityCommand? LastUpdateAvailabilityCommand { get; private set; }
 
         public Task<Result<FollowUpPlan>> GetPlanAsync(Guid studentId, CancellationToken cancellationToken = default)
         {
@@ -75,8 +131,11 @@ public sealed class FollowUpViewModelTests
             return Task.FromResult(Result<FollowUpPlan>.Success(CreatePlan(studentId)));
         }
 
-        public Task<Result<FollowUpPlan>> UpdatePlanAsync(UpdateFollowUpPlanCommand command, CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<FollowUpPlan>.Success(CreatePlan(command.StudentId)));
+        public Task<Result<FollowUpPlan>> UpdatePlanAsync(UpdateFollowUpPlanCommand command, CancellationToken cancellationToken = default)
+        {
+            LastUpdatePlanCommand = command;
+            return Task.FromResult(Result<FollowUpPlan>.Success(CreatePlan(command.StudentId)));
+        }
 
         public Task<Result<AttendancePreferences>> GetAvailabilityAsync(Guid studentId, CancellationToken cancellationToken = default)
         {
@@ -84,8 +143,11 @@ public sealed class FollowUpViewModelTests
             return Task.FromResult(Result<AttendancePreferences>.Success(CreateAvailability()));
         }
 
-        public Task<Result<AttendancePreferences>> UpdateAvailabilityAsync(UpdateAvailabilityCommand command, CancellationToken cancellationToken = default) =>
-            Task.FromResult(Result<AttendancePreferences>.Success(command.Preferences));
+        public Task<Result<AttendancePreferences>> UpdateAvailabilityAsync(UpdateAvailabilityCommand command, CancellationToken cancellationToken = default)
+        {
+            LastUpdateAvailabilityCommand = command;
+            return Task.FromResult(Result<AttendancePreferences>.Success(command.Preferences));
+        }
 
         public Task<Result<FollowUpItemPage>> ListItemsAsync(FollowUpItemQuery query, CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<FollowUpItemPage>.Success(new FollowUpItemPage(new[] { CreateItem(FollowUpItemState.Due) }, 1, 1, 20, 1)));
