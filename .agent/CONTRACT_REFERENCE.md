@@ -40,16 +40,16 @@ Frontend commit reviewed: 74b32ed8f774432967dd166ac4a36a0c67424a90
 
 | الوحدة | المسارات المعلنة ذات الصلة | حالة الاستهلاك الموثقة |
 |---|---|---|
-| Auth | `/auth/register/student`، `/auth/register/teacher`، `/auth/login`، `/auth/logout`، `/auth/password/*` | عميل REST موجود؛ تغيير كلمة المرور ليس له مسار غلاف حالي. |
-| Account | `/me`، `/me/student-profile`، `/me/teacher-profile`، `/me/teacher-documents` | عملاء وواجهات موجودة؛ الملف العام ليس قابلاً للوصول من لوحة التطبيق الحالية. |
+| Auth | `/auth/register/student`، `/auth/register/teacher`، `/auth/login`، `/auth/logout`، `/auth/password/*` | عميل REST موجود؛ تغيير كلمة المرور مسار مصادق عليه يمكن فتحه من لوحة المستخدم، ويرسل فقط `current_password` و`password` و`password_confirmation` إلى العملية المعلنة. |
+| Account | `/me`، `/me/student-profile`، `/me/teacher-profile`، `/me/teacher-documents` | عملاء وواجهات موجودة، والملف العام والمتخصصان يصل إليهما المستخدم من لوحة التطبيق. يبقى التحقق الحي من الرسائل الحقلية والصلاحيات مطلوباً. |
 | Halaqas | `/halaqas`، `/halaqas/{halaqaId}`، `activate`، `deactivate` | مستهلكة في عميل إدارة الحلقات. |
 | Memberships | `GET/POST /halaqas/{halaqaId}/students`، `PATCH/DELETE /halaqas/{halaqaId}/memberships/{membershipId}` | **فجوة:** عميل القائمة يطلب `GET /halaqas/{halaqaId}/memberships`، لكن هذا المسار غير معلن في العقد المراجع. القائمة المعلنة هي `students` بمرشحات `search` و`status` و`page` و`per_page`. |
-| Registrations | `/teachers`، `/registration-requests`، `/halaqas/{halaqaId}/registration-requests`، `/student-applications` | استهلاك طلبات التسجيل الموجهة/الخاصة بالحلقة موجود. لا يوجد استهلاك لصندوق المعلم العام `student-applications`. |
-| Quran | `/quran/surahs`، `/quran/pages/{pageNumber}`، `/quran/ayahs/{ayahId}` | عميل الصفحة البعيدة موجود؛ عارض مستقل قابل للوصول غير موجود. لا يعلن مخطط `Ayah` حقلاً لرموز العرض الصفحي. |
+| Registrations | `/teachers`، `/registration-requests`، `/halaqas/{halaqaId}/registration-requests`، `/student-applications` | استهلاك طلبات التسجيل الموجهة/الخاصة بالحلقة وصندوق المعلم العام `student-applications` موجود؛ تعرض الواجهة ملخصات عامة فقط قبل القبول ولا تنفذ إجراء حمولة تلقائياً. |
+| Quran | `/quran/surahs`، `/quran/pages/{pageNumber}`، `/quran/ayahs/{ayahId}` | يوجد قارئ مستقل قابل للوصول محلياً، يعرض `Uthomanic_text` بخط QCF الخاص بالصفحة عند توافر الأصل المحلي؛ لا يعلن مخطط `Ayah` حقلاً لرموز العرض الصفحي. |
 | Sessions | `/sessions/*`، `/sessions/{sessionId}/mushaf-state`، `/sessions/{sessionId}/realtime`، `/realtime/channels/authorize` | يستهلك العميل الحالي realtime config وchannel authorization و**حفظ** mushaf state فقط؛ لا يثبت ذلك WebRTC أو WebSocket أو مهام أو جلسة حية قابلة للوصول. |
 | Mistakes | `/sessions/{sessionId}/tasks/{taskId}/mistakes` | مصدر أخطاء وoutbox موجودان بلا Presentation أو تنقل. |
 | Reports/Progress | report و`/students/{studentId}/progress` و`reports` و`mistakes` | غير مستهلكة حالياً. |
-| Notifications | `/notifications` وread/read-all | غير مستهلكة حالياً. |
+| Notifications | `/notifications` وread/read-all | توجد قائمة مرقمة وتصفية غير المقروء وتعليم إشعار واحد أو الجميع كمقروء، مع إعادة تحميل قائمة الخادم بعد 204. لا تنفذ الواجهة `action_path` أو إجراءً مرتبطاً تلقائياً. |
 
 ## واجب المراجعة قبل كل تعديل
 
