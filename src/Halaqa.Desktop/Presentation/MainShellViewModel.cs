@@ -2,6 +2,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 using Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
+using Halaqa.Desktop.Features.Evaluations.Domain.Entities;
+using Halaqa.Desktop.Features.Evaluations.Presentation.ViewModels;
 using Halaqa.Desktop.Features.FollowUp.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Halaqas.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Memberships.Presentation.ViewModels;
@@ -40,6 +42,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly SessionsViewModel _sessionsViewModel;
     private readonly SessionTasksViewModel _sessionTasksViewModel;
     private readonly MistakeReportViewModel _mistakeReportViewModel;
+    private readonly TaskEvaluationViewModel _taskEvaluationViewModel;
     private readonly RestoreSessionUseCase _restoreSessionUseCase;
     private AuthenticatedUser? _authenticatedUser;
 
@@ -69,6 +72,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         SessionsViewModel sessionsViewModel,
         SessionTasksViewModel sessionTasksViewModel,
         MistakeReportViewModel mistakeReportViewModel,
+        TaskEvaluationViewModel taskEvaluationViewModel,
         RestoreSessionUseCase restoreSessionUseCase)
     {
         _loginViewModel = loginViewModel;
@@ -93,6 +97,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _sessionsViewModel = sessionsViewModel;
         _sessionTasksViewModel = sessionTasksViewModel;
         _mistakeReportViewModel = mistakeReportViewModel;
+        _taskEvaluationViewModel = taskEvaluationViewModel;
         _restoreSessionUseCase = restoreSessionUseCase;
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
@@ -131,7 +136,9 @@ public sealed partial class MainShellViewModel : ObservableObject
         _sessionsViewModel.TasksRequested += async (_, session) => await ShowSessionTasksAsync(session);
         _sessionTasksViewModel.BackRequested += (_, _) => CurrentPage = _sessionsViewModel;
         _sessionTasksViewModel.MistakeReportingRequested += (_, task) => ShowMistakeReport(task);
+        _sessionTasksViewModel.EvaluationRequested += async (_, task) => await ShowTaskEvaluation(task);
         _mistakeReportViewModel.BackRequested += (_, _) => CurrentPage = _sessionTasksViewModel;
+        _taskEvaluationViewModel.BackRequested += (_, _) => CurrentPage = _sessionTasksViewModel;
 
         CurrentPage = _loginViewModel;
     }
@@ -251,6 +258,22 @@ public sealed partial class MainShellViewModel : ObservableObject
         var taskTitle = $"{task.TaskType} — المهمة رقم {task.SequenceNo}";
         _mistakeReportViewModel.Initialize(task.SessionId, task.Id, taskTitle, canRecordMistakes: _authenticatedUser is not null);
         CurrentPage = _mistakeReportViewModel;
+    }
+
+    private async Task ShowTaskEvaluation(Halaqa.Desktop.Features.Sessions.Domain.Entities.SessionTaskListItem task)
+    {
+        if (_authenticatedUser is null)
+        {
+            return;
+        }
+
+        var currentRole = _authenticatedUser.User.Role == UserRole.Teacher
+            ? TaskEvaluatorRole.Teacher
+            : TaskEvaluatorRole.Student;
+        var taskTitle = $"{task.TaskType} — المهمة رقم {task.SequenceNo}";
+        _taskEvaluationViewModel.Initialize(task.SessionId, task.Id, taskTitle, currentRole);
+        CurrentPage = _taskEvaluationViewModel;
+        await _taskEvaluationViewModel.LoadCommand.ExecuteAsync(null);
     }
 
     private async Task ShowQuranReaderAsync()
