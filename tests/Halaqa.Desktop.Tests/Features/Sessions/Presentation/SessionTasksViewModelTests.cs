@@ -147,6 +147,22 @@ public sealed class SessionTasksViewModelTests
     }
 
     [Fact]
+    public async Task OpenNotes_RaisesEventForSelectedTaskWhenInitializedForAuthorizedParticipant()
+    {
+        var repository = new FakeSessionTaskDirectoryRepository();
+        var viewModel = CreateViewModel(repository);
+        viewModel.Initialize(CreateSession(), canCreateTasks: false, canReportMistakes: true);
+        await viewModel.LoadCommand.ExecuteAsync(null);
+        var selected = Assert.IsType<SessionTaskListItem>(viewModel.SelectedTask);
+        SessionTaskListItem? requested = null;
+        viewModel.NotesRequested += (_, task) => requested = task;
+
+        viewModel.OpenNotesCommand.Execute(null);
+
+        Assert.Equal(selected, requested);
+    }
+
+    [Fact]
     public async Task OpenEvaluation_RaisesEventForSelectedTaskWhenInitializedForAuthorizedParticipant()
     {
         var repository = new FakeSessionTaskDirectoryRepository();
