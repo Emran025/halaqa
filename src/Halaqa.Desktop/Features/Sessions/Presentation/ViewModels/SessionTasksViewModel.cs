@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Sessions.Domain.Entities;
@@ -11,13 +12,16 @@ public sealed partial class SessionTasksViewModel : ObservableObject
 {
     private readonly ListSessionTasksUseCase listSessionTasksUseCase;
     private readonly CreateSessionTaskUseCase createSessionTaskUseCase;
+    private readonly UpdateSessionTaskUseCase updateSessionTaskUseCase;
 
     public SessionTasksViewModel(
         ListSessionTasksUseCase listSessionTasksUseCase,
-        CreateSessionTaskUseCase createSessionTaskUseCase)
+        CreateSessionTaskUseCase createSessionTaskUseCase,
+        UpdateSessionTaskUseCase updateSessionTaskUseCase)
     {
         this.listSessionTasksUseCase = listSessionTasksUseCase;
         this.createSessionTaskUseCase = createSessionTaskUseCase;
+        this.updateSessionTaskUseCase = updateSessionTaskUseCase;
     }
 
     public ObservableCollection<SessionTaskListItem> Tasks { get; } = new();
@@ -27,11 +31,38 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         SessionTaskType.Review,
         SessionTaskType.Recitation
     };
+    public IReadOnlyList<OfficialSessionTaskState> TaskStateOptions { get; } = new[]
+    {
+        OfficialSessionTaskState.Draft,
+        OfficialSessionTaskState.InProgress,
+        OfficialSessionTaskState.Completed,
+        OfficialSessionTaskState.Skipped,
+        OfficialSessionTaskState.Cancelled
+    };
 
     [ObservableProperty] private SessionTaskListItem? _selectedTask;
     [ObservableProperty] private Guid _sessionId;
     [ObservableProperty] private string _sessionTitle = string.Empty;
     [ObservableProperty] private SessionTaskType _newTaskType = SessionTaskType.Memorization;
+    [ObservableProperty] private string _newSequenceNo = string.Empty;
+    [ObservableProperty] private string _newPlannedAmount = string.Empty;
+    [ObservableProperty] private string _newPlannedFromUnitId = string.Empty;
+    [ObservableProperty] private string _newPlannedToUnitId = string.Empty;
+    [ObservableProperty] private string _newStartPage = string.Empty;
+    [ObservableProperty] private string _newStartAyahId = string.Empty;
+    [ObservableProperty] private string _newEndPage = string.Empty;
+    [ObservableProperty] private string _newEndAyahId = string.Empty;
+    [ObservableProperty] private string _updatePlannedAmount = string.Empty;
+    [ObservableProperty] private string _updateActualAmount = string.Empty;
+    [ObservableProperty] private string _updatePlannedFromUnitId = string.Empty;
+    [ObservableProperty] private string _updatePlannedToUnitId = string.Empty;
+    [ObservableProperty] private string _updateStartPage = string.Empty;
+    [ObservableProperty] private string _updateStartAyahId = string.Empty;
+    [ObservableProperty] private string _updateEndPage = string.Empty;
+    [ObservableProperty] private string _updateEndAyahId = string.Empty;
+    [ObservableProperty] private string _updateCurrentPage = string.Empty;
+    [ObservableProperty] private string _updateCurrentAyahId = string.Empty;
+    [ObservableProperty] private OfficialSessionTaskState? _selectedUpdateState;
     [ObservableProperty] private bool _canCreateTasks;
     [ObservableProperty] private bool _canReportMistakes;
     [ObservableProperty] private int _currentPage = 1;
@@ -51,6 +82,8 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         CanCreateTasks = canCreateTasks;
         CanReportMistakes = canReportMistakes;
         NewTaskType = SessionTaskType.Memorization;
+        ClearCreateInputs();
+        ClearUpdateInputs();
         Tasks.Clear();
         SelectedTask = null;
         CurrentPage = 1;
@@ -66,22 +99,62 @@ public sealed partial class SessionTasksViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanCreateTask))]
     private async Task CreateTaskAsync()
     {
+        if (!TryCreateCommand(out var command, out var inputError))
+        {
+            SetLocalFailure(inputError!);
+            return;
+        }
+
         IsBusy = true;
         ClearFeedback();
         try
         {
-            var command = new CreateSessionTaskCommand(SessionId, NewTaskType, Guid.NewGuid());
-            var result = await createSessionTaskUseCase.ExecuteAsync(command);
+            var result = await createSessionTaskUseCase.ExecuteAsync(command!);
             if (!result.IsSuccess)
             {
-                SetFailure(result.Error);
+                SetFailure(result.Error, "تعذر إنشاء مهمة الجلسة.");
                 return;
             }
 
+            ClearCreateInputs();
             await LoadTasksAsync(keepBusy: true);
             if (!IsError)
             {
                 Message = "تم إنشاء المهمة وتحديث القائمة من الخادم.";
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+            NotifyCommands();
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanUpdateTask))]
+    private async Task UpdateTaskAsync()
+    {
+        if (!TryUpdateCommand(out var command, out var inputError))
+        {
+            SetLocalFailure(inputError!);
+            return;
+        }
+
+        IsBusy = true;
+        ClearFeedback();
+        try
+        {
+            var result = await updateSessionTaskUseCase.ExecuteAsync(command!);
+            if (!result.IsSuccess)
+            {
+                SetFailure(result.Error, "تعذر تحديث مهمة الجلسة.");
+                return;
+            }
+
+            ClearUpdateInputs();
+            await LoadTasksAsync(keepBusy: true);
+            if (!IsError)
+            {
+                Message = "تم تحديث المهمة من الخادم.";
             }
         }
         finally
@@ -115,7 +188,7 @@ public sealed partial class SessionTasksViewModel : ObservableObject
             var result = await listSessionTasksUseCase.ExecuteAsync(SessionId);
             if (!result.IsSuccess || result.Value is null)
             {
-                SetFailure(result.Error);
+                SetFailure(result.Error, "تعذر تحميل مهام الجلسة.");
                 return;
             }
 
@@ -143,8 +216,151 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         }
     }
 
+    private bool TryCreateCommand(out CreateSessionTaskCommand? command, out string? error)
+    {
+        command = null;
+        if (!TryReadOptionalInt(NewSequenceNo, "رقم التسلسل", 1, null, out var sequenceNo, out error) ||
+            !TryReadOptionalDecimal(NewPlannedAmount, "الكمية المخططة", out var plannedAmount, out error) ||
+            !TryReadOptionalInt(NewPlannedFromUnitId, "معرّف وحدة بداية النطاق", 1, null, out var plannedFromUnitId, out error) ||
+            !TryReadOptionalInt(NewPlannedToUnitId, "معرّف وحدة نهاية النطاق", 1, null, out var plannedToUnitId, out error) ||
+            !TryReadOptionalInt(NewStartPage, "صفحة بداية النطاق", 1, 604, out var startPage, out error) ||
+            !TryReadOptionalInt(NewStartAyahId, "آية بداية النطاق", 1, 6236, out var startAyahId, out error) ||
+            !TryReadOptionalInt(NewEndPage, "صفحة نهاية النطاق", 1, 604, out var endPage, out error) ||
+            !TryReadOptionalInt(NewEndAyahId, "آية نهاية النطاق", 1, 6236, out var endAyahId, out error))
+        {
+            return false;
+        }
+
+        command = new CreateSessionTaskCommand(
+            SessionId,
+            NewTaskType,
+            Guid.NewGuid(),
+            sequenceNo,
+            plannedAmount,
+            plannedFromUnitId,
+            plannedToUnitId,
+            startPage,
+            startAyahId,
+            endPage,
+            endAyahId);
+        return true;
+    }
+
+    private bool TryUpdateCommand(out UpdateSessionTaskCommand? command, out string? error)
+    {
+        command = null;
+        error = null;
+        if (SelectedTask is null)
+        {
+            error = "اختر مهمة لتحديثها أولاً.";
+            return false;
+        }
+        if (!TryReadOptionalDecimal(UpdatePlannedAmount, "الكمية المخططة", out var plannedAmount, out error) ||
+            !TryReadOptionalDecimal(UpdateActualAmount, "الكمية الفعلية", out var actualAmount, out error) ||
+            !TryReadOptionalInt(UpdatePlannedFromUnitId, "معرّف وحدة بداية النطاق", 1, null, out var plannedFromUnitId, out error) ||
+            !TryReadOptionalInt(UpdatePlannedToUnitId, "معرّف وحدة نهاية النطاق", 1, null, out var plannedToUnitId, out error) ||
+            !TryReadOptionalInt(UpdateStartPage, "صفحة بداية النطاق", 1, 604, out var startPage, out error) ||
+            !TryReadOptionalInt(UpdateStartAyahId, "آية بداية النطاق", 1, 6236, out var startAyahId, out error) ||
+            !TryReadOptionalInt(UpdateEndPage, "صفحة نهاية النطاق", 1, 604, out var endPage, out error) ||
+            !TryReadOptionalInt(UpdateEndAyahId, "آية نهاية النطاق", 1, 6236, out var endAyahId, out error) ||
+            !TryReadOptionalInt(UpdateCurrentPage, "الصفحة الحالية", 1, 604, out var currentPage, out error) ||
+            !TryReadOptionalInt(UpdateCurrentAyahId, "الآية الحالية", 1, 6236, out var currentAyahId, out error))
+        {
+            return false;
+        }
+
+        var candidate = new UpdateSessionTaskCommand(
+            SessionId,
+            SelectedTask.Id,
+            plannedFromUnitId,
+            plannedToUnitId,
+            startPage,
+            startAyahId,
+            endPage,
+            endAyahId,
+            currentPage,
+            currentAyahId,
+            SelectedUpdateState,
+            plannedAmount,
+            actualAmount);
+        if (!candidate.HasChanges)
+        {
+            error = "أدخل حقلاً واحداً على الأقل لتحديث المهمة.";
+            return false;
+        }
+
+        command = candidate;
+        return true;
+    }
+
+    private static bool TryReadOptionalInt(string? value, string label, int min, int? max, out int? number, out string? error)
+    {
+        number = null;
+        error = null;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return true;
+        }
+        if (!int.TryParse(value, NumberStyles.Integer, CultureInfo.InvariantCulture, out var parsed) || parsed < min || (max.HasValue && parsed > max.Value))
+        {
+            error = max.HasValue
+                ? $"{label} يجب أن يكون بين {min} و{max.Value}."
+                : $"{label} يجب أن يبدأ من {min}.";
+            return false;
+        }
+
+        number = parsed;
+        return true;
+    }
+
+    private static bool TryReadOptionalDecimal(string? value, string label, out decimal? number, out string? error)
+    {
+        number = null;
+        error = null;
+        if (string.IsNullOrWhiteSpace(value))
+        {
+            return true;
+        }
+        if (!decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out var parsed) || parsed < 0)
+        {
+            error = $"{label} يجب أن تكون صفراً أو قيمة موجبة.";
+            return false;
+        }
+
+        number = parsed;
+        return true;
+    }
+
+    private void ClearCreateInputs()
+    {
+        NewSequenceNo = string.Empty;
+        NewPlannedAmount = string.Empty;
+        NewPlannedFromUnitId = string.Empty;
+        NewPlannedToUnitId = string.Empty;
+        NewStartPage = string.Empty;
+        NewStartAyahId = string.Empty;
+        NewEndPage = string.Empty;
+        NewEndAyahId = string.Empty;
+    }
+
+    private void ClearUpdateInputs()
+    {
+        UpdatePlannedAmount = string.Empty;
+        UpdateActualAmount = string.Empty;
+        UpdatePlannedFromUnitId = string.Empty;
+        UpdatePlannedToUnitId = string.Empty;
+        UpdateStartPage = string.Empty;
+        UpdateStartAyahId = string.Empty;
+        UpdateEndPage = string.Empty;
+        UpdateEndAyahId = string.Empty;
+        UpdateCurrentPage = string.Empty;
+        UpdateCurrentAyahId = string.Empty;
+        SelectedUpdateState = null;
+    }
+
     private bool CanLoad() => !IsBusy && SessionId != Guid.Empty;
     private bool CanCreateTask() => CanLoad() && CanCreateTasks;
+    private bool CanUpdateTask() => CanLoad() && CanCreateTasks && SelectedTask is not null;
     private bool CanReportMistake() => CanLoad() && CanReportMistakes && SelectedTask is not null;
 
     private void ClearFeedback()
@@ -153,16 +369,23 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         Message = null;
     }
 
-    private void SetFailure(AppError? error)
+    private void SetLocalFailure(string message)
     {
         IsError = true;
-        Message = error?.Message ?? "تعذر إنشاء مهمة الجلسة.";
+        Message = message;
+    }
+
+    private void SetFailure(AppError? error, string fallback)
+    {
+        IsError = true;
+        Message = error?.Message ?? fallback;
     }
 
     private void NotifyCommands()
     {
         LoadCommand.NotifyCanExecuteChanged();
         CreateTaskCommand.NotifyCanExecuteChanged();
+        UpdateTaskCommand.NotifyCanExecuteChanged();
         ReportMistakeCommand.NotifyCanExecuteChanged();
     }
 
@@ -170,5 +393,10 @@ public sealed partial class SessionTasksViewModel : ObservableObject
 
     partial void OnCanReportMistakesChanged(bool value) => NotifyCommands();
 
-    partial void OnSelectedTaskChanged(SessionTaskListItem? value) => ReportMistakeCommand.NotifyCanExecuteChanged();
+    partial void OnSelectedTaskChanged(SessionTaskListItem? value)
+    {
+        ClearUpdateInputs();
+        UpdateTaskCommand.NotifyCanExecuteChanged();
+        ReportMistakeCommand.NotifyCanExecuteChanged();
+    }
 }

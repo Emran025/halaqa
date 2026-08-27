@@ -10,6 +10,8 @@ internal interface ISessionTaskDirectoryRemoteDataSource
     Task<Result<SessionTaskCollectionResponseDto>> ListAsync(Guid sessionId, CancellationToken cancellationToken = default);
 
     Task<Result<SessionTaskResponseDto>> CreateAsync(CreateSessionTaskCommand command, CancellationToken cancellationToken = default);
+
+    Task<Result<SessionTaskResponseDto>> UpdateAsync(UpdateSessionTaskCommand command, CancellationToken cancellationToken = default);
 }
 
 internal sealed class SessionTaskDirectoryRemoteDataSource : ISessionTaskDirectoryRemoteDataSource
@@ -26,7 +28,37 @@ internal sealed class SessionTaskDirectoryRemoteDataSource : ISessionTaskDirecto
 
     public Task<Result<SessionTaskResponseDto>> CreateAsync(CreateSessionTaskCommand command, CancellationToken cancellationToken = default)
     {
-        var request = new CreateSessionTaskRequestDto(command.TaskType.ToString().ToLowerInvariant(), command.ClientOperationId);
+        var request = new CreateSessionTaskRequestDto(
+            command.TaskType.ToString().ToLowerInvariant(),
+            command.ClientOperationId,
+            command.SequenceNo,
+            command.PlannedAmount,
+            command.PlannedFromUnitId,
+            command.PlannedToUnitId,
+            command.StartPage,
+            command.StartAyahId,
+            command.EndPage,
+            command.EndAyahId);
         return apiClient.PostAsync<CreateSessionTaskRequestDto, SessionTaskResponseDto>($"sessions/{command.SessionId}/tasks", request, cancellationToken);
+    }
+
+    public Task<Result<SessionTaskResponseDto>> UpdateAsync(UpdateSessionTaskCommand command, CancellationToken cancellationToken = default)
+    {
+        var request = new UpdateSessionTaskRequestDto(
+            command.PlannedFromUnitId,
+            command.PlannedToUnitId,
+            command.StartPage,
+            command.StartAyahId,
+            command.EndPage,
+            command.EndAyahId,
+            command.CurrentPage,
+            command.CurrentAyahId,
+            command.State?.ToString().ToLowerInvariant(),
+            command.PlannedAmount,
+            command.ActualAmount);
+        return apiClient.PatchAsync<UpdateSessionTaskRequestDto, SessionTaskResponseDto>(
+            $"sessions/{command.SessionId}/tasks/{command.TaskId}",
+            request,
+            cancellationToken);
     }
 }

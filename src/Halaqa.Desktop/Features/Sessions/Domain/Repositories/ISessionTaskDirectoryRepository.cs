@@ -8,4 +8,6 @@ public interface ISessionTaskDirectoryRepository
     Task<Result<SessionTaskPage>> ListAsync(Guid sessionId, CancellationToken cancellationToken = default);
 
     Task<Result<SessionTaskListItem>> CreateAsync(CreateSessionTaskCommand command, CancellationToken cancellationToken = default);
+
+    Task<Result<SessionTaskListItem>> UpdateAsync(UpdateSessionTaskCommand command, CancellationToken cancellationToken = default);
 }
