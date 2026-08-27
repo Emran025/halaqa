@@ -113,6 +113,17 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
+                    <materialDesign:PackIcon Kind="VideoOutline" Foreground="{StaticResource AppInfoBrush}" Width="28" Height="28" />
+                    <TextBlock Text="جلساتي" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
+                    <TextBlock Text="اعرض الجلسات الرسمية المتاحة لحسابك وحالتها وموعدها. لا تبدأ هذه الشاشة اتصالاً أو وسائط." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                    <Button Content="فتح جلساتي"
+                            Command="{Binding OpenSessionsCommand}"
+                            HorizontalAlignment="Right"
+                            Margin="0,16,0,0" />
+                </StackPanel>
+            </Border>
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
+                <StackPanel>
                     <materialDesign:PackIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppWarningBrush}" Width="28" Height="28" />
                     <TextBlock Text="المصحف والأخطاء" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="اقرأ صفحات المصحف محلياً بخط الصفحة المخصص، مع تمييز صريح عند استخدام بديل الخادم." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />

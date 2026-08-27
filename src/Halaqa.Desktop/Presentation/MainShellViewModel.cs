@@ -11,6 +11,7 @@ using Halaqa.Desktop.Features.Quran.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Profile.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Registrations.Presentation.ViewModels;
 using Halaqa.Desktop.Features.TeacherDocuments.Presentation.ViewModels;
+using Halaqa.Desktop.Features.Sessions.Presentation.ViewModels;
 
 namespace Halaqa.Desktop.Presentation;
 
@@ -35,6 +36,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly FollowUpViewModel _followUpViewModel;
     private readonly QuranReaderViewModel _quranReaderViewModel;
     private readonly NotificationsViewModel _notificationsViewModel;
+    private readonly SessionsViewModel _sessionsViewModel;
     private readonly RestoreSessionUseCase _restoreSessionUseCase;
     private AuthenticatedUser? _authenticatedUser;
 
@@ -61,6 +63,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         FollowUpViewModel followUpViewModel,
         QuranReaderViewModel quranReaderViewModel,
         NotificationsViewModel notificationsViewModel,
+        SessionsViewModel sessionsViewModel,
         RestoreSessionUseCase restoreSessionUseCase)
     {
         _loginViewModel = loginViewModel;
@@ -82,6 +85,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _followUpViewModel = followUpViewModel;
         _quranReaderViewModel = quranReaderViewModel;
         _notificationsViewModel = notificationsViewModel;
+        _sessionsViewModel = sessionsViewModel;
         _restoreSessionUseCase = restoreSessionUseCase;
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
@@ -116,6 +120,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _followUpViewModel.BackRequested += (_, _) => ShowDashboard();
         _quranReaderViewModel.BackRequested += (_, _) => ShowDashboard();
         _notificationsViewModel.BackRequested += (_, _) => ShowDashboard();
+        _sessionsViewModel.BackRequested += (_, _) => ShowDashboard();
 
         CurrentPage = _loginViewModel;
     }
@@ -153,6 +158,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         dashboardViewModel.FollowUpRequested += async (_, _) => await ShowFollowUpAsync();
         dashboardViewModel.QuranReaderRequested += async (_, _) => await ShowQuranReaderAsync();
         dashboardViewModel.NotificationsRequested += async (_, _) => await ShowNotificationsAsync();
+        dashboardViewModel.SessionsRequested += async (_, _) => await ShowSessionsAsync();
         dashboardViewModel.PasswordChangeRequested += (_, _) => ShowChangePassword();
         CurrentPage = dashboardViewModel;
     }
@@ -210,6 +216,13 @@ public sealed partial class MainShellViewModel : ObservableObject
         _notificationsViewModel.Initialize();
         CurrentPage = _notificationsViewModel;
         await _notificationsViewModel.LoadCommand.ExecuteAsync(null);
+    }
+
+    private async Task ShowSessionsAsync()
+    {
+        _sessionsViewModel.Initialize();
+        CurrentPage = _sessionsViewModel;
+        await _sessionsViewModel.LoadCommand.ExecuteAsync(null);
     }
 
     private async Task ShowQuranReaderAsync()
