@@ -1,4 +1,5 @@
 using Halaqa.Desktop.Features.Auth;
+using Halaqa.Desktop.Features.Evaluations;
 using Halaqa.Desktop.Features.FollowUp;
 using Halaqa.Desktop.Features.Halaqas;
 using Halaqa.Desktop.Features.Memberships;
@@ -41,6 +42,7 @@ public static class Bootstrapper
         services.AddFollowUpFeature();
         services.AddQuranFeature();
         services.AddMistakesFeature();
+        services.AddEvaluationsFeature();
         services.AddNotificationsFeature();
         services.AddSessionsFeature();
 

@@ -1,0 +1,60 @@
+<UserControl x:Class="Halaqa.Desktop.Features.Evaluations.Presentation.Views.TaskEvaluationView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             FlowDirection="RightToLeft">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36" MaxWidth="760">
+            <DockPanel Margin="0,0,0,20">
+                <Button Content="رجوع إلى المهام" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                <StackPanel>
+                    <TextBlock Text="تقييم المهمة" Style="{StaticResource PageTitle}" />
+                    <TextBlock Text="{Binding TaskTitle}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                </StackPanel>
+            </DockPanel>
+
+            <Border Background="#0D155EEF" Padding="14" CornerRadius="10" Margin="0,0,0,16">
+                <DockPanel>
+                    <materialDesign:PackIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0" />
+                    <TextBlock Text="تعرض الشاشة تقييم المعلم والتقييم الذاتي للطالب كما يعيدهما الخادم. يحفظ كل طرف تقييمه الخاص فقط." TextWrapping="Wrap" />
+                </DockPanel>
+            </Border>
+
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,0,0,16">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <StackPanel Margin="0,0,8,0">
+                        <TextBlock Text="تقييم المعلم" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{Binding TeacherEvaluation.Score, StringFormat=الدرجة: {0}}" Style="{StaticResource BodyMuted}" />
+                        <TextBlock Text="{Binding TeacherEvaluation.Comment, StringFormat=الملاحظة: {0}}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding TeacherEvaluation.Evaluator.Name, StringFormat=المقيّم: {0}}" Style="{StaticResource CaptionText}" />
+                    </StackPanel>
+                    <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                        <TextBlock Text="التقييم الذاتي للطالب" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="{Binding StudentEvaluation.Score, StringFormat=الدرجة: {0}}" Style="{StaticResource BodyMuted}" />
+                        <TextBlock Text="{Binding StudentEvaluation.Comment, StringFormat=الملاحظة: {0}}" TextWrapping="Wrap" />
+                        <TextBlock Text="{Binding StudentEvaluation.Evaluator.Name, StringFormat=المقيّم: {0}}" Style="{StaticResource CaptionText}" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="180"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <TextBlock Grid.ColumnSpan="2" Text="حفظ تقييمي" Style="{StaticResource SectionTitle}" />
+                    <TextBox Grid.Row="1" Text="{Binding Score, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الدرجة (0–100)" Margin="0,12,8,12" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding Comment, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="ملاحظة اختيارية (حتى 2000 حرف)" MaxLength="2000" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="72" Margin="8,12,0,12" />
+                    <DockPanel Grid.Row="2" Grid.ColumnSpan="2">
+                        <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                            <Button Content="تحديث" Command="{Binding LoadCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,8,0" />
+                            <Button Content="حفظ التقييم" Command="{Binding SaveCommand}" />
+                        </StackPanel>
+                    </DockPanel>
+                </Grid>
+            </Border>
+            <ProgressBar IsIndeterminate="True" Height="3" Margin="0,16,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

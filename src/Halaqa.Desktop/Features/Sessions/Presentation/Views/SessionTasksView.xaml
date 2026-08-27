@@ -48,7 +48,10 @@
             </DockPanel>
             <DockPanel Margin="0,0,0,10">
                 <TextBlock Text="اختر مهمة لعرض بياناتها أو تسجيل خطأ عليها." Style="{StaticResource BodyMuted}" />
-                <Button Content="تسجيل خطأ" Command="{Binding ReportMistakeCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" Visibility="{Binding CanReportMistakes, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Visibility="{Binding CanReportMistakes, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Button Content="التقييم" Command="{Binding OpenEvaluationCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,8,0" />
+                    <Button Content="تسجيل خطأ" Command="{Binding ReportMistakeCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                </StackPanel>
             </DockPanel>
             <ListBox ItemsSource="{Binding Tasks}" SelectedItem="{Binding SelectedTask}" MinHeight="190" BorderThickness="0" Background="Transparent">
                 <ListBox.ItemTemplate>
