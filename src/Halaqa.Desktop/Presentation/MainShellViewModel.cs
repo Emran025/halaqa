@@ -232,7 +232,7 @@ public sealed partial class MainShellViewModel : ObservableObject
 
     private async Task ShowSessionTasksAsync(Halaqa.Desktop.Features.Sessions.Domain.Entities.SessionListItem session)
     {
-        _sessionTasksViewModel.Initialize(session);
+        _sessionTasksViewModel.Initialize(session, _authenticatedUser?.User.Role == UserRole.Teacher);
         CurrentPage = _sessionTasksViewModel;
         await _sessionTasksViewModel.LoadCommand.ExecuteAsync(null);
     }

@@ -13,9 +13,9 @@ public sealed class SessionTasksViewModelTests
     public async Task Load_UsesSelectedSessionIdentifierAndDisplaysOfficialTasks()
     {
         var repository = new FakeSessionTaskDirectoryRepository();
-        var viewModel = new SessionTasksViewModel(new ListSessionTasksUseCase(repository));
+        var viewModel = CreateViewModel(repository);
         var session = CreateSession();
-        viewModel.Initialize(session);
+        viewModel.Initialize(session, canCreateTasks: false);
 
         await viewModel.LoadCommand.ExecuteAsync(null);
 
@@ -26,6 +26,38 @@ public sealed class SessionTasksViewModelTests
         Assert.Equal(41, viewModel.Total);
         Assert.False(viewModel.IsError);
     }
+
+    [Fact]
+    public async Task CreateTask_ForTeacherSendsMinimumContractCommandAndRefreshesList()
+    {
+        var repository = new FakeSessionTaskDirectoryRepository();
+        var viewModel = CreateViewModel(repository);
+        var session = CreateSession();
+        viewModel.Initialize(session, canCreateTasks: true);
+        viewModel.NewTaskType = SessionTaskType.Recitation;
+
+        await viewModel.CreateTaskCommand.ExecuteAsync(null);
+
+        var command = Assert.IsType<CreateSessionTaskCommand>(repository.LastCreateCommand);
+        Assert.Equal(session.Id, command.SessionId);
+        Assert.Equal(SessionTaskType.Recitation, command.TaskType);
+        Assert.NotEqual(Guid.Empty, command.ClientOperationId);
+        Assert.Equal(session.Id, repository.LastSessionId);
+        Assert.Single(viewModel.Tasks);
+        Assert.False(viewModel.IsError);
+    }
+
+    [Fact]
+    public void CreateTask_IsUnavailableWhenScreenIsInitializedForStudent()
+    {
+        var viewModel = CreateViewModel(new FakeSessionTaskDirectoryRepository());
+        viewModel.Initialize(CreateSession(), canCreateTasks: false);
+
+        Assert.False(viewModel.CreateTaskCommand.CanExecute(null));
+    }
+
+    private static SessionTasksViewModel CreateViewModel(FakeSessionTaskDirectoryRepository repository) =>
+        new(new ListSessionTasksUseCase(repository), new CreateSessionTaskUseCase(repository));
 
     private static SessionListItem CreateSession()
     {
@@ -40,15 +72,24 @@ public sealed class SessionTasksViewModelTests
     private sealed class FakeSessionTaskDirectoryRepository : ISessionTaskDirectoryRepository
     {
         public Guid LastSessionId { get; private set; }
+        public CreateSessionTaskCommand? LastCreateCommand { get; private set; }
 
         public Task<Result<SessionTaskPage>> ListAsync(Guid sessionId, CancellationToken cancellationToken = default)
         {
             LastSessionId = sessionId;
-            var task = new SessionTaskListItem(
-                Guid.NewGuid(), sessionId, SessionTaskType.Memorization, 1,
+            return Task.FromResult(Result<SessionTaskPage>.Success(new SessionTaskPage(new[] { CreateTask(sessionId) }, 2, 3, 20, 41)));
+        }
+
+        public Task<Result<SessionTaskListItem>> CreateAsync(CreateSessionTaskCommand command, CancellationToken cancellationToken = default)
+        {
+            LastCreateCommand = command;
+            return Task.FromResult(Result<SessionTaskListItem>.Success(CreateTask(command.SessionId, command.TaskType)));
+        }
+
+        private static SessionTaskListItem CreateTask(Guid sessionId, SessionTaskType taskType = SessionTaskType.Memorization) =>
+            new(
+                Guid.NewGuid(), sessionId, taskType, 1,
                 OfficialSessionTaskState.InProgress, 1, 2, 3, 1, "ملاحظة",
                 80, 2, DateTimeOffset.UtcNow, null, null, null, 1);
-            return Task.FromResult(Result<SessionTaskPage>.Success(new SessionTaskPage(new[] { task }, 2, 3, 20, 41)));
-        }
     }
 }

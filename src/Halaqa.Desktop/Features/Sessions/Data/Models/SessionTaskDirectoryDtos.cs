@@ -2,6 +2,13 @@ using System.Text.Json.Serialization;
 
 namespace Halaqa.Desktop.Features.Sessions.Data.Models;
 
+internal sealed record CreateSessionTaskRequestDto(
+    [property: JsonPropertyName("task_type")] string TaskType,
+    [property: JsonPropertyName("client_operation_id")] Guid ClientOperationId);
+
+internal sealed record SessionTaskResponseDto(
+    [property: JsonPropertyName("task")] SessionTaskListItemDto Task);
+
 internal sealed record SessionTaskListItemDto(
     [property: JsonPropertyName("id")] Guid Id,
     [property: JsonPropertyName("session_id")] Guid SessionId,

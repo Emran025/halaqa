@@ -22,6 +22,7 @@ public static class SessionsFeatureModule
         services.AddSingleton<SaveOfficialMushafStateUseCase>();
         services.AddSingleton<ListSessionsUseCase>();
         services.AddSingleton<ListSessionTasksUseCase>();
+        services.AddSingleton<CreateSessionTaskUseCase>();
         services.AddTransient<LiveSessionStore>();
         services.AddTransient<SessionsViewModel>();
         services.AddTransient<SessionTasksViewModel>();

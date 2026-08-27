@@ -22,4 +22,12 @@ internal sealed class SessionTaskDirectoryRepository : ISessionTaskDirectoryRepo
             ? Result<SessionTaskPage>.Success(SessionTaskDirectoryMapper.ToDomain(result.Value))
             : Result<SessionTaskPage>.Failure(result.Error ?? new AppError(AppErrorKind.Unknown, "تعذر تحميل مهام الجلسة."));
     }
+
+    public async Task<Result<SessionTaskListItem>> CreateAsync(CreateSessionTaskCommand command, CancellationToken cancellationToken = default)
+    {
+        var result = await remoteDataSource.CreateAsync(command, cancellationToken);
+        return result.IsSuccess && result.Value is not null
+            ? Result<SessionTaskListItem>.Success(SessionTaskDirectoryMapper.ToDomain(result.Value.Task))
+            : Result<SessionTaskListItem>.Failure(result.Error ?? new AppError(AppErrorKind.Unknown, "تعذر إنشاء مهمة الجلسة."));
+    }
 }

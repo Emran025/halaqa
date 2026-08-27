@@ -16,10 +16,21 @@
             <Border Background="#0D155EEF" Padding="14" CornerRadius="10" Margin="0,0,0,16">
                 <DockPanel>
                     <materialDesign:PackIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0" />
-                    <TextBlock Text="هذه الشاشة تقرأ مهام الجلسة التي يصرح بها الخادم. لا تنشئ أو تعدل المهام ولا تبدأ اتصالاً مباشراً أو وسائط." TextWrapping="Wrap" />
+                    <TextBlock Text="يعرض العميل مهام الجلسة المصرح بها. يمكن للمعلم إنشاء مهمة جديدة بنوعها ومعرّف عملية فريد؛ لا ينفذ اتصالاً مباشراً أو وسائط." TextWrapping="Wrap" />
                 </DockPanel>
             </Border>
 
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,0,0,16" Visibility="{Binding CanCreateTasks, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="إضافة مهمة" Style="{StaticResource SectionTitle}" />
+                        <TextBlock Text="نوع المهمة إلزامي؛ أما رقم التسلسل والنطاق والكميات فاختيارية في العقد ولم تُضف إلى هذا الإدخال المبسط." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,10" />
+                        <ComboBox ItemsSource="{Binding TaskTypeOptions}" SelectedItem="{Binding NewTaskType}" Width="240" HorizontalAlignment="Right" materialDesign:HintAssist.Hint="نوع المهمة" />
+                    </StackPanel>
+                    <Button Grid.Column="1" Content="إنشاء المهمة" Command="{Binding CreateTaskCommand}" VerticalAlignment="Bottom" Margin="16,0,0,0" />
+                </Grid>
+            </Border>
             <DockPanel Margin="0,0,0,12">
                 <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                 <Button Content="تحديث" Command="{Binding LoadCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
