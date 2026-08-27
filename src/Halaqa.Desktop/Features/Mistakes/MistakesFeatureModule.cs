@@ -4,6 +4,7 @@ using Halaqa.Desktop.Features.Mistakes.Data.Repositories;
 using Halaqa.Desktop.Features.Mistakes.Data.Sync;
 using Halaqa.Desktop.Features.Mistakes.Domain.Repositories;
 using Halaqa.Desktop.Features.Mistakes.Domain.UseCases;
+using Halaqa.Desktop.Features.Mistakes.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Halaqa.Desktop.Features.Mistakes;
@@ -17,6 +18,7 @@ public static class MistakesFeatureModule
         services.AddSingleton<IMistakeRepository, MistakeRepository>();
         services.AddSingleton<IMistakeSyncService, MistakeSyncService>();
         services.AddSingleton<QueueMistakeUseCase>();
+        services.AddTransient<MistakeReportViewModel>();
         return services;
     }
 }

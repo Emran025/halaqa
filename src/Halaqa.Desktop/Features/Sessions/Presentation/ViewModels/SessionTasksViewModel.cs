@@ -28,10 +28,12 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         SessionTaskType.Recitation
     };
 
+    [ObservableProperty] private SessionTaskListItem? _selectedTask;
     [ObservableProperty] private Guid _sessionId;
     [ObservableProperty] private string _sessionTitle = string.Empty;
     [ObservableProperty] private SessionTaskType _newTaskType = SessionTaskType.Memorization;
     [ObservableProperty] private bool _canCreateTasks;
+    [ObservableProperty] private bool _canReportMistakes;
     [ObservableProperty] private int _currentPage = 1;
     [ObservableProperty] private int _lastPage = 1;
     [ObservableProperty] private int _total;
@@ -40,14 +42,17 @@ public sealed partial class SessionTasksViewModel : ObservableObject
     [ObservableProperty] private string? _message;
 
     public event EventHandler? BackRequested;
+    public event EventHandler<SessionTaskListItem>? MistakeReportingRequested;
 
-    public void Initialize(SessionListItem session, bool canCreateTasks)
+    public void Initialize(SessionListItem session, bool canCreateTasks, bool canReportMistakes)
     {
         SessionId = session.Id;
         SessionTitle = $"{session.TaskType} — {session.Teacher.Name} / {session.Student.Name}";
         CanCreateTasks = canCreateTasks;
+        CanReportMistakes = canReportMistakes;
         NewTaskType = SessionTaskType.Memorization;
         Tasks.Clear();
+        SelectedTask = null;
         CurrentPage = 1;
         LastPage = 1;
         Total = 0;
@@ -86,6 +91,15 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         }
     }
 
+    [RelayCommand(CanExecute = nameof(CanReportMistake))]
+    private void ReportMistake()
+    {
+        if (SelectedTask is not null)
+        {
+            MistakeReportingRequested?.Invoke(this, SelectedTask);
+        }
+    }
+
     [RelayCommand]
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
 
@@ -113,6 +127,7 @@ public sealed partial class SessionTasksViewModel : ObservableObject
             CurrentPage = result.Value.CurrentPage;
             LastPage = result.Value.LastPage;
             Total = result.Value.Total;
+            SelectedTask = Tasks.FirstOrDefault();
             if (Tasks.Count == 0)
             {
                 Message = "لا توجد مهام معلنة لهذه الجلسة.";
@@ -130,6 +145,7 @@ public sealed partial class SessionTasksViewModel : ObservableObject
 
     private bool CanLoad() => !IsBusy && SessionId != Guid.Empty;
     private bool CanCreateTask() => CanLoad() && CanCreateTasks;
+    private bool CanReportMistake() => CanLoad() && CanReportMistakes && SelectedTask is not null;
 
     private void ClearFeedback()
     {
@@ -147,7 +163,12 @@ public sealed partial class SessionTasksViewModel : ObservableObject
     {
         LoadCommand.NotifyCanExecuteChanged();
         CreateTaskCommand.NotifyCanExecuteChanged();
+        ReportMistakeCommand.NotifyCanExecuteChanged();
     }
 
-    partial void OnCanCreateTasksChanged(bool value) => CreateTaskCommand.NotifyCanExecuteChanged();
+    partial void OnCanCreateTasksChanged(bool value) => NotifyCommands();
+
+    partial void OnCanReportMistakesChanged(bool value) => NotifyCommands();
+
+    partial void OnSelectedTaskChanged(SessionTaskListItem? value) => ReportMistakeCommand.NotifyCanExecuteChanged();
 }
