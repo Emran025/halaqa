@@ -44,9 +44,12 @@ public sealed partial class FollowUpViewModel : ObservableObject
 
     public ObservableCollection<FollowUpItem> Items { get; } = new();
     public ObservableCollection<TrackingItem> Trackings { get; } = new();
+    public ObservableCollection<FollowUpPlanDetailEditor> PlanDetails { get; } = new();
+    public ObservableCollection<FollowUpAvailabilitySlotEditor> WeeklySlots { get; } = new();
     public IReadOnlyList<FollowUpFrequency> FrequencyOptions { get; } = Enum.GetValues<FollowUpFrequency>();
     public IReadOnlyList<FollowUpTaskType> TaskTypeOptions { get; } = Enum.GetValues<FollowUpTaskType>();
     public IReadOnlyList<FollowUpUnit> UnitOptions { get; } = Enum.GetValues<FollowUpUnit>();
+    public IReadOnlyList<int> WeekDayOptions { get; } = new[] { 0, 1, 2, 3, 4, 5, 6 };
 
     [ObservableProperty] private Guid _studentId;
     [ObservableProperty] private FollowUpPlan? _plan;
@@ -61,17 +64,9 @@ public sealed partial class FollowUpViewModel : ObservableObject
     [ObservableProperty] private int _trackingsLastPage = 1;
 
     [ObservableProperty] private FollowUpFrequency _frequency = FollowUpFrequency.Daily;
-    [ObservableProperty] private FollowUpTaskType _taskType = FollowUpTaskType.Memorization;
-    [ObservableProperty] private FollowUpUnit _unit = FollowUpUnit.Page;
-    [ObservableProperty] private string _amount = "1";
-    [ObservableProperty] private string? _planNotes;
     [ObservableProperty] private string? _startsOn;
     [ObservableProperty] private string? _endsOn;
     [ObservableProperty] private string _timezone = "UTC";
-    [ObservableProperty] private string _availabilityDayOfWeek = "0";
-    [ObservableProperty] private string _availabilityFrom = "18:00";
-    [ObservableProperty] private string _availabilityTo = "18:30";
-    [ObservableProperty] private bool _availabilityPreferred = true;
     [ObservableProperty] private string? _preferredSessionDurationMinutes = "30";
     [ObservableProperty] private string? _skipReason;
     [ObservableProperty] private string? _rescheduledAt;
@@ -86,6 +81,10 @@ public sealed partial class FollowUpViewModel : ObservableObject
         Trackings.Clear();
         Plan = null;
         Availability = null;
+        PlanDetails.Clear();
+        PlanDetails.Add(new FollowUpPlanDetailEditor());
+        WeeklySlots.Clear();
+        WeeklySlots.Add(new FollowUpAvailabilitySlotEditor());
         SelectedItem = null;
         ItemsCurrentPage = 1;
         ItemsLastPage = 1;
@@ -145,6 +144,40 @@ public sealed partial class FollowUpViewModel : ObservableObject
         finally
         {
             IsBusy = false;
+            NotifyCommands();
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanEditPlanDetails))]
+    private void AddPlanDetail()
+    {
+        PlanDetails.Add(new FollowUpPlanDetailEditor());
+        NotifyCommands();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanRemovePlanDetail))]
+    private void RemovePlanDetail(FollowUpPlanDetailEditor? detail)
+    {
+        if (detail is not null && PlanDetails.Count > 1)
+        {
+            PlanDetails.Remove(detail);
+            NotifyCommands();
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanEditAvailabilitySlots))]
+    private void AddAvailabilitySlot()
+    {
+        WeeklySlots.Add(new FollowUpAvailabilitySlotEditor());
+        NotifyCommands();
+    }
+
+    [RelayCommand(CanExecute = nameof(CanRemoveAvailabilitySlot))]
+    private void RemoveAvailabilitySlot(FollowUpAvailabilitySlotEditor? slot)
+    {
+        if (slot is not null && WeeklySlots.Count > 1)
+        {
+            WeeklySlots.Remove(slot);
             NotifyCommands();
         }
     }
@@ -219,8 +252,12 @@ public sealed partial class FollowUpViewModel : ObservableObject
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
 
     private bool CanLoad() => !IsBusy && StudentId != Guid.Empty;
-    private bool CanSavePlan() => CanLoad();
-    private bool CanSaveAvailability() => CanLoad();
+    private bool CanSavePlan() => CanLoad() && PlanDetails.Count > 0;
+    private bool CanSaveAvailability() => CanLoad() && WeeklySlots.Count > 0;
+    private bool CanEditPlanDetails() => CanLoad();
+    private bool CanRemovePlanDetail(FollowUpPlanDetailEditor? detail) => CanLoad() && detail is not null && PlanDetails.Count > 1;
+    private bool CanEditAvailabilitySlots() => CanLoad();
+    private bool CanRemoveAvailabilitySlot(FollowUpAvailabilitySlotEditor? slot) => CanLoad() && slot is not null && WeeklySlots.Count > 1;
     private bool CanActOnItem() => CanLoad() && SelectedItem is not null;
 
     private async Task LoadAllAsync()
@@ -369,9 +406,20 @@ public sealed partial class FollowUpViewModel : ObservableObject
     {
         command = default!;
         error = null;
-        if (!decimal.TryParse(Amount, NumberStyles.Number, CultureInfo.InvariantCulture, out var amount) || amount <= 0)
+        var details = new List<PlanDetailDraft>();
+        foreach (var detail in PlanDetails)
         {
-            error = "أدخل كمية صحيحة أكبر من صفر.";
+            if (!detail.TryToDraft(out var draft) || draft is null)
+            {
+                error = "تحقق من نوع كل تفصيل ووحدته وكميته الإيجابية وملاحظاته (حتى 500 حرف).";
+                return false;
+            }
+
+            details.Add(draft);
+        }
+        if (details.Count == 0)
+        {
+            error = "أضف تفصيلاً واحداً على الأقل للخطة.";
             return false;
         }
         if (!TryReadDate(StartsOn, out var startsOn) || !TryReadDate(EndsOn, out var endsOn))
@@ -385,8 +433,7 @@ public sealed partial class FollowUpViewModel : ObservableObject
             return false;
         }
 
-        command = new UpdateFollowUpPlanCommand(StudentId, Frequency,
-            new[] { new PlanDetailDraft(TaskType, Unit, amount, NormalizeOptional(PlanNotes)) }, startsOn, endsOn);
+        command = new UpdateFollowUpPlanCommand(StudentId, Frequency, details, startsOn, endsOn);
         return true;
     }
 
@@ -394,16 +441,30 @@ public sealed partial class FollowUpViewModel : ObservableObject
     {
         command = default!;
         error = null;
-        if (string.IsNullOrWhiteSpace(Timezone) || !int.TryParse(AvailabilityDayOfWeek, NumberStyles.Integer, CultureInfo.InvariantCulture, out var day) || day is < 0 or > 6 ||
-            !TimeOnly.TryParseExact(AvailabilityFrom, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var from) ||
-            !TimeOnly.TryParseExact(AvailabilityTo, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out var to) || from >= to ||
-            !TryReadDuration(out var duration))
+        if (string.IsNullOrWhiteSpace(Timezone) || !TryReadDuration(out var duration))
         {
-            error = "تحقق من المنطقة الزمنية واليوم (0 إلى 6) وأوقات الحضور HH:mm والمدة بين 10 و180 دقيقة.";
+            error = "تحقق من المنطقة الزمنية والمدة بين 10 و180 دقيقة.";
             return false;
         }
 
-        command = new UpdateAvailabilityCommand(StudentId, new AttendancePreferences(Timezone.Trim(), new[] { new WeeklyAvailabilitySlot(day, from, to, AvailabilityPreferred) }, duration));
+        var slots = new List<WeeklyAvailabilitySlot>();
+        foreach (var editor in WeeklySlots)
+        {
+            if (!editor.TryToDomain(out var slot) || slot is null)
+            {
+                error = "تحقق من كل نطاق حضور: اليوم بين 0 و6، والأوقات بصيغة HH:mm، ووقت النهاية بعد البداية.";
+                return false;
+            }
+
+            slots.Add(slot);
+        }
+        if (slots.Count == 0)
+        {
+            error = "أضف نطاق حضور أسبوعياً واحداً على الأقل.";
+            return false;
+        }
+
+        command = new UpdateAvailabilityCommand(StudentId, new AttendancePreferences(Timezone.Trim(), slots, duration));
         return true;
     }
 
@@ -442,27 +503,22 @@ public sealed partial class FollowUpViewModel : ObservableObject
         Timezone = value.Timezone;
         StartsOn = value.StartsOn?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         EndsOn = value.EndsOn?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
-        var detail = value.Details.OrderBy(item => item.SortOrder).FirstOrDefault();
-        if (detail is not null)
-        {
-            TaskType = detail.TaskType;
-            Unit = detail.Unit;
-            Amount = detail.Amount.ToString(CultureInfo.InvariantCulture);
-            PlanNotes = detail.Notes;
-        }
+        ReplaceEditors(PlanDetails, value.Details.OrderBy(item => item.SortOrder).Select(FollowUpPlanDetailEditor.FromDomain));
     }
 
     private void ApplyAvailability(AttendancePreferences value)
     {
         Timezone = value.Timezone;
         PreferredSessionDurationMinutes = value.PreferredSessionDurationMinutes?.ToString(CultureInfo.InvariantCulture);
-        var slot = value.WeeklySlots.FirstOrDefault();
-        if (slot is not null)
+        ReplaceEditors(WeeklySlots, value.WeeklySlots.Select(FollowUpAvailabilitySlotEditor.FromDomain));
+    }
+
+    private static void ReplaceEditors<TEditor>(ObservableCollection<TEditor> target, IEnumerable<TEditor> values)
+    {
+        target.Clear();
+        foreach (var value in values)
         {
-            AvailabilityDayOfWeek = slot.DayOfWeek.ToString(CultureInfo.InvariantCulture);
-            AvailabilityFrom = slot.From.ToString("HH:mm", CultureInfo.InvariantCulture);
-            AvailabilityTo = slot.To.ToString("HH:mm", CultureInfo.InvariantCulture);
-            AvailabilityPreferred = slot.Preferred;
+            target.Add(value);
         }
     }
 
@@ -491,7 +547,11 @@ public sealed partial class FollowUpViewModel : ObservableObject
         LoadNextItemsPageCommand.NotifyCanExecuteChanged();
         LoadPreviousItemsPageCommand.NotifyCanExecuteChanged();
         SavePlanCommand.NotifyCanExecuteChanged();
+        AddPlanDetailCommand.NotifyCanExecuteChanged();
+        RemovePlanDetailCommand.NotifyCanExecuteChanged();
         SaveAvailabilityCommand.NotifyCanExecuteChanged();
+        AddAvailabilitySlotCommand.NotifyCanExecuteChanged();
+        RemoveAvailabilitySlotCommand.NotifyCanExecuteChanged();
         CompleteSelectedItemCommand.NotifyCanExecuteChanged();
         SkipSelectedItemCommand.NotifyCanExecuteChanged();
         RescheduleSelectedItemCommand.NotifyCanExecuteChanged();
