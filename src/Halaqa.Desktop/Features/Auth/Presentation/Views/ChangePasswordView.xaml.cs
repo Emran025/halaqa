@@ -6,20 +6,48 @@ namespace Halaqa.Desktop.Features.Auth.Presentation.Views;
 
 public partial class ChangePasswordView : UserControl
 {
+    private ChangePasswordViewModel? viewModel;
+
     public ChangePasswordView()
     {
         InitializeComponent();
+        DataContextChanged += OnDataContextChanged;
+    }
+
+    private void OnDataContextChanged(object sender, DependencyPropertyChangedEventArgs e)
+    {
+        if (viewModel is not null)
+        {
+            viewModel.SensitiveInputsCleared -= OnSensitiveInputsCleared;
+        }
+
+        viewModel = e.NewValue as ChangePasswordViewModel;
+        if (viewModel is not null)
+        {
+            viewModel.SensitiveInputsCleared += OnSensitiveInputsCleared;
+        }
+
+        ClearPasswordInputs();
     }
 
     private void PasswordChanged(object sender, RoutedEventArgs e)
     {
-        if (DataContext is not ChangePasswordViewModel viewModel)
+        if (DataContext is not ChangePasswordViewModel currentViewModel)
         {
             return;
         }
 
-        viewModel.CurrentPassword = CurrentPasswordInput.Password;
-        viewModel.Password = PasswordInput.Password;
-        viewModel.PasswordConfirmation = PasswordConfirmationInput.Password;
+        currentViewModel.CurrentPassword = CurrentPasswordInput.Password;
+        currentViewModel.Password = PasswordInput.Password;
+        currentViewModel.PasswordConfirmation = PasswordConfirmationInput.Password;
+    }
+
+    private void OnSensitiveInputsCleared(object? sender, EventArgs e) => ClearPasswordInputs();
+
+    private void ClearPasswordInputs()
+    {
+        CurrentPasswordInput?.Clear();
+        PasswordInput?.Clear();
+        PasswordConfirmationInput?.Clear();
     }
 }

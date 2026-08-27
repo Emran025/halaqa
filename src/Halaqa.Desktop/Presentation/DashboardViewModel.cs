@@ -27,6 +27,7 @@ public sealed partial class DashboardViewModel
     public event EventHandler? FollowUpRequested;
     public event EventHandler? QuranReaderRequested;
     public event EventHandler? NotificationsRequested;
+    public event EventHandler? PasswordChangeRequested;
 
     public string UserName { get; }
     public string RoleLabel { get; }
@@ -69,6 +70,9 @@ public sealed partial class DashboardViewModel
             FollowUpRequested?.Invoke(this, EventArgs.Empty);
         }
     }
+
+    [RelayCommand]
+    private void OpenPasswordChange() => PasswordChangeRequested?.Invoke(this, EventArgs.Empty);
 
     [RelayCommand]
     private void OpenGeneralProfile() => ProfileRequested?.Invoke(this, EventArgs.Empty);
