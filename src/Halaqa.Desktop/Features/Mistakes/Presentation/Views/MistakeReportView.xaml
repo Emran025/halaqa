@@ -1,0 +1,49 @@
+<UserControl x:Class="Halaqa.Desktop.Features.Mistakes.Presentation.Views.MistakeReportView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             FlowDirection="RightToLeft">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36" MaxWidth="760">
+            <DockPanel Margin="0,0,0,20">
+                <Button Content="رجوع إلى المهام" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                <StackPanel>
+                    <TextBlock Text="تسجيل خطأ" Style="{StaticResource PageTitle}" />
+                    <TextBlock Text="{Binding TaskTitle}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                </StackPanel>
+            </DockPanel>
+
+            <Border Background="#0D155EEF" Padding="14" CornerRadius="10" Margin="0,0,0,16">
+                <DockPanel>
+                    <materialDesign:PackIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0" />
+                    <TextBlock Text="يسجل النموذج موضع خطأ واحد للمهمة ثم يحفظه محلياً ويجرب إرساله إلى الخادم. تُعرض لك النتيجة الفعلية: تمت المزامنة، بانتظار الاتصال، تعارض، أو فشل." TextWrapping="Wrap" />
+                </DockPanel>
+            </Border>
+
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="20" CornerRadius="12" IsEnabled="{Binding CanRecordMistakes}">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <TextBox Text="{Binding AyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="رقم الآية (1–6236)" Margin="0,0,8,12" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Column="1" Text="{Binding PageNumber, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="رقم الصفحة (اختياري، 1–604)" Margin="8,0,0,12" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Row="1" Text="{Binding WordIndex, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="فهرس الكلمة (يبدأ من 1)" Margin="0,0,8,12" FlowDirection="LeftToRight" />
+                    <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding MistakeTypeOptions}" SelectedItem="{Binding SelectedMistakeType}" materialDesign:HintAssist.Hint="نوع الخطأ" Margin="8,0,0,12" />
+                    <TextBox Grid.Row="2" Grid.ColumnSpan="2" Text="{Binding Note, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="ملاحظة اختيارية (حتى 1000 حرف)" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="90" MaxLength="1000" />
+                    <TextBlock Grid.Row="3" Grid.ColumnSpan="2" Text="{Binding Message}" TextWrapping="Wrap" Margin="0,14,0,10">
+                        <TextBlock.Style>
+                            <Style TargetType="TextBlock" BasedOn="{StaticResource BodyMuted}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsError}" Value="True">
+                                        <Setter Property="Foreground" Value="#B91C1C" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBlock.Style>
+                    </TextBlock>
+                    <Button Grid.Row="4" Grid.ColumnSpan="2" Content="تسجيل الخطأ" Command="{Binding SubmitCommand}" HorizontalAlignment="Right" />
+                </Grid>
+            </Border>
+            <ProgressBar IsIndeterminate="True" Height="3" Margin="0,16,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

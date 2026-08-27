@@ -15,7 +15,7 @@ public sealed class SessionTasksViewModelTests
         var repository = new FakeSessionTaskDirectoryRepository();
         var viewModel = CreateViewModel(repository);
         var session = CreateSession();
-        viewModel.Initialize(session, canCreateTasks: false);
+        viewModel.Initialize(session, canCreateTasks: false, canReportMistakes: true);
 
         await viewModel.LoadCommand.ExecuteAsync(null);
 
@@ -33,7 +33,7 @@ public sealed class SessionTasksViewModelTests
         var repository = new FakeSessionTaskDirectoryRepository();
         var viewModel = CreateViewModel(repository);
         var session = CreateSession();
-        viewModel.Initialize(session, canCreateTasks: true);
+        viewModel.Initialize(session, canCreateTasks: true, canReportMistakes: true);
         viewModel.NewTaskType = SessionTaskType.Recitation;
 
         await viewModel.CreateTaskCommand.ExecuteAsync(null);
@@ -48,10 +48,26 @@ public sealed class SessionTasksViewModelTests
     }
 
     [Fact]
+    public async Task ReportMistake_RaisesEventForSelectedTaskWhenInitializedForAuthorizedParticipant()
+    {
+        var repository = new FakeSessionTaskDirectoryRepository();
+        var viewModel = CreateViewModel(repository);
+        viewModel.Initialize(CreateSession(), canCreateTasks: true, canReportMistakes: true);
+        await viewModel.LoadCommand.ExecuteAsync(null);
+        var selected = Assert.IsType<SessionTaskListItem>(viewModel.SelectedTask);
+        SessionTaskListItem? requested = null;
+        viewModel.MistakeReportingRequested += (_, task) => requested = task;
+
+        viewModel.ReportMistakeCommand.Execute(null);
+
+        Assert.Equal(selected, requested);
+    }
+
+    [Fact]
     public void CreateTask_IsUnavailableWhenScreenIsInitializedForStudent()
     {
         var viewModel = CreateViewModel(new FakeSessionTaskDirectoryRepository());
-        viewModel.Initialize(CreateSession(), canCreateTasks: false);
+        viewModel.Initialize(CreateSession(), canCreateTasks: false, canReportMistakes: true);
 
         Assert.False(viewModel.CreateTaskCommand.CanExecute(null));
     }
