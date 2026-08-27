@@ -93,7 +93,8 @@
         "contentHash": "+TUFINV2q2ifyXauQXRwy4CiBhqvDEDZeVJU7qfxya4aRYOKzVBpN+4acx25VcPB9ywUN6C0n8drWl110PhZEg=="
       },
       "MaterialDesignColors": {
-        "type": "Transitive",
+        "type": "Direct",
+        "requested": "[3.1.0, )",
         "resolved": "3.1.0",
         "contentHash": "J2mpZBWx0wArrMCK8E0Cqfsy+Wh3iRDVnznp5/84B1KcnTKI9u9Pyt2zN0oSQGsa6NhvwdUErbhE3jJd6iRTxw=="
       },
