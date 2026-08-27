@@ -108,6 +108,45 @@ public sealed class SessionTasksViewModelTests
     }
 
     [Fact]
+    public async Task SaveDraft_ForAuthorizedParticipantSendsUniqueOperationAndOptionalPosition()
+    {
+        var repository = new FakeSessionTaskDirectoryRepository();
+        var viewModel = CreateViewModel(repository);
+        var session = CreateSession();
+        viewModel.Initialize(session, canCreateTasks: false, canReportMistakes: true);
+        await viewModel.LoadCommand.ExecuteAsync(null);
+        var selected = Assert.IsType<SessionTaskListItem>(viewModel.SelectedTask);
+        viewModel.DraftCurrentPage = "12";
+        viewModel.DraftCurrentAyahId = "155";
+
+        await viewModel.SaveDraftCommand.ExecuteAsync(null);
+
+        var command = Assert.IsType<SaveSessionTaskDraftCommand>(repository.LastSaveDraftCommand);
+        Assert.Equal(session.Id, command.SessionId);
+        Assert.Equal(selected.Id, command.TaskId);
+        Assert.NotEqual(Guid.Empty, command.ClientOperationId);
+        Assert.Equal(12, command.CurrentPage);
+        Assert.Equal(155, command.CurrentAyahId);
+        Assert.False(viewModel.IsError);
+    }
+
+    [Fact]
+    public async Task SaveDraft_WithInvalidPositionDoesNotCallRepository()
+    {
+        var repository = new FakeSessionTaskDirectoryRepository();
+        var viewModel = CreateViewModel(repository);
+        viewModel.Initialize(CreateSession(), canCreateTasks: false, canReportMistakes: true);
+        await viewModel.LoadCommand.ExecuteAsync(null);
+        viewModel.DraftCurrentPage = "605";
+
+        await viewModel.SaveDraftCommand.ExecuteAsync(null);
+
+        Assert.Null(repository.LastSaveDraftCommand);
+        Assert.True(viewModel.IsError);
+        Assert.Equal("الصفحة الحالية يجب أن يكون بين 1 و604.", viewModel.Message);
+    }
+
+    [Fact]
     public async Task ReportMistake_RaisesEventForSelectedTaskWhenInitializedForAuthorizedParticipant()
     {
         var repository = new FakeSessionTaskDirectoryRepository();
@@ -133,13 +172,15 @@ public sealed class SessionTasksViewModelTests
         Assert.False(viewModel.CreateTaskCommand.CanExecute(null));
         Assert.False(viewModel.UpdateTaskCommand.CanExecute(null));
         Assert.True(viewModel.ReportMistakeCommand.CanExecute(null));
+        Assert.True(viewModel.SaveDraftCommand.CanExecute(null));
     }
 
     private static SessionTasksViewModel CreateViewModel(FakeSessionTaskDirectoryRepository repository) =>
         new(
             new ListSessionTasksUseCase(repository),
             new CreateSessionTaskUseCase(repository),
-            new UpdateSessionTaskUseCase(repository));
+            new UpdateSessionTaskUseCase(repository),
+            new SaveSessionTaskDraftUseCase(repository));
 
     private static SessionListItem CreateSession()
     {
@@ -156,6 +197,7 @@ public sealed class SessionTasksViewModelTests
         public Guid LastSessionId { get; private set; }
         public CreateSessionTaskCommand? LastCreateCommand { get; private set; }
         public UpdateSessionTaskCommand? LastUpdateCommand { get; private set; }
+        public SaveSessionTaskDraftCommand? LastSaveDraftCommand { get; private set; }
 
         public Task<Result<SessionTaskPage>> ListAsync(Guid sessionId, CancellationToken cancellationToken = default)
         {
@@ -167,6 +209,12 @@ public sealed class SessionTasksViewModelTests
         {
             LastCreateCommand = command;
             return Task.FromResult(Result<SessionTaskListItem>.Success(CreateTask(command.SessionId, command.TaskType)));
+        }
+
+        public Task<Result<SessionTaskListItem>> SaveDraftAsync(SaveSessionTaskDraftCommand command, CancellationToken cancellationToken = default)
+        {
+            LastSaveDraftCommand = command;
+            return Task.FromResult(Result<SessionTaskListItem>.Success(CreateTask(command.SessionId)));
         }
 
         public Task<Result<SessionTaskListItem>> UpdateAsync(UpdateSessionTaskCommand command, CancellationToken cancellationToken = default)

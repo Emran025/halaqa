@@ -14,6 +14,11 @@ internal sealed record CreateSessionTaskRequestDto(
     [property: JsonPropertyName("end_page"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? EndPage,
     [property: JsonPropertyName("end_ayah_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? EndAyahId);
 
+internal sealed record SaveSessionTaskDraftRequestDto(
+    [property: JsonPropertyName("client_operation_id")] Guid ClientOperationId,
+    [property: JsonPropertyName("current_page"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? CurrentPage,
+    [property: JsonPropertyName("current_ayah_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? CurrentAyahId);
+
 internal sealed record UpdateSessionTaskRequestDto(
     [property: JsonPropertyName("planned_from_unit_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? PlannedFromUnitId,
     [property: JsonPropertyName("planned_to_unit_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? PlannedToUnitId,

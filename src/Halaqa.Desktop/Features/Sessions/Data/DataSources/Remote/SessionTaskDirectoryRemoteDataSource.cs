@@ -12,6 +12,8 @@ internal interface ISessionTaskDirectoryRemoteDataSource
     Task<Result<SessionTaskResponseDto>> CreateAsync(CreateSessionTaskCommand command, CancellationToken cancellationToken = default);
 
     Task<Result<SessionTaskResponseDto>> UpdateAsync(UpdateSessionTaskCommand command, CancellationToken cancellationToken = default);
+
+    Task<Result<SessionTaskResponseDto>> SaveDraftAsync(SaveSessionTaskDraftCommand command, CancellationToken cancellationToken = default);
 }
 
 internal sealed class SessionTaskDirectoryRemoteDataSource : ISessionTaskDirectoryRemoteDataSource
@@ -40,6 +42,15 @@ internal sealed class SessionTaskDirectoryRemoteDataSource : ISessionTaskDirecto
             command.EndPage,
             command.EndAyahId);
         return apiClient.PostAsync<CreateSessionTaskRequestDto, SessionTaskResponseDto>($"sessions/{command.SessionId}/tasks", request, cancellationToken);
+    }
+
+    public Task<Result<SessionTaskResponseDto>> SaveDraftAsync(SaveSessionTaskDraftCommand command, CancellationToken cancellationToken = default)
+    {
+        var request = new SaveSessionTaskDraftRequestDto(command.ClientOperationId, command.CurrentPage, command.CurrentAyahId);
+        return apiClient.PostAsync<SaveSessionTaskDraftRequestDto, SessionTaskResponseDto>(
+            $"sessions/{command.SessionId}/tasks/{command.TaskId}/save-draft",
+            request,
+            cancellationToken);
     }
 
     public Task<Result<SessionTaskResponseDto>> UpdateAsync(UpdateSessionTaskCommand command, CancellationToken cancellationToken = default)

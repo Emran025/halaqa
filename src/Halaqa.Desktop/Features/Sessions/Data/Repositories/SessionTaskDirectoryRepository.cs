@@ -31,6 +31,14 @@ internal sealed class SessionTaskDirectoryRepository : ISessionTaskDirectoryRepo
             : Result<SessionTaskListItem>.Failure(result.Error ?? new AppError(AppErrorKind.Unknown, "تعذر إنشاء مهمة الجلسة."));
     }
 
+    public async Task<Result<SessionTaskListItem>> SaveDraftAsync(SaveSessionTaskDraftCommand command, CancellationToken cancellationToken = default)
+    {
+        var result = await remoteDataSource.SaveDraftAsync(command, cancellationToken);
+        return result.IsSuccess && result.Value is not null
+            ? Result<SessionTaskListItem>.Success(SessionTaskDirectoryMapper.ToDomain(result.Value.Task))
+            : Result<SessionTaskListItem>.Failure(result.Error ?? new AppError(AppErrorKind.Unknown, "تعذر حفظ مسودة المهمة."));
+    }
+
     public async Task<Result<SessionTaskListItem>> UpdateAsync(UpdateSessionTaskCommand command, CancellationToken cancellationToken = default)
     {
         var result = await remoteDataSource.UpdateAsync(command, cancellationToken);

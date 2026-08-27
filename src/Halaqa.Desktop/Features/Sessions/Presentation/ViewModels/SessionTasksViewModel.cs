@@ -13,15 +13,18 @@ public sealed partial class SessionTasksViewModel : ObservableObject
     private readonly ListSessionTasksUseCase listSessionTasksUseCase;
     private readonly CreateSessionTaskUseCase createSessionTaskUseCase;
     private readonly UpdateSessionTaskUseCase updateSessionTaskUseCase;
+    private readonly SaveSessionTaskDraftUseCase saveSessionTaskDraftUseCase;
 
     public SessionTasksViewModel(
         ListSessionTasksUseCase listSessionTasksUseCase,
         CreateSessionTaskUseCase createSessionTaskUseCase,
-        UpdateSessionTaskUseCase updateSessionTaskUseCase)
+        UpdateSessionTaskUseCase updateSessionTaskUseCase,
+        SaveSessionTaskDraftUseCase saveSessionTaskDraftUseCase)
     {
         this.listSessionTasksUseCase = listSessionTasksUseCase;
         this.createSessionTaskUseCase = createSessionTaskUseCase;
         this.updateSessionTaskUseCase = updateSessionTaskUseCase;
+        this.saveSessionTaskDraftUseCase = saveSessionTaskDraftUseCase;
     }
 
     public ObservableCollection<SessionTaskListItem> Tasks { get; } = new();
@@ -63,6 +66,8 @@ public sealed partial class SessionTasksViewModel : ObservableObject
     [ObservableProperty] private string _updateCurrentPage = string.Empty;
     [ObservableProperty] private string _updateCurrentAyahId = string.Empty;
     [ObservableProperty] private OfficialSessionTaskState? _selectedUpdateState;
+    [ObservableProperty] private string _draftCurrentPage = string.Empty;
+    [ObservableProperty] private string _draftCurrentAyahId = string.Empty;
     [ObservableProperty] private bool _canCreateTasks;
     [ObservableProperty] private bool _canReportMistakes;
     [ObservableProperty] private int _currentPage = 1;
@@ -84,6 +89,7 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         NewTaskType = SessionTaskType.Memorization;
         ClearCreateInputs();
         ClearUpdateInputs();
+        ClearDraftInputs();
         Tasks.Clear();
         SelectedTask = null;
         CurrentPage = 1;
@@ -155,6 +161,40 @@ public sealed partial class SessionTasksViewModel : ObservableObject
             if (!IsError)
             {
                 Message = "تم تحديث المهمة من الخادم.";
+            }
+        }
+        finally
+        {
+            IsBusy = false;
+            NotifyCommands();
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanSaveDraft))]
+    private async Task SaveDraftAsync()
+    {
+        if (!TrySaveDraftCommand(out var command, out var inputError))
+        {
+            SetLocalFailure(inputError!);
+            return;
+        }
+
+        IsBusy = true;
+        ClearFeedback();
+        try
+        {
+            var result = await saveSessionTaskDraftUseCase.ExecuteAsync(command!);
+            if (!result.IsSuccess)
+            {
+                SetFailure(result.Error, "تعذر حفظ مسودة المهمة.");
+                return;
+            }
+
+            ClearDraftInputs();
+            await LoadTasksAsync(keepBusy: true);
+            if (!IsError)
+            {
+                Message = "تم حفظ مسودة المهمة من الخادم.";
             }
         }
         finally
@@ -243,6 +283,25 @@ public sealed partial class SessionTasksViewModel : ObservableObject
             startAyahId,
             endPage,
             endAyahId);
+        return true;
+    }
+
+    private bool TrySaveDraftCommand(out SaveSessionTaskDraftCommand? command, out string? error)
+    {
+        command = null;
+        error = null;
+        if (SelectedTask is null)
+        {
+            error = "اختر مهمة لحفظ مسودتها أولاً.";
+            return false;
+        }
+        if (!TryReadOptionalInt(DraftCurrentPage, "الصفحة الحالية", 1, 604, out var currentPage, out error) ||
+            !TryReadOptionalInt(DraftCurrentAyahId, "الآية الحالية", 1, 6236, out var currentAyahId, out error))
+        {
+            return false;
+        }
+
+        command = new SaveSessionTaskDraftCommand(SessionId, SelectedTask.Id, Guid.NewGuid(), currentPage, currentAyahId);
         return true;
     }
 
@@ -343,6 +402,12 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         NewEndAyahId = string.Empty;
     }
 
+    private void ClearDraftInputs()
+    {
+        DraftCurrentPage = string.Empty;
+        DraftCurrentAyahId = string.Empty;
+    }
+
     private void ClearUpdateInputs()
     {
         UpdatePlannedAmount = string.Empty;
@@ -361,6 +426,7 @@ public sealed partial class SessionTasksViewModel : ObservableObject
     private bool CanLoad() => !IsBusy && SessionId != Guid.Empty;
     private bool CanCreateTask() => CanLoad() && CanCreateTasks;
     private bool CanUpdateTask() => CanLoad() && CanCreateTasks && SelectedTask is not null;
+    private bool CanSaveDraft() => CanLoad() && CanReportMistakes && SelectedTask is not null;
     private bool CanReportMistake() => CanLoad() && CanReportMistakes && SelectedTask is not null;
 
     private void ClearFeedback()
@@ -386,6 +452,7 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         LoadCommand.NotifyCanExecuteChanged();
         CreateTaskCommand.NotifyCanExecuteChanged();
         UpdateTaskCommand.NotifyCanExecuteChanged();
+        SaveDraftCommand.NotifyCanExecuteChanged();
         ReportMistakeCommand.NotifyCanExecuteChanged();
     }
 
@@ -396,7 +463,9 @@ public sealed partial class SessionTasksViewModel : ObservableObject
     partial void OnSelectedTaskChanged(SessionTaskListItem? value)
     {
         ClearUpdateInputs();
+        ClearDraftInputs();
         UpdateTaskCommand.NotifyCanExecuteChanged();
+        SaveDraftCommand.NotifyCanExecuteChanged();
         ReportMistakeCommand.NotifyCanExecuteChanged();
     }
 }

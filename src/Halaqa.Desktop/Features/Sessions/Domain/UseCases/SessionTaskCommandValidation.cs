@@ -26,6 +26,24 @@ internal static class SessionTaskCommandValidation
             null);
     }
 
+    public static AppError? Validate(SaveSessionTaskDraftCommand command)
+    {
+        if (command.SessionId == Guid.Empty || command.TaskId == Guid.Empty || command.ClientOperationId == Guid.Empty)
+        {
+            return Invalid("client_operation_id", "تعذر تجهيز حفظ مسودة المهمة.");
+        }
+        if (!IsPage(command.CurrentPage))
+        {
+            return Invalid("current_page", "رقم صفحة المصحف يجب أن يكون بين 1 و604.");
+        }
+        if (!IsAyah(command.CurrentAyahId))
+        {
+            return Invalid("current_ayah_id", "رقم الآية يجب أن يكون بين 1 و6236.");
+        }
+
+        return null;
+    }
+
     public static AppError? Validate(UpdateSessionTaskCommand command)
     {
         if (command.SessionId == Guid.Empty || command.TaskId == Guid.Empty)
