@@ -11,6 +11,7 @@ using Halaqa.Desktop.Features.Mistakes.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Notifications.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Notes.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Profile.Domain.Entities;
+using Halaqa.Desktop.Features.Progress.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Quran.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Profile.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Registrations.Presentation.ViewModels;
@@ -45,6 +46,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly MistakeReportViewModel _mistakeReportViewModel;
     private readonly TaskEvaluationViewModel _taskEvaluationViewModel;
     private readonly TaskNotesViewModel _taskNotesViewModel;
+    private readonly StudentProgressViewModel _studentProgressViewModel;
     private readonly RestoreSessionUseCase _restoreSessionUseCase;
     private AuthenticatedUser? _authenticatedUser;
 
@@ -76,6 +78,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         MistakeReportViewModel mistakeReportViewModel,
         TaskEvaluationViewModel taskEvaluationViewModel,
         TaskNotesViewModel taskNotesViewModel,
+        StudentProgressViewModel studentProgressViewModel,
         RestoreSessionUseCase restoreSessionUseCase)
     {
         _loginViewModel = loginViewModel;
@@ -102,6 +105,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _mistakeReportViewModel = mistakeReportViewModel;
         _taskEvaluationViewModel = taskEvaluationViewModel;
         _taskNotesViewModel = taskNotesViewModel;
+        _studentProgressViewModel = studentProgressViewModel;
         _restoreSessionUseCase = restoreSessionUseCase;
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
@@ -145,6 +149,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _mistakeReportViewModel.BackRequested += (_, _) => CurrentPage = _sessionTasksViewModel;
         _taskEvaluationViewModel.BackRequested += (_, _) => CurrentPage = _sessionTasksViewModel;
         _taskNotesViewModel.BackRequested += (_, _) => CurrentPage = _sessionTasksViewModel;
+        _studentProgressViewModel.BackRequested += (_, _) => ShowDashboard();
 
         CurrentPage = _loginViewModel;
     }
@@ -180,6 +185,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         dashboardViewModel.TeacherApplicationsRequested += async (_, _) => await ShowTeacherApplicationInboxAsync();
         dashboardViewModel.StudentRegistrationsRequested += async (_, _) => await ShowStudentTeacherDirectoryAsync();
         dashboardViewModel.FollowUpRequested += async (_, _) => await ShowFollowUpAsync();
+        dashboardViewModel.ProgressRequested += async (_, _) => await ShowStudentProgressAsync();
         dashboardViewModel.QuranReaderRequested += async (_, _) => await ShowQuranReaderAsync();
         dashboardViewModel.NotificationsRequested += async (_, _) => await ShowNotificationsAsync();
         dashboardViewModel.SessionsRequested += async (_, _) => await ShowSessionsAsync();
@@ -312,6 +318,18 @@ public sealed partial class MainShellViewModel : ObservableObject
         _followUpViewModel.Initialize(_authenticatedUser.User.Id);
         CurrentPage = _followUpViewModel;
         await _followUpViewModel.LoadCommand.ExecuteAsync(null);
+    }
+
+    private async Task ShowStudentProgressAsync()
+    {
+        if (_authenticatedUser?.User.Role != UserRole.Student)
+        {
+            return;
+        }
+
+        _studentProgressViewModel.Initialize(_authenticatedUser.User.Id);
+        CurrentPage = _studentProgressViewModel;
+        await _studentProgressViewModel.LoadCommand.ExecuteAsync(null);
     }
 
     private async Task ShowStudentTeacherDirectoryAsync()
