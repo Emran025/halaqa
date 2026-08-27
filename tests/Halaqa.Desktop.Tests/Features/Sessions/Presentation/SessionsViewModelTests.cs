@@ -34,6 +34,21 @@ public sealed class SessionsViewModelTests
         Assert.False(viewModel.IsError);
     }
 
+    [Fact]
+    public async Task OpenTasks_RaisesTasksRequestedForSelectedOfficialSession()
+    {
+        var viewModel = new SessionsViewModel(new ListSessionsUseCase(new FakeSessionDirectoryRepository()));
+        viewModel.Initialize();
+        await viewModel.LoadCommand.ExecuteAsync(null);
+        var selected = Assert.IsType<SessionListItem>(viewModel.SelectedSession);
+        SessionListItem? requested = null;
+        viewModel.TasksRequested += (_, session) => requested = session;
+
+        viewModel.OpenTasksCommand.Execute(null);
+
+        Assert.Equal(selected, requested);
+    }
+
     private sealed class FakeSessionDirectoryRepository : ISessionDirectoryRepository
     {
         public SessionQuery? LastQuery { get; private set; }

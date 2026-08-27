@@ -1,0 +1,54 @@
+<UserControl x:Class="Halaqa.Desktop.Features.Sessions.Presentation.Views.SessionTasksView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             FlowDirection="RightToLeft">
+    <ScrollViewer VerticalScrollBarVisibility="Auto">
+        <StackPanel Margin="36" MaxWidth="980">
+            <DockPanel Margin="0,0,0,20">
+                <Button Content="رجوع إلى الجلسات" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                <StackPanel>
+                    <TextBlock Text="مهام الجلسة" Style="{StaticResource PageTitle}" />
+                    <TextBlock Text="{Binding SessionTitle}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                </StackPanel>
+            </DockPanel>
+
+            <Border Background="#0D155EEF" Padding="14" CornerRadius="10" Margin="0,0,0,16">
+                <DockPanel>
+                    <materialDesign:PackIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0" />
+                    <TextBlock Text="هذه الشاشة تقرأ مهام الجلسة التي يصرح بها الخادم. لا تنشئ أو تعدل المهام ولا تبدأ اتصالاً مباشراً أو وسائط." TextWrapping="Wrap" />
+                </DockPanel>
+            </Border>
+
+            <DockPanel Margin="0,0,0,12">
+                <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                <Button Content="تحديث" Command="{Binding LoadCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
+            </DockPanel>
+            <ListBox ItemsSource="{Binding Tasks}" MinHeight="190" BorderThickness="0" Background="Transparent">
+                <ListBox.ItemTemplate>
+                    <DataTemplate>
+                        <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,0,0,10">
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                                <StackPanel>
+                                    <TextBlock Text="{Binding TaskType}" Style="{StaticResource SectionTitle}" />
+                                    <TextBlock Text="{Binding SequenceNo, StringFormat=الترتيب: {0}}" Style="{StaticResource BodyMuted}" />
+                                    <TextBlock Text="{Binding PlannedAmount, StringFormat=الكمية المخططة: {0}}" Style="{StaticResource CaptionText}" />
+                                    <TextBlock Text="{Binding ActualAmount, StringFormat=الكمية الفعلية: {0}}" Style="{StaticResource CaptionText}" />
+                                    <TextBlock Text="{Binding Score, StringFormat=النتيجة: {0}}" Style="{StaticResource CaptionText}" />
+                                    <TextBlock Text="{Binding MistakesCount, StringFormat=عدد الأخطاء: {0}}" Style="{StaticResource CaptionText}" />
+                                    <TextBlock Text="{Binding Comment, StringFormat=ملاحظة: {0}}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
+                                </StackPanel>
+                                <Border Grid.Column="1" Background="#0D155EEF" Padding="10,6" CornerRadius="8" VerticalAlignment="Top">
+                                    <TextBlock Text="{Binding State}" FontWeight="SemiBold" />
+                                </Border>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ListBox.ItemTemplate>
+            </ListBox>
+            <TextBlock Text="{Binding Total, StringFormat=إجمالي المهام: {0}}" Style="{StaticResource BodyMuted}" HorizontalAlignment="Left" Margin="0,10,0,0" />
+            <ProgressBar IsIndeterminate="True" Height="3" Margin="0,16,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>
