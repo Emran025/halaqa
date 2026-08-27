@@ -26,6 +26,8 @@
         xmlns:mistakesViews="clr-namespace:Halaqa.Desktop.Features.Mistakes.Presentation.Views"
         xmlns:evaluationsVm="clr-namespace:Halaqa.Desktop.Features.Evaluations.Presentation.ViewModels"
         xmlns:evaluationsViews="clr-namespace:Halaqa.Desktop.Features.Evaluations.Presentation.Views"
+        xmlns:notesVm="clr-namespace:Halaqa.Desktop.Features.Notes.Presentation.ViewModels"
+        xmlns:notesViews="clr-namespace:Halaqa.Desktop.Features.Notes.Presentation.Views"
         Title="حلقة القرآن" Height="720" Width="1120" MinHeight="620" MinWidth="900"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -58,6 +60,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type evaluationsVm:TaskEvaluationViewModel}">
             <evaluationsViews:TaskEvaluationView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type notesVm:TaskNotesViewModel}">
+            <notesViews:TaskNotesView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:DashboardViewModel}">
             <local:DashboardView />

@@ -49,6 +49,7 @@
             <DockPanel Margin="0,0,0,10">
                 <TextBlock Text="اختر مهمة لعرض بياناتها أو تسجيل خطأ عليها." Style="{StaticResource BodyMuted}" />
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Visibility="{Binding CanReportMistakes, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Button Content="الملاحظات" Command="{Binding OpenNotesCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,8,0" />
                     <Button Content="التقييم" Command="{Binding OpenEvaluationCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,8,0" />
                     <Button Content="تسجيل خطأ" Command="{Binding ReportMistakeCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" />
                 </StackPanel>

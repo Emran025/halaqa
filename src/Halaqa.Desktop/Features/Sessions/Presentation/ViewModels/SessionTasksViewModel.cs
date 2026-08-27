@@ -80,6 +80,7 @@ public sealed partial class SessionTasksViewModel : ObservableObject
     public event EventHandler? BackRequested;
     public event EventHandler<SessionTaskListItem>? MistakeReportingRequested;
     public event EventHandler<SessionTaskListItem>? EvaluationRequested;
+    public event EventHandler<SessionTaskListItem>? NotesRequested;
 
     public void Initialize(SessionListItem session, bool canCreateTasks, bool canReportMistakes)
     {
@@ -202,6 +203,15 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         {
             IsBusy = false;
             NotifyCommands();
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanOpenNotes))]
+    private void OpenNotes()
+    {
+        if (SelectedTask is not null)
+        {
+            NotesRequested?.Invoke(this, SelectedTask);
         }
     }
 
@@ -437,6 +447,7 @@ public sealed partial class SessionTasksViewModel : ObservableObject
     private bool CanCreateTask() => CanLoad() && CanCreateTasks;
     private bool CanUpdateTask() => CanLoad() && CanCreateTasks && SelectedTask is not null;
     private bool CanSaveDraft() => CanLoad() && CanReportMistakes && SelectedTask is not null;
+    private bool CanOpenNotes() => CanLoad() && CanReportMistakes && SelectedTask is not null;
     private bool CanEvaluate() => CanLoad() && CanReportMistakes && SelectedTask is not null;
     private bool CanReportMistake() => CanLoad() && CanReportMistakes && SelectedTask is not null;
 
@@ -464,6 +475,7 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         CreateTaskCommand.NotifyCanExecuteChanged();
         UpdateTaskCommand.NotifyCanExecuteChanged();
         SaveDraftCommand.NotifyCanExecuteChanged();
+        OpenNotesCommand.NotifyCanExecuteChanged();
         OpenEvaluationCommand.NotifyCanExecuteChanged();
         ReportMistakeCommand.NotifyCanExecuteChanged();
     }
@@ -478,6 +490,7 @@ public sealed partial class SessionTasksViewModel : ObservableObject
         ClearDraftInputs();
         UpdateTaskCommand.NotifyCanExecuteChanged();
         SaveDraftCommand.NotifyCanExecuteChanged();
+        OpenNotesCommand.NotifyCanExecuteChanged();
         OpenEvaluationCommand.NotifyCanExecuteChanged();
         ReportMistakeCommand.NotifyCanExecuteChanged();
     }

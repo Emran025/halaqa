@@ -5,6 +5,7 @@ using Halaqa.Desktop.Features.Halaqas;
 using Halaqa.Desktop.Features.Memberships;
 using Halaqa.Desktop.Features.Mistakes;
 using Halaqa.Desktop.Features.Notifications;
+using Halaqa.Desktop.Features.Notes;
 using Halaqa.Desktop.Features.Profile;
 using Halaqa.Desktop.Features.Registrations;
 using Halaqa.Desktop.Features.Quran;
@@ -44,6 +45,7 @@ public static class Bootstrapper
         services.AddMistakesFeature();
         services.AddEvaluationsFeature();
         services.AddNotificationsFeature();
+        services.AddNotesFeature();
         services.AddSessionsFeature();
 
         services.AddSingleton<MainWindow>();
