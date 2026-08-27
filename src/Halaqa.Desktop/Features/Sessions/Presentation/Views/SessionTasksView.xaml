@@ -75,6 +75,17 @@
             </ListBox>
             <TextBlock Text="{Binding Total, StringFormat=إجمالي المهام: {0}}" Style="{StaticResource BodyMuted}" HorizontalAlignment="Left" Margin="0,10,0,0" />
 
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,20,0,0" Visibility="{Binding CanReportMistakes, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <TextBlock Grid.ColumnSpan="3" Text="حفظ مسودة المهمة المختارة" Style="{StaticResource SectionTitle}" />
+                    <TextBox Grid.Row="1" Text="{Binding DraftCurrentPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الصفحة الحالية (اختيارية، 1–604)" Margin="0,10,6,0" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DraftCurrentAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الآية الحالية (اختيارية، 1–6236)" Margin="6,10" FlowDirection="LeftToRight" />
+                    <Button Grid.Row="1" Grid.Column="2" Content="حفظ المسودة" Command="{Binding SaveDraftCommand}" Margin="6,10,0,0" />
+                </Grid>
+            </Border>
+
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,20,0,0" Visibility="{Binding CanCreateTasks, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Grid>
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>

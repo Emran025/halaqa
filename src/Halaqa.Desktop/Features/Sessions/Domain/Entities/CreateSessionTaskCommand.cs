@@ -13,6 +13,13 @@ public sealed record CreateSessionTaskCommand(
     int? EndPage = null,
     int? EndAyahId = null);
 
+public sealed record SaveSessionTaskDraftCommand(
+    Guid SessionId,
+    Guid TaskId,
+    Guid ClientOperationId,
+    int? CurrentPage = null,
+    int? CurrentAyahId = null);
+
 public sealed record UpdateSessionTaskCommand(
     Guid SessionId,
     Guid TaskId,

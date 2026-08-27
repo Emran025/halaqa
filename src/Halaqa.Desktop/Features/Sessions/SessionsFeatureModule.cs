@@ -24,6 +24,7 @@ public static class SessionsFeatureModule
         services.AddSingleton<ListSessionTasksUseCase>();
         services.AddSingleton<CreateSessionTaskUseCase>();
         services.AddSingleton<UpdateSessionTaskUseCase>();
+        services.AddSingleton<SaveSessionTaskDraftUseCase>();
         services.AddTransient<LiveSessionStore>();
         services.AddTransient<SessionsViewModel>();
         services.AddTransient<SessionTasksViewModel>();
