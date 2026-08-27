@@ -16,21 +16,32 @@
             <Border Background="#0D155EEF" Padding="14" CornerRadius="10" Margin="0,0,0,16">
                 <DockPanel>
                     <materialDesign:PackIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0" />
-                    <TextBlock Text="يعرض العميل مهام الجلسة المصرح بها. يمكن للمعلم إنشاء مهمة، ويمكن للطرفين تسجيل أخطاء المهمة؛ لا ينفذ اتصالاً مباشراً أو وسائط." TextWrapping="Wrap" />
+                    <TextBlock Text="تعرض هذه الشاشة مهام الجلسة المصرح بها. يمكن للمعلم إنشاء مهمة وتحديث النطاق أو الموضع أو الحالة؛ ويسجل الطرفان أخطاء المهمة. لا تنفذ اتصالاً مباشراً أو وسائط." TextWrapping="Wrap" />
                 </DockPanel>
             </Border>
 
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,0,0,16" Visibility="{Binding CanCreateTasks, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Grid>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <StackPanel>
-                        <TextBlock Text="إضافة مهمة" Style="{StaticResource SectionTitle}" />
-                        <TextBlock Text="نوع المهمة إلزامي؛ أما رقم التسلسل والنطاق والكميات فاختيارية في العقد ولم تُضف إلى هذا الإدخال المبسط." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,10" />
-                        <ComboBox ItemsSource="{Binding TaskTypeOptions}" SelectedItem="{Binding NewTaskType}" Width="240" HorizontalAlignment="Right" materialDesign:HintAssist.Hint="نوع المهمة" />
-                    </StackPanel>
-                    <Button Grid.Column="1" Content="إنشاء المهمة" Command="{Binding CreateTaskCommand}" VerticalAlignment="Bottom" Margin="16,0,0,0" />
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <TextBlock Grid.ColumnSpan="4" Text="إضافة مهمة" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Grid.Row="1" Grid.ColumnSpan="4" Text="نوع المهمة ومعرّف العملية مطلوبان؛ القيم الآتية اختيارية في العقد وتُحذف من الطلب حين تترك فارغة." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,10" />
+                    <ComboBox Grid.Row="2" ItemsSource="{Binding TaskTypeOptions}" SelectedItem="{Binding NewTaskType}" materialDesign:HintAssist.Hint="نوع المهمة" Margin="0,0,6,10" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewSequenceNo, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="التسلسل (≥ 1)" Margin="6,0,6,10" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding NewPlannedAmount, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الكمية المخططة (≥ 0)" Margin="6,0,6,10" FlowDirection="LeftToRight" />
+                    <Button Grid.Row="2" Grid.Column="3" Content="إنشاء المهمة" Command="{Binding CreateTaskCommand}" Margin="6,0,0,10" />
+                    <Grid Grid.Row="3" Grid.ColumnSpan="4">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding NewPlannedFromUnitId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="وحدة البداية (≥ 1)" Margin="0,0,4,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="1" Text="{Binding NewPlannedToUnitId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="وحدة النهاية (≥ 1)" Margin="4,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="2" Text="{Binding NewStartPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="صفحة البدء" Margin="4,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="3" Text="{Binding NewStartAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="آية البدء" Margin="4,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="4" Text="{Binding NewEndPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="صفحة النهاية" Margin="4,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="5" Text="{Binding NewEndAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="آية النهاية" Margin="4,0,0,0" FlowDirection="LeftToRight" />
+                    </Grid>
                 </Grid>
             </Border>
+
             <DockPanel Margin="0,0,0,12">
                 <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                 <Button Content="تحديث" Command="{Binding LoadCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
@@ -63,6 +74,30 @@
                 </ListBox.ItemTemplate>
             </ListBox>
             <TextBlock Text="{Binding Total, StringFormat=إجمالي المهام: {0}}" Style="{StaticResource BodyMuted}" HorizontalAlignment="Left" Margin="0,10,0,0" />
+
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,20,0,0" Visibility="{Binding CanCreateTasks, Converter={StaticResource BooleanToVisibilityConverter}}">
+                <Grid>
+                    <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+                    <TextBlock Grid.ColumnSpan="4" Text="تحديث المهمة المختارة" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Grid.Row="1" Grid.ColumnSpan="4" Text="أدخل الحقول التي تريد تعديلها فقط؛ يرسل العميل PATCH بحقل واحد على الأقل ولا يرسل قيماً فارغة على أنها null." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,10" />
+                    <ComboBox Grid.Row="2" ItemsSource="{Binding TaskStateOptions}" SelectedItem="{Binding SelectedUpdateState}" materialDesign:HintAssist.Hint="الحالة" Margin="0,0,6,10" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding UpdatePlannedAmount, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الكمية المخططة" Margin="6,0,6,10" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding UpdateActualAmount, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الكمية الفعلية" Margin="6,0,6,10" FlowDirection="LeftToRight" />
+                    <Button Grid.Row="2" Grid.Column="3" Content="حفظ التحديث" Command="{Binding UpdateTaskCommand}" Margin="6,0,0,10" />
+                    <Grid Grid.Row="3" Grid.ColumnSpan="4">
+                        <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+                        <TextBox Text="{Binding UpdatePlannedFromUnitId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="وحدة البداية" Margin="0,0,3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="1" Text="{Binding UpdatePlannedToUnitId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="وحدة النهاية" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="2" Text="{Binding UpdateStartPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="صفحة البدء" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="3" Text="{Binding UpdateStartAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="آية البدء" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="4" Text="{Binding UpdateEndPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="صفحة النهاية" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="5" Text="{Binding UpdateEndAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="آية النهاية" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="6" Text="{Binding UpdateCurrentPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الصفحة الحالية" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="7" Text="{Binding UpdateCurrentAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الآية الحالية" Margin="3,0,0,0" FlowDirection="LeftToRight" />
+                    </Grid>
+                </Grid>
+            </Border>
             <ProgressBar IsIndeterminate="True" Height="3" Margin="0,16,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
         </StackPanel>
     </ScrollViewer>

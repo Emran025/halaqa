@@ -4,7 +4,28 @@ namespace Halaqa.Desktop.Features.Sessions.Data.Models;
 
 internal sealed record CreateSessionTaskRequestDto(
     [property: JsonPropertyName("task_type")] string TaskType,
-    [property: JsonPropertyName("client_operation_id")] Guid ClientOperationId);
+    [property: JsonPropertyName("client_operation_id")] Guid ClientOperationId,
+    [property: JsonPropertyName("sequence_no"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? SequenceNo,
+    [property: JsonPropertyName("planned_amount"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] decimal? PlannedAmount,
+    [property: JsonPropertyName("planned_from_unit_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? PlannedFromUnitId,
+    [property: JsonPropertyName("planned_to_unit_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? PlannedToUnitId,
+    [property: JsonPropertyName("start_page"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? StartPage,
+    [property: JsonPropertyName("start_ayah_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? StartAyahId,
+    [property: JsonPropertyName("end_page"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? EndPage,
+    [property: JsonPropertyName("end_ayah_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? EndAyahId);
+
+internal sealed record UpdateSessionTaskRequestDto(
+    [property: JsonPropertyName("planned_from_unit_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? PlannedFromUnitId,
+    [property: JsonPropertyName("planned_to_unit_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? PlannedToUnitId,
+    [property: JsonPropertyName("start_page"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? StartPage,
+    [property: JsonPropertyName("start_ayah_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? StartAyahId,
+    [property: JsonPropertyName("end_page"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? EndPage,
+    [property: JsonPropertyName("end_ayah_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? EndAyahId,
+    [property: JsonPropertyName("current_page"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? CurrentPage,
+    [property: JsonPropertyName("current_ayah_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] int? CurrentAyahId,
+    [property: JsonPropertyName("state"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? State,
+    [property: JsonPropertyName("planned_amount"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] decimal? PlannedAmount,
+    [property: JsonPropertyName("actual_amount"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] decimal? ActualAmount);
 
 internal sealed record SessionTaskResponseDto(
     [property: JsonPropertyName("task")] SessionTaskListItemDto Task);

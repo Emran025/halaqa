@@ -4,20 +4,20 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Sessions.Domain.UseCases;
 
-public sealed class CreateSessionTaskUseCase
+public sealed class UpdateSessionTaskUseCase
 {
     private readonly ISessionTaskDirectoryRepository repository;
 
-    public CreateSessionTaskUseCase(ISessionTaskDirectoryRepository repository)
+    public UpdateSessionTaskUseCase(ISessionTaskDirectoryRepository repository)
     {
         this.repository = repository;
     }
 
-    public Task<Result<SessionTaskListItem>> ExecuteAsync(CreateSessionTaskCommand command, CancellationToken cancellationToken = default)
+    public Task<Result<SessionTaskListItem>> ExecuteAsync(UpdateSessionTaskCommand command, CancellationToken cancellationToken = default)
     {
         var validationError = SessionTaskCommandValidation.Validate(command);
         return validationError is null
-            ? repository.CreateAsync(command, cancellationToken)
+            ? repository.UpdateAsync(command, cancellationToken)
             : Task.FromResult(Result<SessionTaskListItem>.Failure(validationError));
     }
 }
