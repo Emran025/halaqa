@@ -25,6 +25,7 @@ public sealed partial class DashboardViewModel
     public event EventHandler? TeacherApplicationsRequested;
     public event EventHandler? StudentRegistrationsRequested;
     public event EventHandler? FollowUpRequested;
+    public event EventHandler? ProgressRequested;
     public event EventHandler? QuranReaderRequested;
     public event EventHandler? NotificationsRequested;
     public event EventHandler? SessionsRequested;
@@ -69,6 +70,15 @@ public sealed partial class DashboardViewModel
         if (_isStudent)
         {
             FollowUpRequested?.Invoke(this, EventArgs.Empty);
+        }
+    }
+
+    [RelayCommand]
+    private void OpenProgress()
+    {
+        if (_isStudent)
+        {
+            ProgressRequested?.Invoke(this, EventArgs.Empty);
         }
     }
 

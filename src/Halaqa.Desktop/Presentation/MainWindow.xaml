@@ -28,6 +28,8 @@
         xmlns:evaluationsViews="clr-namespace:Halaqa.Desktop.Features.Evaluations.Presentation.Views"
         xmlns:notesVm="clr-namespace:Halaqa.Desktop.Features.Notes.Presentation.ViewModels"
         xmlns:notesViews="clr-namespace:Halaqa.Desktop.Features.Notes.Presentation.Views"
+        xmlns:progressVm="clr-namespace:Halaqa.Desktop.Features.Progress.Presentation.ViewModels"
+        xmlns:progressViews="clr-namespace:Halaqa.Desktop.Features.Progress.Presentation.Views"
         Title="حلقة القرآن" Height="720" Width="1120" MinHeight="620" MinWidth="900"
         WindowStartupLocation="CenterScreen">
     <Window.Resources>
@@ -63,6 +65,9 @@
         </DataTemplate>
         <DataTemplate DataType="{x:Type notesVm:TaskNotesViewModel}">
             <notesViews:TaskNotesView />
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type progressVm:StudentProgressViewModel}">
+            <progressViews:StudentProgressView />
         </DataTemplate>
         <DataTemplate DataType="{x:Type local:DashboardViewModel}">
             <local:DashboardView />
