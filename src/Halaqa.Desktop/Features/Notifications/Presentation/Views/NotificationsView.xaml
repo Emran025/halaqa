@@ -18,7 +18,7 @@
             </StackPanel>
         </DockPanel>
 
-        <Border Grid.Row="1" Background="{StaticResource AppSurfaceBrush}" Padding="14" CornerRadius="12" Margin="0,0,0,16">
+        <Border Grid.Row="1" Background="{StaticResource AppSurfaceBrush}" Padding="14" CornerRadius="4" Margin="0,0,0,16">
             <DockPanel>
                 <StackPanel>
                     <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
@@ -38,7 +38,7 @@
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="300" />
             </Grid.ColumnDefinitions>
-            <Border Background="{StaticResource AppSurfaceBrush}" Padding="12" CornerRadius="12" Margin="0,0,12,0">
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="12" CornerRadius="4" Margin="0,0,12,0">
                 <StackPanel>
                     <ListBox ItemsSource="{Binding Notifications}" SelectedItem="{Binding SelectedNotification}" MinHeight="260">
                         <ListBox.ItemTemplate>
@@ -64,7 +64,7 @@
                     </StackPanel>
                 </StackPanel>
             </Border>
-            <Border Grid.Column="1" Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12">
+            <Border Grid.Column="1" Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="4">
                 <StackPanel>
                     <TextBlock Text="تفاصيل الإشعار" Style="{StaticResource SectionTitle}" />
                     <TextBlock Text="{Binding SelectedNotification.Title}" FontWeight="SemiBold" TextWrapping="Wrap" Margin="0,12,0,4" />

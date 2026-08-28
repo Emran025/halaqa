@@ -108,7 +108,7 @@
                                 <TextBlock Text="{Binding AvailableTimeError}" Style="{StaticResource SectionError}" />
                             </StackPanel>
                             <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <Border Background="#0D155EEF" CornerRadius="10" Padding="12" Margin="0,4,0,12">
+                                <Border Background="#0D155EEF" CornerRadius="4" Padding="12" Margin="0,4,0,12">
                                     <StackPanel>
                                         <TextBlock Text="حالة السعة" Style="{StaticResource BodyMuted}" />
                                         <TextBlock Text="{Binding CapacityAvailable, StringFormat=متاحة: {0}}" Style="{StaticResource SectionTitle}" />
@@ -132,7 +132,7 @@
                         <ItemsControl ItemsSource="{Binding Documents}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="10" Margin="0,3">
+                                    <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="3" Padding="10" Margin="0,3">
                                         <DockPanel>
                                             <controls:AppIcon Kind="FileCertificateOutline" Width="20" Height="20" Foreground="{StaticResource AppInfoBrush}" Margin="0,0,8,0"  />
                                             <StackPanel>

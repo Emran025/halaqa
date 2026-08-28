@@ -35,7 +35,7 @@
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
                     <controls:AppIcon Kind="VideoOutline" Width="22" Height="22" Foreground="{StaticResource AppInfoBrush}"  />
                     <TextBlock Text="الجلسة التفاعلية" Style="{StaticResource SectionTitle}" Margin="10,0,0,0" />
-                    <Border Background="#1200796B" CornerRadius="12" Padding="10,3" Margin="12,0,0,0">
+                    <Border Background="#1200796B" CornerRadius="4" Padding="10,3" Margin="12,0,0,0">
                         <TextBlock Text="{Binding ConnectionLabel}" Foreground="{StaticResource AppInfoBrush}" />
                     </Border>
                 </StackPanel>
@@ -80,14 +80,14 @@
                     <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <Border Grid.Row="0" Background="#FF17201D" CornerRadius="12" Padding="18" Margin="0,0,0,12">
+                <Border Grid.Row="0" Background="#FF17201D" CornerRadius="4" Padding="18" Margin="0,0,0,12">
                     <Grid>
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                             <controls:AppIcon Kind="VideoOutline" Width="34" Height="34" Foreground="#FFB5E4DB" HorizontalAlignment="Center"  />
                             <TextBlock Text="مساحة فيديو الطرف الآخر" Foreground="White" FontSize="18" Margin="0,8,0,0" HorizontalAlignment="Center" />
                             <TextBlock Text="يظهر البث عند اكتمال الاتصال المباشر المتوافق مع سياسة Host-only." Foreground="#FFB5E4DB" Margin="0,4,0,0" HorizontalAlignment="Center" />
                         </StackPanel>
-                        <Border Width="170" Height="106" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="#FF34433C" CornerRadius="8" Padding="8">
+                        <Border Width="170" Height="106" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="#FF34433C" CornerRadius="3" Padding="8">
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
                                 <controls:AppIcon Kind="AccountVideoOutline" Width="22" Height="22" Foreground="White" HorizontalAlignment="Center"  />
                                 <TextBlock Text="المعاينة المحلية" Foreground="White" HorizontalAlignment="Center" Margin="0,5,0,0" />
@@ -127,7 +127,7 @@
                                       Margin="8,0" ToolTip="آية" />
                             <ProgressBar Grid.Column="2" Width="90" Height="4" IsIndeterminate="True" Visibility="{Binding IsQuranLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
                         </Grid>
-                        <Border Grid.Row="2" Background="#FFFDFBF5" BorderBrush="#14000000" BorderThickness="1" CornerRadius="8" Padding="16">
+                        <Border Grid.Row="2" Background="#FFFDFBF5" BorderBrush="#14000000" BorderThickness="1" CornerRadius="3" Padding="16">
                             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                 <TextBlock Text="{Binding QuranPage.PageGlyphText}"
                                            FontFamily="{Binding QuranPage.PageNumber, Converter={StaticResource QuranPageFontFamilyConverter}}"
@@ -179,7 +179,7 @@
                 <Button Command="{Binding ToggleLocalRecordingCommand}" ToolTip="تسجيل محلي">
                     <controls:AppIcon Kind="RecordCircleOutline" Width="22" Height="22"  />
                 </Button>
-                <Border Background="#14000000" CornerRadius="10" Padding="10,4" Margin="12,0,0,0">
+                <Border Background="#14000000" CornerRadius="4" Padding="10,4" Margin="12,0,0,0">
                     <TextBlock Text="لا يوجد مسار وسيط للوسائط" Style="{StaticResource CaptionText}" />
                 </Border>
             </StackPanel>

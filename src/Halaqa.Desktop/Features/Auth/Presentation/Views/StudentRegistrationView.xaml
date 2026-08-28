@@ -111,7 +111,7 @@
                                     <TextBox Text="{Binding PlanAmount}" FlowDirection="LeftToRight" ToolTip="الكمية" />
                                 </StackPanel>
                             </Grid>
-                            <Border Background="{StaticResource AppPrimarySoftBrush}" CornerRadius="8" Padding="12" Margin="0,8,0,0">
+                            <Border Background="{StaticResource AppPrimarySoftBrush}" CornerRadius="3" Padding="12" Margin="0,8,0,0">
                                 <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" />
                             </Border>
                         </StackPanel>

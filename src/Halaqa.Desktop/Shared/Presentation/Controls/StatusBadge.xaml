@@ -5,7 +5,7 @@
              MinHeight="30">
     <Border x:Name="BadgeBorder"
             Padding="11,4"
-            CornerRadius="14"
+            CornerRadius="4"
             Background="{StaticResource AppSurfaceMutedBrush}"
             BorderBrush="{StaticResource AppBorderBrush}"
             BorderThickness="1">

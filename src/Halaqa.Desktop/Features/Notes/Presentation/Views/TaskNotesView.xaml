@@ -13,14 +13,14 @@
                 </StackPanel>
             </DockPanel>
 
-            <Border Background="#0D155EEF" Padding="14" CornerRadius="10" Margin="0,0,0,16">
+            <Border Background="#0D155EEF" Padding="14" CornerRadius="4" Margin="0,0,0,16">
                 <DockPanel>
                     <controls:AppIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0"  />
                     <TextBlock Text="تظهر الملاحظات التي يعيدها الخادم للمهمة. يمكن تعديل أو حذف الملاحظة التي أنشأتها أنت فقط؛ يبقى الخادم صاحب القرار النهائي." TextWrapping="Wrap" />
                 </DockPanel>
             </Border>
 
-            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,0,0,16">
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="4" Margin="0,0,0,16">
                 <StackPanel>
                     <TextBlock Text="إضافة ملاحظة تعليمية أو استفسار" Style="{StaticResource SectionTitle}" />
                     <TextBox Text="{Binding NewBody, UpdateSourceTrigger=PropertyChanged}" ToolTip="نص الملاحظة (1–2000 حرف)" MaxLength="2000" AcceptsReturn="True" TextWrapping="Wrap" MinHeight="90" Margin="0,12,0,12" />
@@ -32,7 +32,7 @@
             <ListBox ItemsSource="{Binding Notes}" SelectedItem="{Binding SelectedNote}" BorderThickness="0" Background="Transparent" MinHeight="160">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="{StaticResource AppSurfaceBrush}" Padding="14" CornerRadius="10" Margin="0,0,0,8">
+                        <Border Background="{StaticResource AppSurfaceBrush}" Padding="14" CornerRadius="4" Margin="0,0,0,8">
                             <StackPanel>
                                 <TextBlock Text="{Binding Body}" TextWrapping="Wrap" />
                                 <TextBlock Text="{Binding Author.Name, StringFormat=الكاتب: {0}}" Style="{StaticResource CaptionText}" Margin="0,8,0,0" />
@@ -43,7 +43,7 @@
                 </ListBox.ItemTemplate>
             </ListBox>
 
-            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,16,0,0">
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="4" Margin="0,16,0,0">
                 <StackPanel>
                     <TextBlock Text="تعديل ملاحظتي المختارة" Style="{StaticResource SectionTitle}" />
                     <TextBlock Text="تُفعّل أزرار الحفظ والحذف فقط إذا كانت الملاحظة المختارة من إنشائك." Style="{StaticResource BodyMuted}" Margin="0,4,0,8" />

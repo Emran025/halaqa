@@ -29,9 +29,9 @@
                 <TextBlock Text="{Binding RoleLabel, StringFormat=لوحة {0}}" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
             </StackPanel>
 
-            <Border Grid.Row="1" Background="{StaticResource AppInfoSoftBrush}" BorderBrush="#332367C9" BorderThickness="1" Padding="16" CornerRadius="12" Margin="0,22,0,18">
+            <Border Grid.Row="1" Background="{StaticResource AppInfoSoftBrush}" BorderBrush="#332367C9" BorderThickness="1" Padding="16" CornerRadius="4" Margin="0,22,0,18">
                 <DockPanel LastChildFill="True">
-                    <Border Width="32" Height="32" CornerRadius="16" Background="#1A2367C9" DockPanel.Dock="Right" Margin="0,0,12,0">
+                    <Border Width="32" Height="32" CornerRadius="4" Background="#1A2367C9" DockPanel.Dock="Right" Margin="0,0,12,0">
                         <controls:AppIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <TextBlock Text="البيانات التعليمية الرسمية تُحمّل من الخادم، بينما تتوفر صفحات المصحف وعمليات الأخطاء غير المتزامنة محلياً عند الحاجة." VerticalAlignment="Center" />

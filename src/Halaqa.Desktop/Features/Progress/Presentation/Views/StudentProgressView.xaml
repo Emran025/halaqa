@@ -12,18 +12,18 @@
                     <TextBlock Text="يعرض هذا المسار بيانات حساب الطالب الحالي كما يعيدها الخادم." Style="{StaticResource BodyMuted}" />
                 </StackPanel>
             </DockPanel>
-            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,0,0,16">
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="4" Margin="0,0,0,16">
                 <DockPanel>
                     <ComboBox ItemsSource="{Binding TaskTypeOptions}" SelectedItem="{Binding SelectedTaskType}" Width="190" DockPanel.Dock="Right" ToolTip="نوع المهمة" />
                     <Button Content="تحديث التقدم" Command="{Binding LoadCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
                 </DockPanel>
             </Border>
             <UniformGrid Columns="3" Margin="0,0,0,16">
-                <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" Margin="4" CornerRadius="10"><StackPanel><TextBlock Text="الجلسات" Style="{StaticResource BodyMuted}"/><TextBlock Text="{Binding Progress.Totals.TotalSessions}" Style="{StaticResource PageTitle}"/></StackPanel></Border>
-                <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" Margin="4" CornerRadius="10"><StackPanel><TextBlock Text="المهام" Style="{StaticResource BodyMuted}"/><TextBlock Text="{Binding Progress.Totals.TotalTasks}" Style="{StaticResource PageTitle}"/></StackPanel></Border>
-                <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" Margin="4" CornerRadius="10"><StackPanel><TextBlock Text="الأخطاء" Style="{StaticResource BodyMuted}"/><TextBlock Text="{Binding Progress.Totals.TotalMistakes}" Style="{StaticResource PageTitle}"/></StackPanel></Border>
+                <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" Margin="4" CornerRadius="4"><StackPanel><TextBlock Text="الجلسات" Style="{StaticResource BodyMuted}"/><TextBlock Text="{Binding Progress.Totals.TotalSessions}" Style="{StaticResource PageTitle}"/></StackPanel></Border>
+                <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" Margin="4" CornerRadius="4"><StackPanel><TextBlock Text="المهام" Style="{StaticResource BodyMuted}"/><TextBlock Text="{Binding Progress.Totals.TotalTasks}" Style="{StaticResource PageTitle}"/></StackPanel></Border>
+                <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" Margin="4" CornerRadius="4"><StackPanel><TextBlock Text="الأخطاء" Style="{StaticResource BodyMuted}"/><TextBlock Text="{Binding Progress.Totals.TotalMistakes}" Style="{StaticResource PageTitle}"/></StackPanel></Border>
             </UniformGrid>
-            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12">
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="4">
                 <StackPanel>
                     <TextBlock Text="آخر نطاقات مكتملة" Style="{StaticResource SectionTitle}" />
                     <TextBlock Text="{Binding Progress.LastCompleted.Memorization.StartPage, StringFormat=الحفظ: يبدأ من الصفحة {0}}" Margin="0,10,0,0" />

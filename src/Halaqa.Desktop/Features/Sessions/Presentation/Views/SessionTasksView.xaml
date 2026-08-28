@@ -13,14 +13,14 @@
                 </StackPanel>
             </DockPanel>
 
-            <Border Background="#0D155EEF" Padding="14" CornerRadius="10" Margin="0,0,0,16">
+            <Border Background="#0D155EEF" Padding="14" CornerRadius="4" Margin="0,0,0,16">
                 <DockPanel>
                     <controls:AppIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0"  />
                     <TextBlock Text="تعرض هذه الشاشة مهام الجلسة المصرح بها. يمكن للمعلم إنشاء مهمة وتحديث النطاق أو الموضع أو الحالة؛ ويسجل الطرفان أخطاء المهمة. لا تنفذ اتصالاً مباشراً أو وسائط." TextWrapping="Wrap" />
                 </DockPanel>
             </Border>
 
-            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,0,0,16" Visibility="{Binding CanCreateTasks, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="4" Margin="0,0,0,16" Visibility="{Binding CanCreateTasks, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Grid>
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
@@ -57,7 +57,7 @@
             <ListBox ItemsSource="{Binding Tasks}" SelectedItem="{Binding SelectedTask}" MinHeight="190" BorderThickness="0" Background="Transparent">
                 <ListBox.ItemTemplate>
                     <DataTemplate>
-                        <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,0,0,10">
+                        <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="4" Margin="0,0,0,10">
                             <Grid>
                                 <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                                 <StackPanel>
@@ -69,7 +69,7 @@
                                     <TextBlock Text="{Binding MistakesCount, StringFormat=عدد الأخطاء: {0}}" Style="{StaticResource CaptionText}" />
                                     <TextBlock Text="{Binding Comment, StringFormat=ملاحظة: {0}}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
                                 </StackPanel>
-                                <Border Grid.Column="1" Background="#0D155EEF" Padding="10,6" CornerRadius="8" VerticalAlignment="Top">
+                                <Border Grid.Column="1" Background="#0D155EEF" Padding="10,6" CornerRadius="3" VerticalAlignment="Top">
                                     <TextBlock Text="{Binding State}" FontWeight="SemiBold" />
                                 </Border>
                             </Grid>
@@ -79,7 +79,7 @@
             </ListBox>
             <TextBlock Text="{Binding Total, StringFormat=إجمالي المهام: {0}}" Style="{StaticResource BodyMuted}" HorizontalAlignment="Left" Margin="0,10,0,0" />
 
-            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,20,0,0" Visibility="{Binding CanReportMistakes, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="4" Margin="0,20,0,0" Visibility="{Binding CanReportMistakes, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Grid>
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
@@ -90,7 +90,7 @@
                 </Grid>
             </Border>
 
-            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="12" Margin="0,20,0,0" Visibility="{Binding CanCreateTasks, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="4" Margin="0,20,0,0" Visibility="{Binding CanCreateTasks, Converter={StaticResource BooleanToVisibilityConverter}}">
                 <Grid>
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>

@@ -7,54 +7,55 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
-    <Grid Background="{StaticResource AppCanvasBrush}">
+    <Grid>
+        <Image Source="/Assets/Images/quran-study-hero.jpg" Stretch="UniformToFill" />
+        <Rectangle Fill="{StaticResource AppHeroOverlayBrush}" />
+
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <WrapPanel Margin="32" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border Width="438" MinHeight="388" Margin="8" Padding="36" CornerRadius="20" Background="#FF123D32" Effect="{StaticResource AppCardShadow}">
+                <Border Width="438" MinHeight="388" Margin="8" Padding="32" CornerRadius="4" Background="#BD103B36" BorderBrush="#80FFFFFF" BorderThickness="1" Effect="{StaticResource AppCardShadow}">
                     <StackPanel VerticalAlignment="Center">
-                        <Border Width="52" Height="52" CornerRadius="16" Background="#24FFFFFF" HorizontalAlignment="Right">
-                            <TextBlock Text="ق" Foreground="White" FontSize="26" FontWeight="Bold" HorizontalAlignment="Center" VerticalAlignment="Center" />
-                        </Border>
-                        <TextBlock Text="أهلاً بك في حلقة القرآن" Foreground="White" FontSize="30" FontWeight="SemiBold" LineHeight="42" Margin="0,22,0,0" />
-                        <TextBlock Text="نظّم حلقتك وتابع خطتك وادخل إلى جلسات التعليم المباشر ضمن تجربة واضحة وآمنة." Foreground="#D9FFFFFF" FontSize="15" TextWrapping="Wrap" LineHeight="27" Margin="0,12,0,26" />
-                        <Border Background="#16FFFFFF" BorderBrush="#30FFFFFF" BorderThickness="1" CornerRadius="12" Padding="16">
+                        <Image Source="/Assets/Brand/halaqa-mark.png" Width="66" Height="66" HorizontalAlignment="Right" Stretch="Uniform" />
+                        <TextBlock Text="أهلاً بك في حلقة القرآن" Foreground="White" FontSize="29" FontWeight="SemiBold" LineHeight="40" Margin="0,20,0,0" />
+                        <TextBlock Text="نظّم حلقتك وتابع خطتك وادخل إلى جلسات التعليم المباشر ضمن تجربة هادئة وآمنة." Foreground="#E8FFFFFF" FontSize="15" TextWrapping="Wrap" LineHeight="26" Margin="0,10,0,24" />
+                        <Border Background="#24FFFFFF" BorderBrush="#40FFFFFF" BorderThickness="1" CornerRadius="3" Padding="14">
                             <StackPanel>
                                 <TextBlock Text="تجربة تعليمية متصلة" Foreground="White" FontWeight="SemiBold" />
-                                <TextBlock Text="تُحمّل الحسابات والحلقات من الخادم، بينما تبقى صفحات المصحف والأخطاء غير المتزامنة متاحة محلياً عند الحاجة." Foreground="#D9FFFFFF" FontSize="13" TextWrapping="Wrap" LineHeight="23" Margin="0,5,0,0" />
+                                <TextBlock Text="تُحمّل الحسابات والحلقات من الخادم، بينما تبقى صفحات المصحف والأخطاء غير المتزامنة متاحة محلياً عند الحاجة." Foreground="#E8FFFFFF" FontSize="13" TextWrapping="Wrap" LineHeight="22" Margin="0,5,0,0" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
                 </Border>
 
-                <Border Width="420" Margin="8" Style="{StaticResource AppElevatedCard}" VerticalAlignment="Center">
+                <Border Width="420" Margin="8" Padding="30" CornerRadius="4" Background="{StaticResource AppGlassStrongBrush}" BorderBrush="{StaticResource AppGlassBorderBrush}" BorderThickness="1" VerticalAlignment="Center" Effect="{StaticResource AppCardShadow}">
                     <StackPanel>
                         <TextBlock Text="تسجيل الدخول" Style="{StaticResource PageTitle}" />
-                        <TextBlock Text="أدخل بيانات حساب الطالب أو المعلم للمتابعة." Style="{StaticResource BodyMuted}" Margin="0,4,0,22" />
+                        <TextBlock Text="أدخل بيانات حساب الطالب أو المعلم للمتابعة." Style="{StaticResource BodyMuted}" Margin="0,4,0,18" />
 
                         <TextBlock Text="البريد الإلكتروني" Style="{StaticResource CaptionText}" />
-                        <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="name@example.com" />
+                        <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" Background="{StaticResource AppGlassBrush}" ToolTip="name@example.com" />
 
                         <TextBlock Text="كلمة المرور" Style="{StaticResource CaptionText}" />
-                        <PasswordBox x:Name="PasswordBox" PasswordChanged="PasswordBox_OnPasswordChanged" FlowDirection="LeftToRight" ToolTip="كلمة المرور" />
+                        <PasswordBox x:Name="PasswordBox" PasswordChanged="PasswordBox_OnPasswordChanged" FlowDirection="LeftToRight" Background="{StaticResource AppGlassBrush}" ToolTip="كلمة المرور" />
 
-                        <Border Background="{StaticResource AppErrorSoftBrush}" BorderBrush="#33B42318" BorderThickness="1" Padding="12" CornerRadius="8" Margin="0,2,0,10" Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border Background="{StaticResource AppErrorSoftBrush}" BorderBrush="#33B42318" BorderThickness="1" Padding="10" CornerRadius="3" Margin="0,2,0,8" Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource AppErrorBrush}" />
                         </Border>
-                        <Border Background="{StaticResource AppSuccessSoftBrush}" BorderBrush="#33147A4B" BorderThickness="1" Padding="12" CornerRadius="8" Margin="0,2,0,10" Visibility="{Binding HasStatus, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Border Background="{StaticResource AppSuccessSoftBrush}" BorderBrush="#33147A4B" BorderThickness="1" Padding="10" CornerRadius="3" Margin="0,2,0,8" Visibility="{Binding HasStatus, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="{Binding StatusMessage}" Foreground="{StaticResource AppSuccessBrush}" />
                         </Border>
 
-                        <Button Command="{Binding LoginCommand}" IsDefault="True" HorizontalAlignment="Stretch" Margin="0,8,0,6">
+                        <Button Command="{Binding LoginCommand}" IsDefault="True" HorizontalAlignment="Stretch" Margin="0,8,0,5">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <controls:AppIcon Kind="Login" Width="18" Height="18" Margin="0,0,8,0" />
                                 <TextBlock Text="دخول آمن" Foreground="White" />
                             </StackPanel>
                         </Button>
-                        <ProgressBar IsIndeterminate="True" Margin="0,8,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        <ProgressBar IsIndeterminate="True" Margin="0,7,0,0" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
 
-                        <Separator Margin="0,22,0,12" />
+                        <Separator Margin="0,18,0,10" />
                         <TextBlock Text="ليس لديك حساب؟" Style="{StaticResource BodyMuted}" />
-                        <WrapPanel Margin="0,7,0,0">
+                        <WrapPanel Margin="0,6,0,0">
                             <Button Content="حساب طالب" Command="{Binding OpenStudentRegistrationCommand}" Style="{StaticResource AppSecondaryButton}" />
                             <Button Content="حساب معلم" Command="{Binding OpenTeacherRegistrationCommand}" Style="{StaticResource AppSecondaryButton}" />
                             <Button Content="استعادة كلمة المرور" Command="{Binding OpenPasswordRecoveryCommand}" Style="{StaticResource AppSecondaryButton}" />

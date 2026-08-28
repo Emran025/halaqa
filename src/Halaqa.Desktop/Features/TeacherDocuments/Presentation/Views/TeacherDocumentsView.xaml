@@ -72,7 +72,7 @@
                         <ItemsControl ItemsSource="{Binding Documents}">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
-                                    <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,3">
+                                    <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="3" Padding="12" Margin="0,3">
                                         <DockPanel LastChildFill="True">
                                             <Button DockPanel.Dock="Left" Command="{Binding DataContext.DeleteCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف الوثيقة" Style="{StaticResource AppDangerButton}">
                                                 <controls:AppIcon Kind="DeleteOutline"  />

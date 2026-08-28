@@ -51,7 +51,7 @@
                         <CheckBox Content="مسح مستوى المراجعة المحفوظ" IsChecked="{Binding ClearReviewLevel}" Margin="0,0,0,8" />
                         <TextBlock Text="{Binding ReviewLevelError}" Foreground="{StaticResource AppErrorBrush}" TextWrapping="Wrap" Margin="0,0,0,8" />
 
-                        <Border Background="{StaticResource AppInfoSoftBrush}" BorderBrush="#332367C9" BorderThickness="1" CornerRadius="8" Padding="12" Margin="0,4,0,0">
+                        <Border Background="{StaticResource AppInfoSoftBrush}" BorderBrush="#332367C9" BorderThickness="1" CornerRadius="3" Padding="12" Margin="0,4,0,0">
                             <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                         </Border>
                     </StackPanel>

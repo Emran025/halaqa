@@ -123,18 +123,18 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Border Background="#FF123D32" Padding="32,15" BorderBrush="#0DFFFFFF" BorderThickness="0,0,0,1">
+        <Border Background="#FF1B524A" Padding="24,12" BorderBrush="#1FFFFFFF" BorderThickness="0,0,0,1">
             <DockPanel LastChildFill="False">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Border Width="38" Height="38" CornerRadius="11" Background="#24FFFFFF" Margin="0,0,12,0">
-                        <TextBlock Text="ق" Foreground="White" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    <Border Width="42" Height="42" CornerRadius="4" Background="#24FFFFFF" BorderBrush="#3DFFFFFF" BorderThickness="1" Margin="0,0,12,0">
+                        <Image Source="/Assets/Brand/halaqa-mark.png" Stretch="Uniform" Margin="5" />
                     </Border>
-                    <StackPanel>
+                    <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="حلقة القرآن" Foreground="White" FontSize="20" FontWeight="SemiBold" />
-                        <TextBlock Text="منصة للحلقات التعليمية المباشرة" Foreground="#D6FFFFFF" FontSize="12" Margin="0,1,0,0" />
+                        <TextBlock Text="منصة للحلقات التعليمية المباشرة" Foreground="#DCEDEAE6" FontSize="12" Margin="0,1,0,0" />
                     </StackPanel>
                 </StackPanel>
-                <Border DockPanel.Dock="Left" Background="#1FFFFFFF" BorderBrush="#30FFFFFF" BorderThickness="1" CornerRadius="14" Padding="11,5" VerticalAlignment="Center">
+                <Border DockPanel.Dock="Left" Background="#1FFFFFFF" BorderBrush="#3DFFFFFF" BorderThickness="1" CornerRadius="3" Padding="10,4" VerticalAlignment="Center">
                     <TextBlock Text="متصل عبر API آمن" Foreground="White" FontSize="12" />
                 </Border>
             </DockPanel>
