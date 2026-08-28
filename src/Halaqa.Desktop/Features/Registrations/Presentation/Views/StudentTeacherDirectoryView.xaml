@@ -1,7 +1,7 @@
 <UserControl x:Class="Halaqa.Desktop.Features.Registrations.Presentation.Views.StudentTeacherDirectoryView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
              xmlns:shared="clr-namespace:Halaqa.Desktop.Shared.Presentation.Converters"
              FlowDirection="RightToLeft">
     <UserControl.Resources>
@@ -25,7 +25,7 @@
                     <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
                         <Button Content="طلباتي" Command="{Binding OpenMyRequestsCommand}" Margin="0,0,8,0" />
                         <Button Command="{Binding BackCommand}" ToolTip="العودة إلى لوحة التحكم">
-                            <materialDesign:PackIcon Kind="ArrowRight" />
+                            <controls:AppIcon Kind="ArrowRight"  />
                         </Button>
                     </StackPanel>
                     <StackPanel>
@@ -52,8 +52,8 @@
                                 </DockPanel>
                                 <Grid Margin="0,10,0,0">
                                     <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" materialDesign:HintAssist.Hint="ابحث بالاسم أو الوصف" />
-                                    <TextBox Grid.Column="1" Text="{Binding TeacherCode, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" Margin="8,0,0,0" materialDesign:HintAssist.Hint="كود المعلم" />
+                                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="ابحث بالاسم أو الوصف" />
+                                    <TextBox Grid.Column="1" Text="{Binding TeacherCode, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" Margin="8,0,0,0" ToolTip="كود المعلم" />
                                     <Button Grid.Column="2" Content="بحث" Command="{Binding SearchCommand}" Margin="8,0,0,0" />
                                 </Grid>
                                 <TextBlock Text="{Binding SearchError}" Style="{StaticResource FieldError}" />
@@ -92,10 +92,10 @@
                             <TextBlock Text="{Binding ProfileError}" Style="{StaticResource FieldError}" />
 
                             <TextBlock Text="اختيار حلقة عامة (اختياري)" Style="{StaticResource SectionTitle}" Margin="0,16,0,0" />
-                            <ComboBox ItemsSource="{Binding PublicHalaqas}" SelectedItem="{Binding SelectedHalaqa}" DisplayMemberPath="Name" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" materialDesign:HintAssist.Hint="الحلقة المطلوبة" />
+                            <ComboBox ItemsSource="{Binding PublicHalaqas}" SelectedItem="{Binding SelectedHalaqa}" DisplayMemberPath="Name" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الحلقة المطلوبة" />
                             <TextBlock Text="يمكن ترك الحقل فارغاً لإرسال الطلب موجهاً إلى المعلم فقط." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,10" />
 
-                            <TextBox Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="90" TextWrapping="Wrap" materialDesign:HintAssist.Hint="رسالة للمعلم (اختيارية)" />
+                            <TextBox Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="90" TextWrapping="Wrap" ToolTip="رسالة للمعلم (اختيارية)" />
                             <TextBlock Text="{Binding MessageTextError}" Style="{StaticResource FieldError}" />
                             <TextBlock Text="يُرسل الطلب بلقطة من ملف الطالب الموجود على الخادم، مع معرّف عملية ثابت لإعادة المحاولة. لا تُحفظ هذه البيانات في التطبيق." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,8" />
                             <Button Content="إرسال طلب التسجيل" Command="{Binding SubmitCommand}" HorizontalAlignment="Left" />

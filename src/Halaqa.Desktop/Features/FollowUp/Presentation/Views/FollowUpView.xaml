@@ -1,12 +1,12 @@
 <UserControl x:Class="Halaqa.Desktop.Features.FollowUp.Presentation.Views.FollowUpView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
              FlowDirection="RightToLeft">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="36" MaxWidth="1040">
             <DockPanel Margin="0,0,0,20">
-                <Button Content="رجوع" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                <Button Content="رجوع" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
                 <StackPanel>
                     <TextBlock Text="خطة المتابعة والحضور" Style="{StaticResource PageTitle}" />
                     <TextBlock Text="الخطة والحضور وعناصر المتابعة بيانات رسمية من الخادم. هذه الصفحة مهيأة لحساب الطالب الحالي فقط." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
@@ -15,7 +15,7 @@
 
             <Border Background="#0D155EEF" Padding="14" CornerRadius="10" Margin="0,0,0,16">
                 <DockPanel>
-                    <materialDesign:PackIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0" />
+                    <controls:AppIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0"  />
                     <TextBlock Text="لا تتيح هذه الرحلة اختيار طالب آخر للمعلم حتى تتوفر رحلة قائمة طلاب مطابقة لعقد Laravel." TextWrapping="Wrap" />
                 </DockPanel>
             </Border>
@@ -43,11 +43,11 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="120" /><ColumnDefinition Width="120" /><ColumnDefinition Width="90" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            <ComboBox ItemsSource="{Binding DataContext.TaskTypeOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding TaskType}" materialDesign:HintAssist.Hint="نوع المهمة" />
-                                            <ComboBox Grid.Column="1" ItemsSource="{Binding DataContext.UnitOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding Unit}" materialDesign:HintAssist.Hint="الوحدة" Margin="6,0" />
-                                            <TextBox Grid.Column="2" Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الكمية" Margin="6,0" />
-                                            <TextBox Grid.Column="3" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="ملاحظات (حتى 500)" Margin="6,0" />
-                                            <Button Grid.Column="4" Command="{Binding DataContext.RemovePlanDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف التفصيل"><materialDesign:PackIcon Kind="Close" /></Button>
+                                            <ComboBox ItemsSource="{Binding DataContext.TaskTypeOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding TaskType}" ToolTip="نوع المهمة" />
+                                            <ComboBox Grid.Column="1" ItemsSource="{Binding DataContext.UnitOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding Unit}" ToolTip="الوحدة" Margin="6,0" />
+                                            <TextBox Grid.Column="2" Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" ToolTip="الكمية" Margin="6,0" />
+                                            <TextBox Grid.Column="3" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" ToolTip="ملاحظات (حتى 500)" Margin="6,0" />
+                                            <Button Grid.Column="4" Command="{Binding DataContext.RemovePlanDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف التفصيل"><controls:AppIcon Kind="Close"  /></Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -77,11 +77,11 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="120" /><ColumnDefinition Width="110" /><ColumnDefinition Width="110" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            <ComboBox ItemsSource="{Binding DataContext.WeekDayOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding DayOfWeek}" materialDesign:HintAssist.Hint="اليوم (0–6)" />
-                                            <TextBox Grid.Column="1" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="من HH:mm" Margin="6,0" />
-                                            <TextBox Grid.Column="2" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="إلى HH:mm" Margin="6,0" />
+                                            <ComboBox ItemsSource="{Binding DataContext.WeekDayOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding DayOfWeek}" ToolTip="اليوم (0–6)" />
+                                            <TextBox Grid.Column="1" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" ToolTip="من HH:mm" Margin="6,0" />
+                                            <TextBox Grid.Column="2" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" ToolTip="إلى HH:mm" Margin="6,0" />
                                             <CheckBox Grid.Column="3" Content="مفضل" IsChecked="{Binding Preferred}" VerticalAlignment="Center" Margin="6,0" />
-                                            <Button Grid.Column="4" Command="{Binding DataContext.RemoveAvailabilitySlotCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف نطاق الحضور"><materialDesign:PackIcon Kind="Close" /></Button>
+                                            <Button Grid.Column="4" Command="{Binding DataContext.RemoveAvailabilitySlotCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف نطاق الحضور"><controls:AppIcon Kind="Close"  /></Button>
                                         </Grid>
                                     </Border>
                                 </DataTemplate>
@@ -99,7 +99,7 @@
                 <StackPanel>
                     <DockPanel>
                         <TextBlock Text="عناصر المتابعة اليومية" Style="{StaticResource SectionTitle}" />
-                        <Button Content="تحديث" Command="{Binding RefreshItemsCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        <Button Content="تحديث" Command="{Binding RefreshItemsCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
                     </DockPanel>
                     <ListBox ItemsSource="{Binding Items}" SelectedItem="{Binding SelectedItem}" Margin="0,12,0,0" MinHeight="150">
                         <ListBox.ItemTemplate>
@@ -127,9 +127,9 @@
                         <Button Content="إعادة جدولة" Command="{Binding RescheduleSelectedItemCommand}" />
                     </WrapPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,12,0,0">
-                        <Button Content="السابق" Command="{Binding LoadPreviousItemsPageCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        <Button Content="السابق" Command="{Binding LoadPreviousItemsPageCommand}" Style="{StaticResource AppOutlinedButton}" />
                         <TextBlock Text="{Binding ItemsCurrentPage, StringFormat=صفحة {0}}" VerticalAlignment="Center" Margin="12,0" />
-                        <Button Content="التالي" Command="{Binding LoadNextItemsPageCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" />
+                        <Button Content="التالي" Command="{Binding LoadNextItemsPageCommand}" Style="{StaticResource AppOutlinedButton}" />
                     </StackPanel>
                 </StackPanel>
             </Border>

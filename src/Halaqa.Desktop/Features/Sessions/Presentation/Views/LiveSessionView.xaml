@@ -1,7 +1,7 @@
 <UserControl x:Class="Halaqa.Desktop.Features.Sessions.Presentation.Views.LiveSessionView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
              xmlns:shared="clr-namespace:Halaqa.Desktop.Shared.Presentation.Converters"
              FlowDirection="RightToLeft">
     <UserControl.Resources>
@@ -33,7 +33,7 @@
         <Border Padding="18,12" Background="{StaticResource AppSurfaceBrush}" BorderBrush="#14000000" BorderThickness="0,0,0,1">
             <DockPanel>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                    <materialDesign:PackIcon Kind="VideoOutline" Width="22" Height="22" Foreground="{StaticResource AppInfoBrush}" />
+                    <controls:AppIcon Kind="VideoOutline" Width="22" Height="22" Foreground="{StaticResource AppInfoBrush}"  />
                     <TextBlock Text="الجلسة التفاعلية" Style="{StaticResource SectionTitle}" Margin="10,0,0,0" />
                     <Border Background="#1200796B" CornerRadius="12" Padding="10,3" Margin="12,0,0,0">
                         <TextBlock Text="{Binding ConnectionLabel}" Foreground="{StaticResource AppInfoBrush}" />
@@ -57,11 +57,11 @@
                         <TextBlock Text="يعرض هذا الموضع نطاق التلاوة والتوجيهات الرسمية المرتبطة بالمهمة عند ربط بيانات الجلسة." Style="{StaticResource BodyMuted}" Margin="0,10,0,12" />
                         <Button Command="{Binding RequestRepeatCommand}">
                             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                <materialDesign:PackIcon Kind="Replay" Width="18" Height="18" Margin="0,0,8,0" />
+                                <controls:AppIcon Kind="Replay" Width="18" Height="18" Margin="0,0,8,0"  />
                                 <TextBlock Text="طلب إعادة التلاوة" Foreground="White" />
                             </StackPanel>
                         </Button>
-                        <Button Command="{Binding SaveOfficialMushafStateCommand}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                        <Button Command="{Binding SaveOfficialMushafStateCommand}" Style="{StaticResource AppOutlinedButton}">
                             <TextBlock Text="تثبيت موضع المصحف" />
                         </Button>
                         <TextBlock Text="{Binding OperationMessage}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,8,0,16" />
@@ -83,13 +83,13 @@
                 <Border Grid.Row="0" Background="#FF17201D" CornerRadius="12" Padding="18" Margin="0,0,0,12">
                     <Grid>
                         <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <materialDesign:PackIcon Kind="VideoOutline" Width="34" Height="34" Foreground="#FFB5E4DB" HorizontalAlignment="Center" />
+                            <controls:AppIcon Kind="VideoOutline" Width="34" Height="34" Foreground="#FFB5E4DB" HorizontalAlignment="Center"  />
                             <TextBlock Text="مساحة فيديو الطرف الآخر" Foreground="White" FontSize="18" Margin="0,8,0,0" HorizontalAlignment="Center" />
                             <TextBlock Text="يظهر البث عند اكتمال الاتصال المباشر المتوافق مع سياسة Host-only." Foreground="#FFB5E4DB" Margin="0,4,0,0" HorizontalAlignment="Center" />
                         </StackPanel>
                         <Border Width="170" Height="106" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="#FF34433C" CornerRadius="8" Padding="8">
                             <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <materialDesign:PackIcon Kind="AccountVideoOutline" Width="22" Height="22" Foreground="White" HorizontalAlignment="Center" />
+                                <controls:AppIcon Kind="AccountVideoOutline" Width="22" Height="22" Foreground="White" HorizontalAlignment="Center"  />
                                 <TextBlock Text="المعاينة المحلية" Foreground="White" HorizontalAlignment="Center" Margin="0,5,0,0" />
                             </StackPanel>
                         </Border>
@@ -110,10 +110,10 @@
                                 <TextBlock Text="{Binding QuranSourceLabel}" Style="{StaticResource CaptionText}" />
                             </StackPanel>
                             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Command="{Binding PreviousMushafPageCommand}" ToolTip="الصفحة السابقة"><materialDesign:PackIcon Kind="ChevronRight" /></Button>
-                                <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="66" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" IsReadOnly="{Binding IsQuranLoading}" Margin="6,0" materialDesign:HintAssist.Hint="صفحة" />
+                                <Button Command="{Binding PreviousMushafPageCommand}" ToolTip="الصفحة السابقة"><controls:AppIcon Kind="ChevronRight"  /></Button>
+                                <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="66" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" IsReadOnly="{Binding IsQuranLoading}" Margin="6,0" ToolTip="صفحة" />
                                 <Button Command="{Binding LoadMushafPageCommand}" Content="انتقال" />
-                                <Button Command="{Binding NextMushafPageCommand}" ToolTip="الصفحة التالية" Margin="6,0,0,0"><materialDesign:PackIcon Kind="ChevronLeft" /></Button>
+                                <Button Command="{Binding NextMushafPageCommand}" ToolTip="الصفحة التالية" Margin="6,0,0,0"><controls:AppIcon Kind="ChevronLeft"  /></Button>
                             </StackPanel>
                         </DockPanel>
                         <Grid Grid.Row="1" Margin="0,10,0,8">
@@ -124,8 +124,7 @@
                                       SelectedItem="{Binding SelectedAyah}"
                                       DisplayMemberPath="Number"
                                       Width="74"
-                                      Margin="8,0"
-                                      materialDesign:HintAssist.Hint="آية" />
+                                      Margin="8,0" ToolTip="آية" />
                             <ProgressBar Grid.Column="2" Width="90" Height="4" IsIndeterminate="True" Visibility="{Binding IsQuranLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
                         </Grid>
                         <Border Grid.Row="2" Background="#FFFDFBF5" BorderBrush="#14000000" BorderThickness="1" CornerRadius="8" Padding="16">
@@ -142,7 +141,7 @@
                         </Border>
                         <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
                             <Button Content="مشاركة الموضع" Command="{Binding PublishMushafPresenceCommand}" />
-                            <Button Content="متابعة الطرف الآخر" Command="{Binding FollowPeerMushafCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="10,0,0,0" />
+                            <Button Content="متابعة الطرف الآخر" Command="{Binding FollowPeerMushafCommand}" Style="{StaticResource AppOutlinedButton}" Margin="10,0,0,0" />
                         </StackPanel>
                     </Grid>
                 </Border>
@@ -159,7 +158,7 @@
                         <Separator Margin="0,16" />
                         <TextBlock Text="التسجيل المحلي" Style="{StaticResource SectionTitle}" />
                         <TextBlock Text="التسجيل اختياري ومحلي؛ لا يرفع أو يشارك تلقائياً مع الخادم أو الطرف الآخر." Style="{StaticResource BodyMuted}" Margin="0,8,0" TextWrapping="Wrap" />
-                        <Button Command="{Binding ToggleLocalRecordingCommand}" Style="{StaticResource MaterialDesignOutlinedButton}">
+                        <Button Command="{Binding ToggleLocalRecordingCommand}" Style="{StaticResource AppOutlinedButton}">
                             <TextBlock Text="بدء / إيقاف التسجيل المحلي" />
                         </Button>
                         <TextBlock Text="{Binding Store.Recording.State}" Style="{StaticResource BodyMuted}" Margin="0,8,0,0" />
@@ -172,13 +171,13 @@
         <Border Grid.Row="2" Background="{StaticResource AppSurfaceBrush}" Padding="14" BorderBrush="#14000000" BorderThickness="0,1,0,0">
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                 <Button Command="{Binding ToggleMicrophoneCommand}" ToolTip="كتم أو تشغيل الميكروفون">
-                    <materialDesign:PackIcon Kind="MicrophoneOutline" Width="22" Height="22" />
+                    <controls:AppIcon Kind="MicrophoneOutline" Width="22" Height="22"  />
                 </Button>
                 <Button Command="{Binding ToggleCameraCommand}" ToolTip="تشغيل أو إيقاف الكاميرا">
-                    <materialDesign:PackIcon Kind="VideoOutline" Width="22" Height="22" />
+                    <controls:AppIcon Kind="VideoOutline" Width="22" Height="22"  />
                 </Button>
                 <Button Command="{Binding ToggleLocalRecordingCommand}" ToolTip="تسجيل محلي">
-                    <materialDesign:PackIcon Kind="RecordCircleOutline" Width="22" Height="22" />
+                    <controls:AppIcon Kind="RecordCircleOutline" Width="22" Height="22"  />
                 </Button>
                 <Border Background="#14000000" CornerRadius="10" Padding="10,4" Margin="12,0,0,0">
                     <TextBlock Text="لا يوجد مسار وسيط للوسائط" Style="{StaticResource CaptionText}" />

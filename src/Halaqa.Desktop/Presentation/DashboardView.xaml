@@ -1,7 +1,7 @@
 <UserControl x:Class="Halaqa.Desktop.Presentation.DashboardView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
              FlowDirection="RightToLeft">
     <Grid Margin="40">
         <Grid.RowDefinitions>
@@ -17,7 +17,7 @@
 
         <Border Grid.Row="1" Background="#0D155EEF" Padding="16" CornerRadius="12" Margin="0,28,0,20">
             <DockPanel>
-                <materialDesign:PackIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0" />
+                <controls:AppIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0"  />
                 <TextBlock Text="البيانات التعليمية الرسمية تُحمّل من الخادم. تتوفر فقط صفحات المصحف وعمليات الأخطاء غير المتزامنة للاستخدام المحلي." />
             </DockPanel>
         </Border>
@@ -25,7 +25,7 @@
         <UniformGrid Grid.Row="2" Columns="3" HorizontalAlignment="Stretch" VerticalAlignment="Top">
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="AccountGroupOutline" Foreground="{StaticResource AppInfoBrush}" Width="28" Height="28" />
+                    <controls:AppIcon Kind="AccountGroupOutline" Foreground="{StaticResource AppInfoBrush}" Width="28" Height="28"  />
                     <TextBlock Text="{Binding PrimaryActionTitle}" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="{Binding PrimaryActionDescription}" Style="{StaticResource BodyMuted}" />
                     <Button Content="{Binding PrimaryActionTitle}"
@@ -36,7 +36,7 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="AccountEditOutline" Foreground="{StaticResource AppPrimaryBrush}" Width="28" Height="28" />
+                    <controls:AppIcon Kind="AccountEditOutline" Foreground="{StaticResource AppPrimaryBrush}" Width="28" Height="28"  />
                     <TextBlock Text="الملف الشخصي" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="راجع الاسم ورقم الهاتف ومستوى الحفظ والمراجعة المرتبط بحسابك." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                     <Button Content="فتح الملف الشخصي"
@@ -47,7 +47,7 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="AccountBoxOutline" Foreground="{StaticResource AppPrimaryBrush}" Width="28" Height="28" />
+                    <controls:AppIcon Kind="AccountBoxOutline" Foreground="{StaticResource AppPrimaryBrush}" Width="28" Height="28"  />
                     <TextBlock Text="البيانات العامة" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="حدّث الاسم ورقم الهاتف ومستوى الحفظ والمراجعة المرتبطين بحسابك." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                     <Button Content="فتح البيانات العامة"
@@ -58,7 +58,7 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="LockReset" Foreground="{StaticResource AppWarningBrush}" Width="28" Height="28" />
+                    <controls:AppIcon Kind="LockReset" Foreground="{StaticResource AppWarningBrush}" Width="28" Height="28"  />
                     <TextBlock Text="أمان الحساب" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="غيّر كلمة المرور الحالية من داخل حسابك. تُرسل العملية إلى الخادم ولا تُحفظ كلمة المرور محلياً." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                     <Button Content="تغيير كلمة المرور"
@@ -69,7 +69,7 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="AccountMultipleCheckOutline" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28" />
+                    <controls:AppIcon Kind="AccountMultipleCheckOutline" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28"  />
                     <TextBlock Text="طلبات الطلاب" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="راجع الملخصات العامة للمتقدمين واتخذ القرار المعلن بعد المراجعة." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                     <Button Content="فتح صندوق الطلبات"
@@ -77,7 +77,7 @@
                             HorizontalAlignment="Right"
                             Margin="0,16,0,0">
                         <Button.Style>
-                            <Style TargetType="Button" BasedOn="{StaticResource MaterialDesignRaisedButton}">
+                            <Style TargetType="Button" BasedOn="{StaticResource AppPrimaryButton}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding IsStudent}" Value="True">
                                         <Setter Property="IsEnabled" Value="False" />
@@ -90,7 +90,7 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="CalendarCheckOutline" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28" />
+                    <controls:AppIcon Kind="CalendarCheckOutline" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28"  />
                     <TextBlock Text="خطة المتابعة والحضور" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="راجع خطتك الرسمية وأوقات حضورك وعناصر المتابعة اليومية." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                     <Button Content="فتح المتابعة"
@@ -102,7 +102,7 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="ChartLine" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28" />
+                    <controls:AppIcon Kind="ChartLine" Foreground="{StaticResource AppSuccessBrush}" Width="28" Height="28"  />
                     <TextBlock Text="تقدمي وتقاريري" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="اعرض تقدم حسابك الشخصي وسجل تقارير جلساتك الرسمية." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                     <Button Content="فتح تقدمي"
@@ -114,7 +114,7 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="BellOutline" Foreground="{StaticResource AppInfoBrush}" Width="28" Height="28" />
+                    <controls:AppIcon Kind="BellOutline" Foreground="{StaticResource AppInfoBrush}" Width="28" Height="28"  />
                     <TextBlock Text="الإشعارات" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="راجع الإشعارات الرسمية وحدد المقروء منها دون تنفيذ أي إجراء مرتبط تلقائياً." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                     <Button Content="فتح الإشعارات"
@@ -125,7 +125,7 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="VideoOutline" Foreground="{StaticResource AppInfoBrush}" Width="28" Height="28" />
+                    <controls:AppIcon Kind="VideoOutline" Foreground="{StaticResource AppInfoBrush}" Width="28" Height="28"  />
                     <TextBlock Text="جلساتي" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="اعرض الجلسات الرسمية المتاحة لحسابك وحالتها وموعدها. لا تبدأ هذه الشاشة اتصالاً أو وسائط." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                     <Button Content="فتح جلساتي"
@@ -136,7 +136,7 @@
             </Border>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="22" Margin="8" CornerRadius="12">
                 <StackPanel>
-                    <materialDesign:PackIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppWarningBrush}" Width="28" Height="28" />
+                    <controls:AppIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppWarningBrush}" Width="28" Height="28"  />
                     <TextBlock Text="المصحف والأخطاء" Style="{StaticResource SectionTitle}" Margin="0,16,0,6" />
                     <TextBlock Text="اقرأ صفحات المصحف محلياً بخط الصفحة المخصص، مع تمييز صريح عند استخدام بديل الخادم." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                     <Button Content="فتح قارئ المصحف"
