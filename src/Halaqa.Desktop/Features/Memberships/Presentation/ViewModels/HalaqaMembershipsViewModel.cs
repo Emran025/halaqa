@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Memberships.Domain.Entities;
 using Halaqa.Desktop.Features.Memberships.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.Memberships.Presentation.ViewModels;
 
@@ -28,8 +29,19 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
     }
 
     public ObservableCollection<HalaqaMembership> Memberships { get; } = new();
-    public IReadOnlyList<string> MembershipStatusOptions { get; } = new[] { "active", "inactive" };
-    public IReadOnlyList<string> FilterOptions { get; } = new[] { "", "active", "inactive", "removed" };
+    public IReadOnlyList<LocalizedOption<string>> MembershipStatusOptions { get; } = new[]
+    {
+        new LocalizedOption<string>("active", "نشطة"),
+        new LocalizedOption<string>("inactive", "غير نشطة")
+    };
+
+    public IReadOnlyList<LocalizedOption<string>> FilterOptions { get; } = new[]
+    {
+        new LocalizedOption<string>(string.Empty, "كل العضويات"),
+        new LocalizedOption<string>("active", "نشطة"),
+        new LocalizedOption<string>("inactive", "غير نشطة"),
+        new LocalizedOption<string>("removed", "مزالة")
+    };
 
     [ObservableProperty] private string _halaqaName = string.Empty;
     [ObservableProperty] private HalaqaMembership? _selectedMembership;

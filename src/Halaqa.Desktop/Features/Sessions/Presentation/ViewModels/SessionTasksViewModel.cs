@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Sessions.Domain.Entities;
 using Halaqa.Desktop.Features.Sessions.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.Sessions.Presentation.ViewModels;
 
@@ -28,19 +29,20 @@ public sealed partial class SessionTasksViewModel : ObservableObject
     }
 
     public ObservableCollection<SessionTaskListItem> Tasks { get; } = new();
-    public IReadOnlyList<SessionTaskType> TaskTypeOptions { get; } = new[]
+    public IReadOnlyList<LocalizedOption<SessionTaskType>> TaskTypeOptions { get; } = new[]
     {
-        SessionTaskType.Memorization,
-        SessionTaskType.Review,
-        SessionTaskType.Recitation
+        new LocalizedOption<SessionTaskType>(SessionTaskType.Memorization, "حفظ"),
+        new LocalizedOption<SessionTaskType>(SessionTaskType.Review, "مراجعة"),
+        new LocalizedOption<SessionTaskType>(SessionTaskType.Recitation, "تلاوة")
     };
-    public IReadOnlyList<OfficialSessionTaskState> TaskStateOptions { get; } = new[]
+
+    public IReadOnlyList<LocalizedOption<OfficialSessionTaskState>> TaskStateOptions { get; } = new[]
     {
-        OfficialSessionTaskState.Draft,
-        OfficialSessionTaskState.InProgress,
-        OfficialSessionTaskState.Completed,
-        OfficialSessionTaskState.Skipped,
-        OfficialSessionTaskState.Cancelled
+        new LocalizedOption<OfficialSessionTaskState>(OfficialSessionTaskState.Draft, "مسودة"),
+        new LocalizedOption<OfficialSessionTaskState>(OfficialSessionTaskState.InProgress, "قيد التنفيذ"),
+        new LocalizedOption<OfficialSessionTaskState>(OfficialSessionTaskState.Completed, "مكتملة"),
+        new LocalizedOption<OfficialSessionTaskState>(OfficialSessionTaskState.Skipped, "متجاوزة"),
+        new LocalizedOption<OfficialSessionTaskState>(OfficialSessionTaskState.Cancelled, "ملغاة")
     };
 
     [ObservableProperty] private SessionTaskListItem? _selectedTask;

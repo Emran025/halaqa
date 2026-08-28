@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
@@ -48,7 +49,11 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
 
     public event EventHandler<AuthenticatedUser>? Registered;
 
-    public Array Genders => Enum.GetValues(typeof(Gender));
+    public IReadOnlyList<LocalizedOption<Gender>> Genders { get; } = new[]
+    {
+        new LocalizedOption<Gender>(Gender.Male, "ذكر"),
+        new LocalizedOption<Gender>(Gender.Female, "أنثى")
+    };
     public bool IsFirstStep => Step == 1;
     public bool IsSecondStep => Step == 2;
 

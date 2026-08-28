@@ -50,7 +50,7 @@
                                     <TextBlock Text="تأكيد كلمة المرور" Style="{StaticResource CaptionText}" />
                                     <PasswordBox x:Name="PasswordConfirmationInput" PasswordChanged="PasswordChanged" FlowDirection="LeftToRight" ToolTip="تأكيد كلمة المرور" />
                                     <TextBlock Text="الجنس" Style="{StaticResource CaptionText}" />
-                                    <ComboBox ItemsSource="{Binding Genders}" SelectedItem="{Binding Gender}" ToolTip="الجنس" />
+                                    <ComboBox ItemsSource="{Binding Genders}" SelectedValue="{Binding Gender}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="الجنس" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="تاريخ الميلاد" Style="{StaticResource CaptionText}" />

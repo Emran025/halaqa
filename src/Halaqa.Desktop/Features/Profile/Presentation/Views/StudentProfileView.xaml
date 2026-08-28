@@ -61,7 +61,7 @@
                                 <TextBox Text="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="تاريخ الميلاد (YYYY-MM-DD)" />
                                 <CheckBox Content="مسح تاريخ الميلاد" IsChecked="{Binding ClearBirthDate}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
                                 <TextBlock Text="{Binding BirthDateError}" Style="{StaticResource SectionError}" />
-                                <ComboBox ItemsSource="{Binding GenderOptions}" SelectedItem="{Binding Gender}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" FlowDirection="LeftToRight" ToolTip="الجنس" />
+                                <ComboBox ItemsSource="{Binding GenderOptions}" SelectedValue="{Binding Gender}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الجنس" />
                                 <CheckBox Content="مسح الجنس" IsChecked="{Binding ClearGender}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
                                 <TextBlock Text="{Binding GenderError}" Style="{StaticResource SectionError}" />
                             </StackPanel>
@@ -148,7 +148,7 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="130" /><ColumnDefinition Width="110" /><ColumnDefinition Width="110" /><ColumnDefinition Width="100" /><ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <ComboBox ItemsSource="{Binding DataContext.WeekDays, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding DayOfWeek}" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" FlowDirection="LeftToRight" ToolTip="اليوم" />
+                                        <ComboBox ItemsSource="{Binding DataContext.WeekDays, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding DayOfWeek}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" ToolTip="اليوم" />
                                         <TextBox Grid.Column="1" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" FlowDirection="LeftToRight" ToolTip="من" Margin="6,0" />
                                         <TextBox Grid.Column="2" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" FlowDirection="LeftToRight" ToolTip="إلى" Margin="6,0" />
                                         <CheckBox Grid.Column="3" Content="مفضل" IsChecked="{Binding Preferred}" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" />
@@ -163,7 +163,7 @@
                         <TextBlock Text="خطة المتابعة" Style="{StaticResource SectionHeading}" />
                         <Grid>
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <ComboBox ItemsSource="{Binding FrequencyOptions}" SelectedItem="{Binding PlanFrequency}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" FlowDirection="LeftToRight" ToolTip="وتيرة المتابعة" Margin="0,0,6,0" />
+                            <ComboBox ItemsSource="{Binding FrequencyOptions}" SelectedValue="{Binding PlanFrequency}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="وتيرة المتابعة" Margin="0,0,6,0" />
                             <TextBox Grid.Column="1" Text="{Binding PlanStartsOn, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="تبدأ في YYYY-MM-DD" Margin="6,0" />
                             <TextBox Grid.Column="2" Text="{Binding PlanEndsOn, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="تنتهي في YYYY-MM-DD" Margin="6,0,0,0" />
                         </Grid>
@@ -174,8 +174,8 @@
                                         <Grid.ColumnDefinitions>
                                             <ColumnDefinition Width="150" /><ColumnDefinition Width="150" /><ColumnDefinition Width="100" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
                                         </Grid.ColumnDefinitions>
-                                        <ComboBox ItemsSource="{Binding DataContext.TaskTypeOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding TaskType}" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" FlowDirection="LeftToRight" ToolTip="النوع" />
-                                        <ComboBox Grid.Column="1" ItemsSource="{Binding DataContext.PlanUnitOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding Unit}" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" FlowDirection="LeftToRight" ToolTip="الوحدة" Margin="6,0" />
+                                        <ComboBox ItemsSource="{Binding DataContext.TaskTypeOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding TaskType}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" ToolTip="النوع" />
+                                        <ComboBox Grid.Column="1" ItemsSource="{Binding DataContext.PlanUnitOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding Unit}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الوحدة" Margin="6,0" />
                                         <TextBox Grid.Column="2" Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" FlowDirection="LeftToRight" ToolTip="الكمية" Margin="6,0" />
                                         <TextBox Grid.Column="3" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="ملاحظات" Margin="6,0" />
                                         <Button Grid.Column="4" Command="{Binding DataContext.RemovePlanDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف التفصيل"><controls:AppIcon Kind="Close"  /></Button>

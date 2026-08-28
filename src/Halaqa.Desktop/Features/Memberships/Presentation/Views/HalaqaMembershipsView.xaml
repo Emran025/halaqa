@@ -74,12 +74,12 @@
                             <DockPanel Margin="0,20,0,0">
                                 <TextBlock Text="{Binding EditorTitle}" Style="{StaticResource SectionTitle}" />
                                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                                    <ComboBox ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding FilterStatus}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Width="100" FlowDirection="LeftToRight" ToolTip="تصفية" />
+                                    <ComboBox ItemsSource="{Binding FilterOptions}" SelectedValue="{Binding FilterStatus}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Width="150" ToolTip="تصفية" />
                                     <Button Content="تطبيق" Command="{Binding ApplyFilterCommand}" Margin="8,0,0,0" />
                                 </StackPanel>
                             </DockPanel>
                             <TextBlock Text="اختر عضوية من القائمة لتحديث حالتها أو إزالتها." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,6,0,8" />
-                            <ComboBox ItemsSource="{Binding MembershipStatusOptions}" SelectedItem="{Binding SelectedStatus}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" FlowDirection="LeftToRight" ToolTip="الحالة الجديدة" />
+                            <ComboBox ItemsSource="{Binding MembershipStatusOptions}" SelectedValue="{Binding SelectedStatus}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الحالة الجديدة" />
                             <TextBlock Text="{Binding StatusError}" Style="{StaticResource FieldError}" />
                             <TextBox Text="{Binding Reason, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="70" TextWrapping="Wrap" ToolTip="سبب التغيير (اختياري)" />
                             <TextBlock Text="{Binding ReasonError}" Style="{StaticResource FieldError}" />

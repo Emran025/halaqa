@@ -22,6 +22,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
             <Grid>
@@ -141,6 +142,27 @@
                     </StackPanel>
                 </Border>
             </WrapPanel>
+
+            <Border Grid.Row="3" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="16" Margin="0,22,0,0">
+                <StackPanel>
+                    <TextBlock Text="من معرض تاج الوقار" Style="{StaticResource SectionTitle}" />
+                    <TextBlock Text="صور تعليمية وإيمانية من الموقع موزعة داخل التطبيق لتبقى الهوية البصرية حاضرة في كل مسار." Style="{StaticResource BodyMuted}" Margin="0,3,0,12" />
+                    <ItemsControl ItemsSource="{Binding SiteGalleryImages}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel HorizontalAlignment="Center" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Border Width="132" Height="84" Margin="4" CornerRadius="3" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" ClipToBounds="True">
+                                    <Image Source="{Binding}" Stretch="UniformToFill" />
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </Border>
         </Grid>
     </ScrollViewer>
 </UserControl>

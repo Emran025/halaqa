@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Halaqas.Domain.Entities;
 using Halaqa.Desktop.Features.Halaqas.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.Halaqas.Presentation.ViewModels;
 
@@ -31,7 +32,11 @@ public sealed partial class HalaqasViewModel : ObservableObject
     }
 
     public ObservableCollection<HalaqaItem> Halaqas { get; } = new();
-    public IReadOnlyList<string> GenderOptions { get; } = new[] { "male", "female" };
+    public IReadOnlyList<LocalizedOption<string>> GenderOptions { get; } = new[]
+    {
+        new LocalizedOption<string>("male", "ذكور"),
+        new LocalizedOption<string>("female", "إناث")
+    };
 
     [ObservableProperty] private HalaqaItem? _selectedHalaqa;
     [ObservableProperty] private string _name = string.Empty;

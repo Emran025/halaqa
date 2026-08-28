@@ -5,6 +5,7 @@
     <LangVersion>10.0</LangVersion>
     <UseWPF>true</UseWPF>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <ApplicationIcon>Assets\Brand\halaqa-mark.ico</ApplicationIcon>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
@@ -30,7 +31,8 @@
     <Resource Include="Assets\Fonts\*.ttf" />
     <Resource Include="Assets\Fonts\QuranPages\*.ttf" />
     <Resource Include="Assets\Brand\*.png" />
-    <Resource Include="Assets\Images\**\*.jpg" />
+    <Resource Include="Assets\Brand\*.ico" />
+    <Resource Include="Assets\Images\**\*.jpg;Assets\Images\**\*.jpeg;Assets\Images\**\*.png" />
     <None Include="Assets\Fonts\Cairo-OFL.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

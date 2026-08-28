@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Sessions.Domain.Entities;
 using Halaqa.Desktop.Features.Sessions.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.Sessions.Presentation.ViewModels;
 
@@ -19,21 +20,21 @@ public sealed partial class SessionsViewModel : ObservableObject
     }
 
     public ObservableCollection<SessionListItem> Sessions { get; } = new();
-    public IReadOnlyList<string> StateOptions { get; } = new[]
+    public IReadOnlyList<LocalizedOption<string>> StateOptions { get; } = new[]
     {
-        string.Empty,
-        "requested",
-        "accepted",
-        "connecting",
-        "directNegotiation",
-        "connected",
-        "weakConnection",
-        "reconnecting",
-        "disconnected",
-        "directConnectionUnavailable",
-        "ended",
-        "cancelled",
-        "rejected"
+        new LocalizedOption<string>(string.Empty, "كل الحالات"),
+        new LocalizedOption<string>("requested", "مطلوبة"),
+        new LocalizedOption<string>("accepted", "مقبولة"),
+        new LocalizedOption<string>("connecting", "جارٍ الاتصال"),
+        new LocalizedOption<string>("directNegotiation", "تفاوض مباشر"),
+        new LocalizedOption<string>("connected", "متصلة"),
+        new LocalizedOption<string>("weakConnection", "اتصال ضعيف"),
+        new LocalizedOption<string>("reconnecting", "إعادة الاتصال"),
+        new LocalizedOption<string>("disconnected", "منقطعة"),
+        new LocalizedOption<string>("directConnectionUnavailable", "الاتصال المباشر غير متاح"),
+        new LocalizedOption<string>("ended", "منتهية"),
+        new LocalizedOption<string>("cancelled", "ملغاة"),
+        new LocalizedOption<string>("rejected", "مرفوضة")
     };
 
     [ObservableProperty] private SessionListItem? _selectedSession;

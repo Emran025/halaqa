@@ -20,10 +20,18 @@
                 </DockPanel>
             </Border>
 
+            <Border Height="100" CornerRadius="4" Margin="0,0,0,16" ClipToBounds="True">
+                <Grid>
+                    <Image Source="/Assets/Images/TagAlwaqar/Site/illustrations/high-angle-view-book-table_1048944-27339446.jpg" Stretch="UniformToFill" />
+                    <Rectangle Fill="#C0143E47" />
+                    <TextBlock Text="جلسات هادفة على طريق الإتقان" Foreground="White" FontSize="19" FontWeight="Bold" VerticalAlignment="Center" Margin="20,0" />
+                </Grid>
+            </Border>
+
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="20" CornerRadius="4" Margin="0,0,0,16">
                 <Grid>
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
-                    <ComboBox ItemsSource="{Binding StateOptions}" SelectedItem="{Binding StateFilter}" ToolTip="الحالة" />
+                    <ComboBox ItemsSource="{Binding StateOptions}" SelectedValue="{Binding StateFilter}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="الحالة" />
                     <TextBox Grid.Column="1" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" ToolTip="من YYYY-MM-DD HH:mm +03:00" Margin="8,0" FlowDirection="LeftToRight" />
                     <TextBox Grid.Column="2" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" ToolTip="إلى YYYY-MM-DD HH:mm +03:00" Margin="8,0" FlowDirection="LeftToRight" />
                     <Button Grid.Column="3" Content="تطبيق" Command="{Binding ApplyFilterCommand}" Margin="0,0,0,0" />

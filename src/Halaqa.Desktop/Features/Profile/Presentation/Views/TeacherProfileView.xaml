@@ -60,7 +60,7 @@
                                 <TextBox Text="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="تاريخ الميلاد (YYYY-MM-DD)" />
                                 <CheckBox Content="مسح تاريخ الميلاد" IsChecked="{Binding ClearBirthDate}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
                                 <TextBlock Text="{Binding BirthDateError}" Style="{StaticResource SectionError}" />
-                                <ComboBox ItemsSource="{Binding GenderOptions}" SelectedItem="{Binding Gender}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" FlowDirection="LeftToRight" ToolTip="الجنس" />
+                                <ComboBox ItemsSource="{Binding GenderOptions}" SelectedValue="{Binding Gender}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الجنس" />
                                 <CheckBox Content="مسح الجنس" IsChecked="{Binding ClearGender}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
                                 <TextBlock Text="{Binding GenderError}" Style="{StaticResource SectionError}" />
                             </StackPanel>

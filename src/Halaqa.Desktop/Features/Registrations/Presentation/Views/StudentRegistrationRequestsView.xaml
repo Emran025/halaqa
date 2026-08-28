@@ -33,7 +33,7 @@
                             <DockPanel>
                                 <TextBlock Text="الطلبات" Style="{StaticResource SectionTitle}" />
                                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                                    <ComboBox ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding FilterState}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Width="160" FlowDirection="LeftToRight" ToolTip="تصفية الحالة" />
+                                    <ComboBox ItemsSource="{Binding FilterOptions}" SelectedValue="{Binding FilterState}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Width="190" ToolTip="تصفية الحالة" />
                                     <Button Content="تطبيق" Command="{Binding ApplyFilterCommand}" Margin="8,0,0,0" />
                                     <TextBlock Text="{Binding Total, StringFormat=الإجمالي: {0}}" Style="{StaticResource BodyMuted}" VerticalAlignment="Center" Margin="12,0,0,0" />
                                 </StackPanel>

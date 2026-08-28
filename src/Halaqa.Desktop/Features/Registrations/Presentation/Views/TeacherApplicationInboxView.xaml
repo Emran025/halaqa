@@ -17,7 +17,7 @@
                 <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" VerticalAlignment="Center" TextWrapping="Wrap" />
                 <WrapPanel DockPanel.Dock="Left">
                     <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="160" ToolTip="بحث بالاسم" Margin="0,0,8,0" />
-                    <ComboBox ItemsSource="{Binding FilterOptions}" SelectedItem="{Binding FilterState}" Width="145" Margin="0,0,8,0" ToolTip="الحالة" />
+                    <ComboBox ItemsSource="{Binding FilterOptions}" SelectedValue="{Binding FilterState}" SelectedValuePath="Value" DisplayMemberPath="Label" Width="190" Margin="0,0,8,0" ToolTip="الحالة" />
                     <Button Content="بحث" Command="{Binding ApplyFilterCommand}" Style="{StaticResource AppOutlinedButton}" Margin="0,0,8,0" />
                     <ProgressBar Width="72" Height="4" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
                 </WrapPanel>

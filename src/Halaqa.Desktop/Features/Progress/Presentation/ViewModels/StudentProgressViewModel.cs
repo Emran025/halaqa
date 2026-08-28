@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Progress.Domain.Entities;
 using Halaqa.Desktop.Features.Progress.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.Progress.Presentation.ViewModels;
 
@@ -15,7 +16,13 @@ public sealed partial class StudentProgressViewModel : ObservableObject
         this.getStudentProgressUseCase = getStudentProgressUseCase;
     }
 
-    public IReadOnlyList<string> TaskTypeOptions { get; } = new[] { "", "memorization", "review", "recitation" };
+    public IReadOnlyList<LocalizedOption<string>> TaskTypeOptions { get; } = new[]
+    {
+        new LocalizedOption<string>(string.Empty, "كل المهام"),
+        new LocalizedOption<string>("memorization", "حفظ"),
+        new LocalizedOption<string>("review", "مراجعة"),
+        new LocalizedOption<string>("recitation", "تلاوة")
+    };
 
     [ObservableProperty] private Guid _studentId;
     [ObservableProperty] private string _selectedTaskType = string.Empty;

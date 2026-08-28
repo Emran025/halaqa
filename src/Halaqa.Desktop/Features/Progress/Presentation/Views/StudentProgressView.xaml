@@ -14,7 +14,7 @@
             </DockPanel>
             <Border Background="{StaticResource AppSurfaceBrush}" Padding="16" CornerRadius="4" Margin="0,0,0,16">
                 <DockPanel>
-                    <ComboBox ItemsSource="{Binding TaskTypeOptions}" SelectedItem="{Binding SelectedTaskType}" Width="190" DockPanel.Dock="Right" ToolTip="نوع المهمة" />
+                    <ComboBox ItemsSource="{Binding TaskTypeOptions}" SelectedValue="{Binding SelectedTaskType}" SelectedValuePath="Value" DisplayMemberPath="Label" Width="190" DockPanel.Dock="Right" ToolTip="نوع المهمة" />
                     <Button Content="تحديث التقدم" Command="{Binding LoadCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
                 </DockPanel>
             </Border>

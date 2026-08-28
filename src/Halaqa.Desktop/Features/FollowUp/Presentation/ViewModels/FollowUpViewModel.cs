@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.FollowUp.Domain.Entities;
 using Halaqa.Desktop.Features.FollowUp.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.FollowUp.Presentation.ViewModels;
 
@@ -46,10 +47,40 @@ public sealed partial class FollowUpViewModel : ObservableObject
     public ObservableCollection<TrackingItem> Trackings { get; } = new();
     public ObservableCollection<FollowUpPlanDetailEditor> PlanDetails { get; } = new();
     public ObservableCollection<FollowUpAvailabilitySlotEditor> WeeklySlots { get; } = new();
-    public IReadOnlyList<FollowUpFrequency> FrequencyOptions { get; } = Enum.GetValues<FollowUpFrequency>();
-    public IReadOnlyList<FollowUpTaskType> TaskTypeOptions { get; } = Enum.GetValues<FollowUpTaskType>();
-    public IReadOnlyList<FollowUpUnit> UnitOptions { get; } = Enum.GetValues<FollowUpUnit>();
-    public IReadOnlyList<int> WeekDayOptions { get; } = new[] { 0, 1, 2, 3, 4, 5, 6 };
+    public IReadOnlyList<LocalizedOption<FollowUpFrequency>> FrequencyOptions { get; } = new[]
+    {
+        new LocalizedOption<FollowUpFrequency>(FollowUpFrequency.Daily, "يومياً"),
+        new LocalizedOption<FollowUpFrequency>(FollowUpFrequency.OnceAWeek, "مرة أسبوعياً"),
+        new LocalizedOption<FollowUpFrequency>(FollowUpFrequency.TwiceAWeek, "مرتان أسبوعياً"),
+        new LocalizedOption<FollowUpFrequency>(FollowUpFrequency.ThriceAWeek, "ثلاث مرات أسبوعياً")
+    };
+
+    public IReadOnlyList<LocalizedOption<FollowUpTaskType>> TaskTypeOptions { get; } = new[]
+    {
+        new LocalizedOption<FollowUpTaskType>(FollowUpTaskType.Memorization, "حفظ"),
+        new LocalizedOption<FollowUpTaskType>(FollowUpTaskType.Review, "مراجعة"),
+        new LocalizedOption<FollowUpTaskType>(FollowUpTaskType.Recitation, "تلاوة")
+    };
+
+    public IReadOnlyList<LocalizedOption<FollowUpUnit>> UnitOptions { get; } = new[]
+    {
+        new LocalizedOption<FollowUpUnit>(FollowUpUnit.Page, "صفحة"),
+        new LocalizedOption<FollowUpUnit>(FollowUpUnit.Juz, "جزء"),
+        new LocalizedOption<FollowUpUnit>(FollowUpUnit.Hizb, "حزب"),
+        new LocalizedOption<FollowUpUnit>(FollowUpUnit.HalfHizb, "نصف حزب"),
+        new LocalizedOption<FollowUpUnit>(FollowUpUnit.QuarterHizb, "ربع حزب")
+    };
+
+    public IReadOnlyList<LocalizedOption<int>> WeekDayOptions { get; } = new[]
+    {
+        new LocalizedOption<int>(0, "الأحد"),
+        new LocalizedOption<int>(1, "الاثنين"),
+        new LocalizedOption<int>(2, "الثلاثاء"),
+        new LocalizedOption<int>(3, "الأربعاء"),
+        new LocalizedOption<int>(4, "الخميس"),
+        new LocalizedOption<int>(5, "الجمعة"),
+        new LocalizedOption<int>(6, "السبت")
+    };
 
     [ObservableProperty] private Guid _studentId;
     [ObservableProperty] private FollowUpPlan? _plan;

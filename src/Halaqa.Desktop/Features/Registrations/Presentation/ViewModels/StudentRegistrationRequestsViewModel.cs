@@ -4,6 +4,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Registrations.Domain.Entities;
 using Halaqa.Desktop.Features.Registrations.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.Registrations.Presentation.ViewModels;
 
@@ -21,15 +22,15 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
     }
 
     public ObservableCollection<RegistrationRequest> Requests { get; } = new();
-    public IReadOnlyList<string> FilterOptions { get; } = new[]
+    public IReadOnlyList<LocalizedOption<string>> FilterOptions { get; } = new[]
     {
-        "",
-        "pending",
-        "completion_requested",
-        "accepted",
-        "rejected",
-        "withdrawn",
-        "cancelled"
+        new LocalizedOption<string>(string.Empty, "كل الطلبات"),
+        new LocalizedOption<string>("pending", "قيد الانتظار"),
+        new LocalizedOption<string>("completion_requested", "بانتظار استكمال البيانات"),
+        new LocalizedOption<string>("accepted", "مقبول"),
+        new LocalizedOption<string>("rejected", "مرفوض"),
+        new LocalizedOption<string>("withdrawn", "مسحوب"),
+        new LocalizedOption<string>("cancelled", "ملغى")
     };
 
     [ObservableProperty] private RegistrationRequest? _selectedRequest;

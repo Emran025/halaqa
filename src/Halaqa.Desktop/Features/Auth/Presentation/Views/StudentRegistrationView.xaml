@@ -51,7 +51,7 @@
                                     <TextBlock Text="تأكيد كلمة المرور" Style="{StaticResource CaptionText}" />
                                     <PasswordBox x:Name="PasswordConfirmationInput" PasswordChanged="PasswordChanged" FlowDirection="LeftToRight" ToolTip="تأكيد كلمة المرور" />
                                     <TextBlock Text="الجنس" Style="{StaticResource CaptionText}" />
-                                    <ComboBox ItemsSource="{Binding Genders}" SelectedItem="{Binding Gender}" ToolTip="الجنس" />
+                                    <ComboBox ItemsSource="{Binding Genders}" SelectedValue="{Binding Gender}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="الجنس" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="تاريخ الميلاد" Style="{StaticResource CaptionText}" />
@@ -105,13 +105,13 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="تكرار الخطة" Style="{StaticResource CaptionText}" />
-                                    <ComboBox ItemsSource="{Binding Frequencies}" SelectedItem="{Binding Frequency}" ToolTip="التكرار" />
+                                    <ComboBox ItemsSource="{Binding Frequencies}" SelectedValue="{Binding Frequency}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="التكرار" />
                                     <TextBlock Text="نوع المهمة" Style="{StaticResource CaptionText}" />
-                                    <ComboBox ItemsSource="{Binding TaskTypes}" SelectedItem="{Binding TaskType}" ToolTip="نوع المهمة" />
+                                    <ComboBox ItemsSource="{Binding TaskTypes}" SelectedValue="{Binding TaskType}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="نوع المهمة" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="وحدة الخطة" Style="{StaticResource CaptionText}" />
-                                    <TextBox Text="{Binding PlanUnit}" ToolTip="page أو juz أو hizb" />
+                                    <ComboBox ItemsSource="{Binding PlanUnits}" SelectedValue="{Binding PlanUnit}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="وحدة الخطة" />
                                     <TextBlock Text="الكمية" Style="{StaticResource CaptionText}" />
                                     <TextBox Text="{Binding PlanAmount}" FlowDirection="LeftToRight" ToolTip="الكمية" />
                                 </StackPanel>

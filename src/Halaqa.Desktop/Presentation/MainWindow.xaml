@@ -30,7 +30,7 @@
         xmlns:notesViews="clr-namespace:Halaqa.Desktop.Features.Notes.Presentation.Views"
         xmlns:progressVm="clr-namespace:Halaqa.Desktop.Features.Progress.Presentation.ViewModels"
         xmlns:progressViews="clr-namespace:Halaqa.Desktop.Features.Progress.Presentation.Views"
-        Title="حلقة القرآن" Height="780" Width="1180" MinHeight="640" MinWidth="960"
+        Title="حلقة القرآن" Icon="/Assets/Brand/halaqa-mark.ico" Height="780" Width="1180" MinHeight="640" MinWidth="960"
         WindowStartupLocation="CenterScreen" FlowDirection="RightToLeft"
         FontFamily="{StaticResource AppFontFamily}">
     <Window.Resources>

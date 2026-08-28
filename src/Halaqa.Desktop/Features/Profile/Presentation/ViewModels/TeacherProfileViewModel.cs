@@ -6,6 +6,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Profile.Domain.Entities;
 using Halaqa.Desktop.Features.Profile.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.Profile.Presentation.ViewModels;
 
@@ -25,7 +26,11 @@ public sealed partial class TeacherProfileViewModel : ObservableObject
 
     public ObservableCollection<TeacherDocumentSummary> Documents { get; } = new();
     public ObservableCollection<TeacherHalaqaSummary> PublicHalaqas { get; } = new();
-    public IReadOnlyList<string> GenderOptions { get; } = new[] { "male", "female" };
+    public IReadOnlyList<LocalizedOption<string>> GenderOptions { get; } = new[]
+    {
+        new LocalizedOption<string>("male", "ذكر"),
+        new LocalizedOption<string>("female", "أنثى")
+    };
 
     [ObservableProperty] private string _name = string.Empty;
     [ObservableProperty] private string _teacherCode = string.Empty;

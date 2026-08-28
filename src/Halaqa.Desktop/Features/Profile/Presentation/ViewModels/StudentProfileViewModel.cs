@@ -7,6 +7,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Profile.Domain.Entities;
 using Halaqa.Desktop.Features.Profile.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.Profile.Presentation.ViewModels;
 
@@ -100,11 +101,46 @@ public sealed partial class StudentProfileViewModel : ObservableObject
 
     public ObservableCollection<StudentWeeklySlotEditor> WeeklySlots { get; } = new();
     public ObservableCollection<StudentPlanDetailEditor> PlanDetails { get; } = new();
-    public IReadOnlyList<string> GenderOptions { get; } = new[] { "male", "female" };
-    public IReadOnlyList<string> FrequencyOptions { get; } = new[] { "daily", "onceAWeek", "twiceAWeek", "thriceAWeek" };
-    public IReadOnlyList<string> TaskTypeOptions { get; } = new[] { "memorization", "review", "recitation" };
-    public IReadOnlyList<string> PlanUnitOptions { get; } = new[] { "juz", "hizb", "halfHizb", "quarterHizb", "page" };
-    public IReadOnlyList<int> WeekDays { get; } = new[] { 0, 1, 2, 3, 4, 5, 6 };
+    public IReadOnlyList<LocalizedOption<string>> GenderOptions { get; } = new[]
+    {
+        new LocalizedOption<string>("male", "ذكر"),
+        new LocalizedOption<string>("female", "أنثى")
+    };
+
+    public IReadOnlyList<LocalizedOption<string>> FrequencyOptions { get; } = new[]
+    {
+        new LocalizedOption<string>("daily", "يومياً"),
+        new LocalizedOption<string>("onceAWeek", "مرة أسبوعياً"),
+        new LocalizedOption<string>("twiceAWeek", "مرتان أسبوعياً"),
+        new LocalizedOption<string>("thriceAWeek", "ثلاث مرات أسبوعياً")
+    };
+
+    public IReadOnlyList<LocalizedOption<string>> TaskTypeOptions { get; } = new[]
+    {
+        new LocalizedOption<string>("memorization", "حفظ"),
+        new LocalizedOption<string>("review", "مراجعة"),
+        new LocalizedOption<string>("recitation", "تلاوة")
+    };
+
+    public IReadOnlyList<LocalizedOption<string>> PlanUnitOptions { get; } = new[]
+    {
+        new LocalizedOption<string>("page", "صفحة"),
+        new LocalizedOption<string>("juz", "جزء"),
+        new LocalizedOption<string>("hizb", "حزب"),
+        new LocalizedOption<string>("halfHizb", "نصف حزب"),
+        new LocalizedOption<string>("quarterHizb", "ربع حزب")
+    };
+
+    public IReadOnlyList<LocalizedOption<int>> WeekDays { get; } = new[]
+    {
+        new LocalizedOption<int>(0, "الأحد"),
+        new LocalizedOption<int>(1, "الاثنين"),
+        new LocalizedOption<int>(2, "الثلاثاء"),
+        new LocalizedOption<int>(3, "الأربعاء"),
+        new LocalizedOption<int>(4, "الخميس"),
+        new LocalizedOption<int>(5, "الجمعة"),
+        new LocalizedOption<int>(6, "السبت")
+    };
 
     [ObservableProperty] private string _name = string.Empty;
     [ObservableProperty] private string _email = string.Empty;

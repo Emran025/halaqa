@@ -13,6 +13,17 @@
                 </StackPanel>
             </DockPanel>
 
+            <Border Height="116" CornerRadius="4" Margin="0,0,0,16" ClipToBounds="True">
+                <Grid>
+                    <Image Source="/Assets/Images/TagAlwaqar/Site/illustrations/muslim-woman-reading-quran-medium-shot-from-side_570907-62.jpg" Stretch="UniformToFill" />
+                    <Rectangle Fill="#BF143E47" />
+                    <StackPanel VerticalAlignment="Center" Margin="20,0">
+                        <TextBlock Text="المتابعة تصنع الاستمرارية" Foreground="White" FontSize="20" FontWeight="Bold" />
+                        <TextBlock Text="خطط واضحة، حضور منتظم، وأثر يتراكم" Foreground="#F5FFFFFF" FontSize="13" Margin="0,3,0,0" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+
             <Border Background="#0D155EEF" Padding="14" CornerRadius="4" Margin="0,0,0,16">
                 <DockPanel>
                     <controls:AppIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0"  />
@@ -34,7 +45,7 @@
                         <TextBlock Text="خطة الحفظ والمراجعة" Style="{StaticResource SectionTitle}" />
                         <TextBlock Text="تدعم الخطة تفصيلاً واحداً أو أكثر؛ راجع النوع والوحدة والكمية لكل تفصيل قبل الحفظ." Style="{StaticResource CaptionText}" TextWrapping="Wrap" Margin="0,4,0,12" />
                         <TextBlock Text="التكرار" Style="{StaticResource BodyMuted}" />
-                        <ComboBox ItemsSource="{Binding FrequencyOptions}" SelectedItem="{Binding Frequency}" />
+                        <ComboBox ItemsSource="{Binding FrequencyOptions}" SelectedValue="{Binding Frequency}" SelectedValuePath="Value" DisplayMemberPath="Label" />
                         <ItemsControl ItemsSource="{Binding PlanDetails}" Margin="0,10,0,4">
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate>
@@ -43,8 +54,8 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="120" /><ColumnDefinition Width="120" /><ColumnDefinition Width="90" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            <ComboBox ItemsSource="{Binding DataContext.TaskTypeOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding TaskType}" ToolTip="نوع المهمة" />
-                                            <ComboBox Grid.Column="1" ItemsSource="{Binding DataContext.UnitOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding Unit}" ToolTip="الوحدة" Margin="6,0" />
+                                            <ComboBox ItemsSource="{Binding DataContext.TaskTypeOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding TaskType}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="نوع المهمة" />
+                                            <ComboBox Grid.Column="1" ItemsSource="{Binding DataContext.UnitOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding Unit}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="الوحدة" Margin="6,0" />
                                             <TextBox Grid.Column="2" Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" ToolTip="الكمية" Margin="6,0" />
                                             <TextBox Grid.Column="3" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" ToolTip="ملاحظات (حتى 500)" Margin="6,0" />
                                             <Button Grid.Column="4" Command="{Binding DataContext.RemovePlanDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف التفصيل"><controls:AppIcon Kind="Close"  /></Button>
@@ -77,7 +88,7 @@
                                             <Grid.ColumnDefinitions>
                                                 <ColumnDefinition Width="120" /><ColumnDefinition Width="110" /><ColumnDefinition Width="110" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
                                             </Grid.ColumnDefinitions>
-                                            <ComboBox ItemsSource="{Binding DataContext.WeekDayOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedItem="{Binding DayOfWeek}" ToolTip="اليوم (0–6)" />
+                                            <ComboBox ItemsSource="{Binding DataContext.WeekDayOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding DayOfWeek}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="اليوم" />
                                             <TextBox Grid.Column="1" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" ToolTip="من HH:mm" Margin="6,0" />
                                             <TextBox Grid.Column="2" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" ToolTip="إلى HH:mm" Margin="6,0" />
                                             <CheckBox Grid.Column="3" Content="مفضل" IsChecked="{Binding Preferred}" VerticalAlignment="Center" Margin="6,0" />

@@ -101,11 +101,53 @@
         <Setter Property="BorderBrush" Value="{StaticResource AppErrorBrush}" />
     </Style>
 
+    <!-- Keep scrolling available without the bulky native arrows and rails. -->
+    <Style TargetType="{x:Type ScrollBar}">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{StaticResource AppBorderBrush}" />
+        <Setter Property="Width" Value="6" />
+        <Setter Property="Height" Value="6" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type ScrollBar}">
+                    <Grid Background="{TemplateBinding Background}">
+                        <Track x:Name="PART_Track"
+                               Orientation="{TemplateBinding Orientation}"
+                               IsDirectionReversed="{Binding IsDirectionReversed, RelativeSource={RelativeSource TemplatedParent}}"
+                               Focusable="False">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Style="{x:Null}" Background="Transparent" BorderThickness="0" Focusable="False" IsTabStop="False" />
+                            </Track.DecreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Background="{TemplateBinding Foreground}" BorderThickness="0" Opacity="0.72" />
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Style="{x:Null}" Background="Transparent" BorderThickness="0" Focusable="False" IsTabStop="False" />
+                            </Track.IncreaseRepeatButton>
+                        </Track>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Orientation" Value="Horizontal">
+                            <Setter Property="Height" Value="6" />
+                            <Setter Property="Width" Value="Auto" />
+                        </Trigger>
+                        <Trigger Property="Orientation" Value="Vertical">
+                            <Setter Property="Width" Value="6" />
+                            <Setter Property="Height" Value="Auto" />
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <Style TargetType="{x:Type TextBox}">
         <Setter Property="Margin" Value="0,4,0,11" />
+        <Setter Property="Height" Value="36" />
         <Setter Property="MinHeight" Value="36" />
         <Setter Property="Padding" Value="10,4" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Background" Value="{StaticResource AppSurfaceBrush}" />
         <Setter Property="Foreground" Value="{StaticResource AppInkBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource AppBorderBrush}" />
@@ -133,9 +175,11 @@
 
     <Style TargetType="{x:Type PasswordBox}">
         <Setter Property="Margin" Value="0,4,0,11" />
+        <Setter Property="Height" Value="36" />
         <Setter Property="MinHeight" Value="36" />
         <Setter Property="Padding" Value="10,4" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Background" Value="{StaticResource AppSurfaceBrush}" />
         <Setter Property="Foreground" Value="{StaticResource AppInkBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource AppBorderBrush}" />
@@ -163,9 +207,11 @@
 
     <Style TargetType="{x:Type ComboBox}">
         <Setter Property="Margin" Value="0,4,0,11" />
+        <Setter Property="Height" Value="36" />
         <Setter Property="MinHeight" Value="36" />
         <Setter Property="Padding" Value="10,3" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Background" Value="{StaticResource AppSurfaceBrush}" />
         <Setter Property="Foreground" Value="{StaticResource AppInkBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource AppBorderBrush}" />
@@ -188,7 +234,7 @@
                         </Border>
                         <Popup x:Name="PART_Popup" Placement="Bottom" PlacementTarget="{Binding ElementName=Root}" AllowsTransparency="True" Focusable="False" IsOpen="{TemplateBinding IsDropDownOpen}" PopupAnimation="Fade">
                             <Border Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="3" Margin="0,3,0,0" MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource TemplatedParent}}" Effect="{StaticResource AppSoftShadow}">
-                                <ScrollViewer MaxHeight="260" CanContentScroll="True" HorizontalScrollBarVisibility="Disabled">
+                                <ScrollViewer MaxHeight="260" CanContentScroll="True" VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled">
                                     <ItemsPresenter />
                                 </ScrollViewer>
                             </Border>
@@ -210,6 +256,7 @@
 
     <Style TargetType="{x:Type ComboBoxItem}">
         <Setter Property="Padding" Value="10,7" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Foreground" Value="{StaticResource AppInkBrush}" />
         <Setter Property="Background" Value="{StaticResource AppSurfaceBrush}" />
         <Setter Property="HorizontalContentAlignment" Value="Stretch" />
@@ -237,6 +284,7 @@
         <Setter Property="Margin" Value="0,4,0,11" />
         <Setter Property="MinHeight" Value="36" />
         <Setter Property="FontSize" Value="14" />
+        <Setter Property="FontWeight" Value="SemiBold" />
         <Setter Property="Background" Value="{StaticResource AppSurfaceBrush}" />
         <Setter Property="Foreground" Value="{StaticResource AppInkBrush}" />
         <Setter Property="BorderBrush" Value="{StaticResource AppBorderBrush}" />

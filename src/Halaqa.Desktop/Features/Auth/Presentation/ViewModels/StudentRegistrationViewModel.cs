@@ -3,6 +3,7 @@ using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
+using Halaqa.Desktop.Shared.Presentation.Models;
 
 namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
@@ -52,9 +53,35 @@ public sealed partial class StudentRegistrationViewModel : ObservableObject
 
     public event EventHandler<AuthenticatedUser>? Registered;
 
-    public Array Genders => Enum.GetValues(typeof(Gender));
-    public Array Frequencies => Enum.GetValues(typeof(FollowUpFrequency));
-    public Array TaskTypes => Enum.GetValues(typeof(PlanTaskType));
+    public IReadOnlyList<LocalizedOption<Gender>> Genders { get; } = new[]
+    {
+        new LocalizedOption<Gender>(Gender.Male, "ذكر"),
+        new LocalizedOption<Gender>(Gender.Female, "أنثى")
+    };
+
+    public IReadOnlyList<LocalizedOption<FollowUpFrequency>> Frequencies { get; } = new[]
+    {
+        new LocalizedOption<FollowUpFrequency>(FollowUpFrequency.Daily, "يومياً"),
+        new LocalizedOption<FollowUpFrequency>(FollowUpFrequency.OnceAWeek, "مرة أسبوعياً"),
+        new LocalizedOption<FollowUpFrequency>(FollowUpFrequency.TwiceAWeek, "مرتان أسبوعياً"),
+        new LocalizedOption<FollowUpFrequency>(FollowUpFrequency.ThriceAWeek, "ثلاث مرات أسبوعياً")
+    };
+
+    public IReadOnlyList<LocalizedOption<PlanTaskType>> TaskTypes { get; } = new[]
+    {
+        new LocalizedOption<PlanTaskType>(PlanTaskType.Memorization, "حفظ"),
+        new LocalizedOption<PlanTaskType>(PlanTaskType.Review, "مراجعة"),
+        new LocalizedOption<PlanTaskType>(PlanTaskType.Recitation, "تلاوة")
+    };
+
+    public IReadOnlyList<LocalizedOption<string>> PlanUnits { get; } = new[]
+    {
+        new LocalizedOption<string>("page", "صفحة"),
+        new LocalizedOption<string>("juz", "جزء"),
+        new LocalizedOption<string>("hizb", "حزب"),
+        new LocalizedOption<string>("halfHizb", "نصف حزب"),
+        new LocalizedOption<string>("quarterHizb", "ربع حزب")
+    };
     public bool IsFirstStep => Step == 1;
     public bool IsSecondStep => Step == 2;
     public bool IsThirdStep => Step == 3;

@@ -26,7 +26,7 @@
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                     <TextBlock Grid.ColumnSpan="4" Text="إضافة مهمة" Style="{StaticResource SectionTitle}" />
                     <TextBlock Grid.Row="1" Grid.ColumnSpan="4" Text="نوع المهمة ومعرّف العملية مطلوبان؛ القيم الآتية اختيارية في العقد وتُحذف من الطلب حين تترك فارغة." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,10" />
-                    <ComboBox Grid.Row="2" ItemsSource="{Binding TaskTypeOptions}" SelectedItem="{Binding NewTaskType}" ToolTip="نوع المهمة" Margin="0,0,6,10" />
+                    <ComboBox Grid.Row="2" ItemsSource="{Binding TaskTypeOptions}" SelectedValue="{Binding NewTaskType}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="نوع المهمة" Margin="0,0,6,10" />
                     <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewSequenceNo, UpdateSourceTrigger=PropertyChanged}" ToolTip="التسلسل (≥ 1)" Margin="6,0,6,10" FlowDirection="LeftToRight" />
                     <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding NewPlannedAmount, UpdateSourceTrigger=PropertyChanged}" ToolTip="الكمية المخططة (≥ 0)" Margin="6,0,6,10" FlowDirection="LeftToRight" />
                     <Button Grid.Row="2" Grid.Column="3" Content="إنشاء المهمة" Command="{Binding CreateTaskCommand}" Margin="6,0,0,10" />
@@ -96,7 +96,7 @@
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                     <TextBlock Grid.ColumnSpan="4" Text="تحديث المهمة المختارة" Style="{StaticResource SectionTitle}" />
                     <TextBlock Grid.Row="1" Grid.ColumnSpan="4" Text="أدخل الحقول التي تريد تعديلها فقط؛ يرسل العميل PATCH بحقل واحد على الأقل ولا يرسل قيماً فارغة على أنها null." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,10" />
-                    <ComboBox Grid.Row="2" ItemsSource="{Binding TaskStateOptions}" SelectedItem="{Binding SelectedUpdateState}" ToolTip="الحالة" Margin="0,0,6,10" />
+                    <ComboBox Grid.Row="2" ItemsSource="{Binding TaskStateOptions}" SelectedValue="{Binding SelectedUpdateState}" SelectedValuePath="Value" DisplayMemberPath="Label" ToolTip="الحالة" Margin="0,0,6,10" />
                     <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding UpdatePlannedAmount, UpdateSourceTrigger=PropertyChanged}" ToolTip="الكمية المخططة" Margin="6,0,6,10" FlowDirection="LeftToRight" />
                     <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding UpdateActualAmount, UpdateSourceTrigger=PropertyChanged}" ToolTip="الكمية الفعلية" Margin="6,0,6,10" FlowDirection="LeftToRight" />
                     <Button Grid.Row="2" Grid.Column="3" Content="حفظ التحديث" Command="{Binding UpdateTaskCommand}" Margin="6,0,0,10" />
