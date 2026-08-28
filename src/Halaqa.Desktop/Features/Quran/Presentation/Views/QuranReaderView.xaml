@@ -1,7 +1,7 @@
 <UserControl x:Class="Halaqa.Desktop.Features.Quran.Presentation.Views.QuranReaderView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
+             xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
              xmlns:converters="clr-namespace:Halaqa.Desktop.Shared.Presentation.Converters"
              FlowDirection="RightToLeft">
     <UserControl.Resources>
@@ -15,7 +15,7 @@
         </Grid.RowDefinitions>
 
         <DockPanel Margin="0,0,0,16">
-            <Button Content="رجوع" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
+            <Button Content="رجوع" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
             <StackPanel>
                 <TextBlock Text="قارئ المصحف" Style="{StaticResource PageTitle}" />
                 <TextBlock Text="قراءة مستقلة محلية أولاً؛ لا تحفظ حالة جلسة ولا تشارك موضعاً مع أي طرف." Style="{StaticResource BodyMuted}" />
@@ -33,10 +33,10 @@
                     <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                 </StackPanel>
                 <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Command="{Binding LoadPreviousPageCommand}" ToolTip="الصفحة السابقة"><materialDesign:PackIcon Kind="ChevronRight" /></Button>
-                    <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="66" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" Margin="6,0" materialDesign:HintAssist.Hint="صفحة" />
+                    <Button Command="{Binding LoadPreviousPageCommand}" ToolTip="الصفحة السابقة"><controls:AppIcon Kind="ChevronRight"  /></Button>
+                    <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="66" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" Margin="6,0" ToolTip="صفحة" />
                     <Button Content="انتقال" Command="{Binding LoadPageCommand}" />
-                    <Button Command="{Binding LoadNextPageCommand}" ToolTip="الصفحة التالية" Margin="6,0,0,0"><materialDesign:PackIcon Kind="ChevronLeft" /></Button>
+                    <Button Command="{Binding LoadNextPageCommand}" ToolTip="الصفحة التالية" Margin="6,0,0,0"><controls:AppIcon Kind="ChevronLeft"  /></Button>
                     <ProgressBar Width="72" Height="4" Margin="10,0,0,0" IsIndeterminate="True" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
                 </StackPanel>
             </Grid>
