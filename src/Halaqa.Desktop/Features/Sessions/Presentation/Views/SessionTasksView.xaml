@@ -1,12 +1,12 @@
 <UserControl x:Class="Halaqa.Desktop.Features.Sessions.Presentation.Views.SessionTasksView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
+             xmlns:materialDesign="http://materialdesigninxaml.net/winfx/xaml/themes"
              FlowDirection="RightToLeft">
     <ScrollViewer VerticalScrollBarVisibility="Auto">
         <StackPanel Margin="36" MaxWidth="980">
             <DockPanel Margin="0,0,0,20">
-                <Button Content="رجوع إلى الجلسات" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
+                <Button Content="رجوع إلى الجلسات" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
                 <StackPanel>
                     <TextBlock Text="مهام الجلسة" Style="{StaticResource PageTitle}" />
                     <TextBlock Text="{Binding SessionTitle}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
@@ -15,7 +15,7 @@
 
             <Border Background="#0D155EEF" Padding="14" CornerRadius="10" Margin="0,0,0,16">
                 <DockPanel>
-                    <controls:AppIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0"  />
+                    <materialDesign:PackIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" Width="22" Height="22" Margin="0,0,10,0" />
                     <TextBlock Text="تعرض هذه الشاشة مهام الجلسة المصرح بها. يمكن للمعلم إنشاء مهمة وتحديث النطاق أو الموضع أو الحالة؛ ويسجل الطرفان أخطاء المهمة. لا تنفذ اتصالاً مباشراً أو وسائط." TextWrapping="Wrap" />
                 </DockPanel>
             </Border>
@@ -26,32 +26,32 @@
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                     <TextBlock Grid.ColumnSpan="4" Text="إضافة مهمة" Style="{StaticResource SectionTitle}" />
                     <TextBlock Grid.Row="1" Grid.ColumnSpan="4" Text="نوع المهمة ومعرّف العملية مطلوبان؛ القيم الآتية اختيارية في العقد وتُحذف من الطلب حين تترك فارغة." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,10" />
-                    <ComboBox Grid.Row="2" ItemsSource="{Binding TaskTypeOptions}" SelectedItem="{Binding NewTaskType}" ToolTip="نوع المهمة" Margin="0,0,6,10" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewSequenceNo, UpdateSourceTrigger=PropertyChanged}" ToolTip="التسلسل (≥ 1)" Margin="6,0,6,10" FlowDirection="LeftToRight" />
-                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding NewPlannedAmount, UpdateSourceTrigger=PropertyChanged}" ToolTip="الكمية المخططة (≥ 0)" Margin="6,0,6,10" FlowDirection="LeftToRight" />
+                    <ComboBox Grid.Row="2" ItemsSource="{Binding TaskTypeOptions}" SelectedItem="{Binding NewTaskType}" materialDesign:HintAssist.Hint="نوع المهمة" Margin="0,0,6,10" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding NewSequenceNo, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="التسلسل (≥ 1)" Margin="6,0,6,10" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding NewPlannedAmount, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الكمية المخططة (≥ 0)" Margin="6,0,6,10" FlowDirection="LeftToRight" />
                     <Button Grid.Row="2" Grid.Column="3" Content="إنشاء المهمة" Command="{Binding CreateTaskCommand}" Margin="6,0,0,10" />
                     <Grid Grid.Row="3" Grid.ColumnSpan="4">
                         <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                        <TextBox Text="{Binding NewPlannedFromUnitId, UpdateSourceTrigger=PropertyChanged}" ToolTip="وحدة البداية (≥ 1)" Margin="0,0,4,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="1" Text="{Binding NewPlannedToUnitId, UpdateSourceTrigger=PropertyChanged}" ToolTip="وحدة النهاية (≥ 1)" Margin="4,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="2" Text="{Binding NewStartPage, UpdateSourceTrigger=PropertyChanged}" ToolTip="صفحة البدء" Margin="4,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="3" Text="{Binding NewStartAyahId, UpdateSourceTrigger=PropertyChanged}" ToolTip="آية البدء" Margin="4,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="4" Text="{Binding NewEndPage, UpdateSourceTrigger=PropertyChanged}" ToolTip="صفحة النهاية" Margin="4,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="5" Text="{Binding NewEndAyahId, UpdateSourceTrigger=PropertyChanged}" ToolTip="آية النهاية" Margin="4,0,0,0" FlowDirection="LeftToRight" />
+                        <TextBox Text="{Binding NewPlannedFromUnitId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="وحدة البداية (≥ 1)" Margin="0,0,4,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="1" Text="{Binding NewPlannedToUnitId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="وحدة النهاية (≥ 1)" Margin="4,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="2" Text="{Binding NewStartPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="صفحة البدء" Margin="4,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="3" Text="{Binding NewStartAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="آية البدء" Margin="4,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="4" Text="{Binding NewEndPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="صفحة النهاية" Margin="4,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="5" Text="{Binding NewEndAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="آية النهاية" Margin="4,0,0,0" FlowDirection="LeftToRight" />
                     </Grid>
                 </Grid>
             </Border>
 
             <DockPanel Margin="0,0,0,12">
                 <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
-                <Button Content="تحديث" Command="{Binding LoadCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
+                <Button Content="تحديث" Command="{Binding LoadCommand}" DockPanel.Dock="Left" Style="{StaticResource MaterialDesignOutlinedButton}" />
             </DockPanel>
             <DockPanel Margin="0,0,0,10">
                 <TextBlock Text="اختر مهمة لعرض بياناتها أو تسجيل خطأ عليها." Style="{StaticResource BodyMuted}" />
                 <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" Visibility="{Binding CanReportMistakes, Converter={StaticResource BooleanToVisibilityConverter}}">
-                    <Button Content="الملاحظات" Command="{Binding OpenNotesCommand}" Style="{StaticResource AppOutlinedButton}" Margin="0,0,8,0" />
-                    <Button Content="التقييم" Command="{Binding OpenEvaluationCommand}" Style="{StaticResource AppOutlinedButton}" Margin="0,0,8,0" />
-                    <Button Content="تسجيل خطأ" Command="{Binding ReportMistakeCommand}" Style="{StaticResource AppOutlinedButton}" />
+                    <Button Content="الملاحظات" Command="{Binding OpenNotesCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,8,0" />
+                    <Button Content="التقييم" Command="{Binding OpenEvaluationCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" Margin="0,0,8,0" />
+                    <Button Content="تسجيل خطأ" Command="{Binding ReportMistakeCommand}" Style="{StaticResource MaterialDesignOutlinedButton}" />
                 </StackPanel>
             </DockPanel>
             <ListBox ItemsSource="{Binding Tasks}" SelectedItem="{Binding SelectedTask}" MinHeight="190" BorderThickness="0" Background="Transparent">
@@ -84,8 +84,8 @@
                     <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="Auto"/></Grid.ColumnDefinitions>
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                     <TextBlock Grid.ColumnSpan="3" Text="حفظ مسودة المهمة المختارة" Style="{StaticResource SectionTitle}" />
-                    <TextBox Grid.Row="1" Text="{Binding DraftCurrentPage, UpdateSourceTrigger=PropertyChanged}" ToolTip="الصفحة الحالية (اختيارية، 1–604)" Margin="0,10,6,0" FlowDirection="LeftToRight" />
-                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DraftCurrentAyahId, UpdateSourceTrigger=PropertyChanged}" ToolTip="الآية الحالية (اختيارية، 1–6236)" Margin="6,10" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Row="1" Text="{Binding DraftCurrentPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الصفحة الحالية (اختيارية، 1–604)" Margin="0,10,6,0" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding DraftCurrentAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الآية الحالية (اختيارية، 1–6236)" Margin="6,10" FlowDirection="LeftToRight" />
                     <Button Grid.Row="1" Grid.Column="2" Content="حفظ المسودة" Command="{Binding SaveDraftCommand}" Margin="6,10,0,0" />
                 </Grid>
             </Border>
@@ -96,20 +96,20 @@
                     <Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
                     <TextBlock Grid.ColumnSpan="4" Text="تحديث المهمة المختارة" Style="{StaticResource SectionTitle}" />
                     <TextBlock Grid.Row="1" Grid.ColumnSpan="4" Text="أدخل الحقول التي تريد تعديلها فقط؛ يرسل العميل PATCH بحقل واحد على الأقل ولا يرسل قيماً فارغة على أنها null." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,10" />
-                    <ComboBox Grid.Row="2" ItemsSource="{Binding TaskStateOptions}" SelectedItem="{Binding SelectedUpdateState}" ToolTip="الحالة" Margin="0,0,6,10" />
-                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding UpdatePlannedAmount, UpdateSourceTrigger=PropertyChanged}" ToolTip="الكمية المخططة" Margin="6,0,6,10" FlowDirection="LeftToRight" />
-                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding UpdateActualAmount, UpdateSourceTrigger=PropertyChanged}" ToolTip="الكمية الفعلية" Margin="6,0,6,10" FlowDirection="LeftToRight" />
+                    <ComboBox Grid.Row="2" ItemsSource="{Binding TaskStateOptions}" SelectedItem="{Binding SelectedUpdateState}" materialDesign:HintAssist.Hint="الحالة" Margin="0,0,6,10" />
+                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding UpdatePlannedAmount, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الكمية المخططة" Margin="6,0,6,10" FlowDirection="LeftToRight" />
+                    <TextBox Grid.Row="2" Grid.Column="2" Text="{Binding UpdateActualAmount, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الكمية الفعلية" Margin="6,0,6,10" FlowDirection="LeftToRight" />
                     <Button Grid.Row="2" Grid.Column="3" Content="حفظ التحديث" Command="{Binding UpdateTaskCommand}" Margin="6,0,0,10" />
                     <Grid Grid.Row="3" Grid.ColumnSpan="4">
                         <Grid.ColumnDefinitions><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
-                        <TextBox Text="{Binding UpdatePlannedFromUnitId, UpdateSourceTrigger=PropertyChanged}" ToolTip="وحدة البداية" Margin="0,0,3,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="1" Text="{Binding UpdatePlannedToUnitId, UpdateSourceTrigger=PropertyChanged}" ToolTip="وحدة النهاية" Margin="3,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="2" Text="{Binding UpdateStartPage, UpdateSourceTrigger=PropertyChanged}" ToolTip="صفحة البدء" Margin="3,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="3" Text="{Binding UpdateStartAyahId, UpdateSourceTrigger=PropertyChanged}" ToolTip="آية البدء" Margin="3,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="4" Text="{Binding UpdateEndPage, UpdateSourceTrigger=PropertyChanged}" ToolTip="صفحة النهاية" Margin="3,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="5" Text="{Binding UpdateEndAyahId, UpdateSourceTrigger=PropertyChanged}" ToolTip="آية النهاية" Margin="3,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="6" Text="{Binding UpdateCurrentPage, UpdateSourceTrigger=PropertyChanged}" ToolTip="الصفحة الحالية" Margin="3,0" FlowDirection="LeftToRight" />
-                        <TextBox Grid.Column="7" Text="{Binding UpdateCurrentAyahId, UpdateSourceTrigger=PropertyChanged}" ToolTip="الآية الحالية" Margin="3,0,0,0" FlowDirection="LeftToRight" />
+                        <TextBox Text="{Binding UpdatePlannedFromUnitId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="وحدة البداية" Margin="0,0,3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="1" Text="{Binding UpdatePlannedToUnitId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="وحدة النهاية" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="2" Text="{Binding UpdateStartPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="صفحة البدء" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="3" Text="{Binding UpdateStartAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="آية البدء" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="4" Text="{Binding UpdateEndPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="صفحة النهاية" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="5" Text="{Binding UpdateEndAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="آية النهاية" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="6" Text="{Binding UpdateCurrentPage, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الصفحة الحالية" Margin="3,0" FlowDirection="LeftToRight" />
+                        <TextBox Grid.Column="7" Text="{Binding UpdateCurrentAyahId, UpdateSourceTrigger=PropertyChanged}" materialDesign:HintAssist.Hint="الآية الحالية" Margin="3,0,0,0" FlowDirection="LeftToRight" />
                     </Grid>
                 </Grid>
             </Border>
