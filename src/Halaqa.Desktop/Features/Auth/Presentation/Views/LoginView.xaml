@@ -8,35 +8,35 @@
     </UserControl.Resources>
 
     <Grid>
-        <Image Source="/Assets/Images/quran-study-hero.jpg" Stretch="UniformToFill" />
+        <Image Source="/Assets/Images/TagAlwaqar/login-quran-hero.jpg" Stretch="UniformToFill" />
         <Rectangle Fill="{StaticResource AppHeroOverlayBrush}" />
 
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <WrapPanel Margin="32" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Border Width="438" MinHeight="388" Margin="8" Padding="32" CornerRadius="4" Background="#BD103B36" BorderBrush="#80FFFFFF" BorderThickness="1" Effect="{StaticResource AppCardShadow}">
+                <Border Width="438" MinHeight="388" Margin="8" Padding="32" CornerRadius="4" Background="#E0163C38" BorderBrush="#66D7E6E2" BorderThickness="1" Effect="{StaticResource AppSoftShadow}">
                     <StackPanel VerticalAlignment="Center">
                         <Image Source="/Assets/Brand/halaqa-mark.png" Width="66" Height="66" HorizontalAlignment="Right" Stretch="Uniform" />
                         <TextBlock Text="أهلاً بك في حلقة القرآن" Foreground="White" FontSize="29" FontWeight="SemiBold" LineHeight="40" Margin="0,20,0,0" />
-                        <TextBlock Text="نظّم حلقتك وتابع خطتك وادخل إلى جلسات التعليم المباشر ضمن تجربة هادئة وآمنة." Foreground="#E8FFFFFF" FontSize="15" TextWrapping="Wrap" LineHeight="26" Margin="0,10,0,24" />
-                        <Border Background="#24FFFFFF" BorderBrush="#40FFFFFF" BorderThickness="1" CornerRadius="3" Padding="14">
+                        <TextBlock Text="نظّم حلقتك وتابع خطتك وادخل إلى جلسات التعليم المباشر ضمن تجربة هادئة وآمنة." Foreground="#F2FFFFFF" FontSize="15" TextWrapping="Wrap" LineHeight="26" Margin="0,10,0,24" />
+                        <Border Background="#1FFFFFFF" BorderBrush="#52D7E6E2" BorderThickness="1" CornerRadius="3" Padding="14">
                             <StackPanel>
                                 <TextBlock Text="تجربة تعليمية متصلة" Foreground="White" FontWeight="SemiBold" />
-                                <TextBlock Text="تُحمّل الحسابات والحلقات من الخادم، بينما تبقى صفحات المصحف والأخطاء غير المتزامنة متاحة محلياً عند الحاجة." Foreground="#E8FFFFFF" FontSize="13" TextWrapping="Wrap" LineHeight="22" Margin="0,5,0,0" />
+                                <TextBlock Text="تُحمّل الحسابات والحلقات من الخادم، بينما تبقى صفحات المصحف والأخطاء غير المتزامنة متاحة محلياً عند الحاجة." Foreground="#F2FFFFFF" FontSize="13" TextWrapping="Wrap" LineHeight="22" Margin="0,5,0,0" />
                             </StackPanel>
                         </Border>
                     </StackPanel>
                 </Border>
 
-                <Border Width="420" Margin="8" Padding="30" CornerRadius="4" Background="{StaticResource AppGlassStrongBrush}" BorderBrush="{StaticResource AppGlassBorderBrush}" BorderThickness="1" VerticalAlignment="Center" Effect="{StaticResource AppCardShadow}">
+                <Border Width="420" Margin="8" Padding="30" CornerRadius="4" Background="{StaticResource AppGlassStrongBrush}" BorderBrush="{StaticResource AppGlassBorderBrush}" BorderThickness="1" VerticalAlignment="Center" Effect="{StaticResource AppSoftShadow}">
                     <StackPanel>
                         <TextBlock Text="تسجيل الدخول" Style="{StaticResource PageTitle}" />
                         <TextBlock Text="أدخل بيانات حساب الطالب أو المعلم للمتابعة." Style="{StaticResource BodyMuted}" Margin="0,4,0,18" />
 
                         <TextBlock Text="البريد الإلكتروني" Style="{StaticResource CaptionText}" />
-                        <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" Background="{StaticResource AppGlassBrush}" ToolTip="name@example.com" />
+                        <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" Background="{StaticResource AppSurfaceBrush}" ToolTip="name@example.com" />
 
                         <TextBlock Text="كلمة المرور" Style="{StaticResource CaptionText}" />
-                        <PasswordBox x:Name="PasswordBox" PasswordChanged="PasswordBox_OnPasswordChanged" FlowDirection="LeftToRight" Background="{StaticResource AppGlassBrush}" ToolTip="كلمة المرور" />
+                        <PasswordBox x:Name="PasswordBox" PasswordChanged="PasswordBox_OnPasswordChanged" FlowDirection="LeftToRight" Background="{StaticResource AppSurfaceBrush}" ToolTip="كلمة المرور" />
 
                         <Border Background="{StaticResource AppErrorSoftBrush}" BorderBrush="#33B42318" BorderThickness="1" Padding="10" CornerRadius="3" Margin="0,2,0,8" Visibility="{Binding HasError, Converter={StaticResource BooleanToVisibilityConverter}}">
                             <TextBlock Text="{Binding ErrorMessage}" Foreground="{StaticResource AppErrorBrush}" />

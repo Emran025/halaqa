@@ -41,12 +41,12 @@
     <SolidColorBrush x:Key="AppInfoBrush" Color="{StaticResource AppInfoColor}" />
     <SolidColorBrush x:Key="AppInfoSoftBrush" Color="{StaticResource AppInfoSoftColor}" />
 
-    <SolidColorBrush x:Key="AppGlassBrush" Color="#E8FFFFFF" />
-    <SolidColorBrush x:Key="AppGlassStrongBrush" Color="#F2FFFFFF" />
-    <SolidColorBrush x:Key="AppGlassBorderBrush" Color="#99FFFFFF" />
+    <SolidColorBrush x:Key="AppGlassBrush" Color="#FFFFFFFF" />
+    <SolidColorBrush x:Key="AppGlassStrongBrush" Color="#FCFAFCFC" />
+    <SolidColorBrush x:Key="AppGlassBorderBrush" Color="#FFD6DDE3" />
     <LinearGradientBrush x:Key="AppHeroOverlayBrush" StartPoint="0,0" EndPoint="1,1">
-        <GradientStop Color="#D91A4843" Offset="0" />
-        <GradientStop Color="#AD173A50" Offset="0.58" />
-        <GradientStop Color="#57101E2B" Offset="1" />
+        <GradientStop Color="#F0113432" Offset="0" />
+        <GradientStop Color="#E8143E47" Offset="0.56" />
+        <GradientStop Color="#CC102630" Offset="1" />
     </LinearGradientBrush>
 </ResourceDictionary>

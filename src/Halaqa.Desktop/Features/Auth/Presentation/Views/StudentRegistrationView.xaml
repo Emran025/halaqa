@@ -7,9 +7,14 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
 
-    <Grid Background="{StaticResource AppCanvasBrush}">
+    <Grid>
+        <Image Source="/Assets/Images/TagAlwaqar/open-mushaf.jpg" Stretch="UniformToFill" />
+        <Rectangle Fill="{StaticResource AppHeroOverlayBrush}" />
         <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
             <Border Style="{StaticResource AppElevatedCard}"
+                    Background="{StaticResource AppGlassStrongBrush}"
+                    BorderBrush="{StaticResource AppGlassBorderBrush}"
+                    Effect="{StaticResource AppSoftShadow}"
                     MaxWidth="820"
                     Margin="24"
                     HorizontalAlignment="Center"

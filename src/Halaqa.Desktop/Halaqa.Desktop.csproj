@@ -30,7 +30,7 @@
     <Resource Include="Assets\Fonts\*.ttf" />
     <Resource Include="Assets\Fonts\QuranPages\*.ttf" />
     <Resource Include="Assets\Brand\*.png" />
-    <Resource Include="Assets\Images\*.jpg" />
+    <Resource Include="Assets\Images\**\*.jpg" />
     <None Include="Assets\Fonts\Cairo-OFL.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
