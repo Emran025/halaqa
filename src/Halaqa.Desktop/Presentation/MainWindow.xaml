@@ -30,8 +30,9 @@
         xmlns:notesViews="clr-namespace:Halaqa.Desktop.Features.Notes.Presentation.Views"
         xmlns:progressVm="clr-namespace:Halaqa.Desktop.Features.Progress.Presentation.ViewModels"
         xmlns:progressViews="clr-namespace:Halaqa.Desktop.Features.Progress.Presentation.Views"
-        Title="حلقة القرآن" Height="720" Width="1120" MinHeight="620" MinWidth="900"
-        WindowStartupLocation="CenterScreen">
+        Title="حلقة القرآن" Height="780" Width="1180" MinHeight="640" MinWidth="960"
+        WindowStartupLocation="CenterScreen" FlowDirection="RightToLeft"
+        FontFamily="{StaticResource AppFontFamily}">
     <Window.Resources>
         <DataTemplate DataType="{x:Type authVm:LoginViewModel}">
             <authViews:LoginView />
@@ -122,13 +123,20 @@
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <Border Background="{StaticResource AppSurfaceBrush}" Padding="28,16" BorderBrush="#14000000" BorderThickness="0,0,0,1">
-            <DockPanel LastChildFill="True">
+        <Border Background="#FF123D32" Padding="32,15" BorderBrush="#0DFFFFFF" BorderThickness="0,0,0,1">
+            <DockPanel LastChildFill="False">
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                    <TextBlock Text="حلقة القرآن" FontSize="20" FontWeight="SemiBold" VerticalAlignment="Center" />
-                    <TextBlock Text="منصة للحلقات التعليمية المباشرة" Style="{StaticResource BodyMuted}" Margin="12,4,0,0" VerticalAlignment="Center" />
+                    <Border Width="38" Height="38" CornerRadius="11" Background="#24FFFFFF" Margin="0,0,12,0">
+                        <TextBlock Text="ق" Foreground="White" FontWeight="Bold" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                    </Border>
+                    <StackPanel>
+                        <TextBlock Text="حلقة القرآن" Foreground="White" FontSize="20" FontWeight="SemiBold" />
+                        <TextBlock Text="منصة للحلقات التعليمية المباشرة" Foreground="#D6FFFFFF" FontSize="12" Margin="0,1,0,0" />
+                    </StackPanel>
                 </StackPanel>
-                <TextBlock DockPanel.Dock="Left" Text="متصل عبر API آمن" Foreground="{StaticResource AppInfoBrush}" VerticalAlignment="Center" />
+                <Border DockPanel.Dock="Left" Background="#1FFFFFFF" BorderBrush="#30FFFFFF" BorderThickness="1" CornerRadius="14" Padding="11,5" VerticalAlignment="Center">
+                    <TextBlock Text="متصل عبر API آمن" Foreground="White" FontSize="12" />
+                </Border>
             </DockPanel>
         </Border>
 

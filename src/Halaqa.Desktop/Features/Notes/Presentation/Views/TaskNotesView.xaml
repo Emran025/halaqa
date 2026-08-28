@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
              FlowDirection="RightToLeft">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="36" MaxWidth="820">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+        <StackPanel Margin="28,24" MaxWidth="820">
             <DockPanel Margin="0,0,0,20">
                 <Button Content="رجوع إلى المهام" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
                 <StackPanel>

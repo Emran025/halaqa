@@ -3,7 +3,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Name="Root"
              MinHeight="30">
-    <Border x:Name="BadgeBorder" Padding="10,3" CornerRadius="99" Background="{StaticResource AppSurfaceMutedBrush}">
-        <TextBlock x:Name="BadgeText" Text="{Binding Text, ElementName=Root}" FontSize="12" FontWeight="SemiBold" />
+    <Border x:Name="BadgeBorder"
+            Padding="11,4"
+            CornerRadius="14"
+            Background="{StaticResource AppSurfaceMutedBrush}"
+            BorderBrush="{StaticResource AppBorderBrush}"
+            BorderThickness="1">
+        <TextBlock x:Name="BadgeText"
+                   Text="{Binding Text, ElementName=Root}"
+                   FontSize="12"
+                   FontWeight="SemiBold"
+                   VerticalAlignment="Center" />
     </Border>
 </UserControl>

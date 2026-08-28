@@ -1,12 +1,12 @@
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 
 namespace Halaqa.Desktop.Shared.Presentation.Controls;
 
 /// <summary>
-/// A lightweight, dependency-free icon element for the desktop client.
-/// It keeps the XAML icon names used by the application while rendering
-/// universally available Unicode symbols.
+/// Dependency-free icon control backed by the Windows Segoe MDL2 Assets font.
+/// The names mirror the screen markup and keep the desktop UI consistent.
 /// </summary>
 public sealed class AppIcon : TextBlock
 {
@@ -26,30 +26,34 @@ public sealed class AppIcon : TextBlock
     {
         var icon = (AppIcon)dependencyObject;
         icon.Text = GetGlyph(args.NewValue as string);
-        icon.FontFamily = new System.Windows.Media.FontFamily("Segoe UI Symbol");
+        icon.FontFamily = new FontFamily("Segoe MDL2 Assets");
+        icon.FontSize = 18;
         icon.TextAlignment = TextAlignment.Center;
+        icon.VerticalAlignment = VerticalAlignment.Center;
     }
 
     private static string GetGlyph(string? kind) => kind switch
     {
-        "ArrowRight" or "ChevronRight" => "›",
-        "ChevronLeft" => "‹",
-        "Close" => "×",
-        "Login" => "→",
-        "Replay" => "↻",
-        "MicrophoneOutline" => "●",
-        "RecordCircleOutline" => "●",
-        "VideoOutline" or "AccountVideoOutline" => "▶",
-        "LockCheck" or "LockReset" => "▣",
-        "InformationOutline" => "i",
-        "DeleteOutline" => "×",
-        "CalendarCheckOutline" => "✓",
-        "ChartLine" => "⌁",
-        "BookOpenPageVariantOutline" => "▤",
-        "BellOutline" => "◉",
-        "FileCertificateOutline" => "▧",
-        "AccountMultipleCheckOutline" or "AccountGroupOutline" => "●●",
-        "AccountEditOutline" or "AccountBoxOutline" => "●",
-        _ => "•"
+        "ArrowRight" => "\uE72A",
+        "ChevronRight" => "\uE76C",
+        "ChevronLeft" => "\uE76B",
+        "Close" => "\uE711",
+        "Login" => "\uE8AC",
+        "Replay" => "\uE72C",
+        "MicrophoneOutline" => "\uE720",
+        "RecordCircleOutline" => "\uE7C8",
+        "VideoOutline" => "\uE714",
+        "AccountVideoOutline" => "\uE714",
+        "LockCheck" or "LockReset" => "\uE72E",
+        "InformationOutline" => "\uE946",
+        "DeleteOutline" => "\uE74D",
+        "CalendarCheckOutline" => "\uE787",
+        "ChartLine" => "\uE9D2",
+        "BookOpenPageVariantOutline" => "\uE82D",
+        "BellOutline" => "\uEA8F",
+        "FileCertificateOutline" => "\uE8A5",
+        "AccountMultipleCheckOutline" or "AccountGroupOutline" => "\uE716",
+        "AccountEditOutline" or "AccountBoxOutline" => "\uE77B",
+        _ => "\uE10C"
     };
 }

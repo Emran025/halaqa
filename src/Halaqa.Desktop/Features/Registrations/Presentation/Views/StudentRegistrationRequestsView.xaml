@@ -9,7 +9,7 @@
         <shared:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </UserControl.Resources>
     <Grid Background="{StaticResource AppCanvasBrush}">
-        <Border Style="{StaticResource AppCard}" MaxWidth="1080" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="28">
+        <Border Style="{StaticResource AppElevatedCard}" MaxWidth="1080" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="28">
             <Grid>
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />

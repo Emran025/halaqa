@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
              FlowDirection="RightToLeft">
-    <Grid Margin="36">
+    <Grid Margin="28,24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />

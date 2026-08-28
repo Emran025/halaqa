@@ -6,55 +6,131 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
     </UserControl.Resources>
+
     <Grid Background="{StaticResource AppCanvasBrush}">
-        <Border Style="{StaticResource AppCard}" Width="760" MaxHeight="720" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <DockPanel>
-                <StackPanel DockPanel.Dock="Top">
-                    <TextBlock Text="إنشاء حساب طالب" Style="{StaticResource PageTitle}" />
-                    <TextBlock Text="أكمل خطوات التسجيل ثم راجع طلبك قبل إرساله." Style="{StaticResource BodyMuted}" Margin="0,4,0,16" />
-                    <ProgressBar Minimum="1" Maximum="3" Value="{Binding Step}" Height="6" Foreground="{StaticResource AppPrimaryBrush}" />
-                </StackPanel>
-                <ScrollViewer VerticalScrollBarVisibility="Auto" Margin="0,18,0,12">
-                    <Grid>
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Border Style="{StaticResource AppElevatedCard}"
+                    MaxWidth="820"
+                    Margin="24"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <StackPanel>
+                        <TextBlock Text="إنشاء حساب طالب" Style="{StaticResource DisplayTitle}" />
+                        <TextBlock Text="أكمل البيانات المطلوبة خطوةً بخطوة، ثم راجع طلبك قبل إرساله." Style="{StaticResource BodyMuted}" Margin="0,4,0,18" />
+                        <ProgressBar Minimum="1" Maximum="3" Value="{Binding Step}" />
+                    </StackPanel>
+
+                    <Grid Grid.Row="1" Margin="0,28,0,20">
                         <StackPanel Visibility="{Binding IsFirstStep, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <TextBlock Text="بيانات الحساب" Style="{StaticResource SectionTitle}" />
-                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" ToolTip="الاسم الكامل" />
-                            <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" ToolTip="البريد الإلكتروني" />
-                            <PasswordBox x:Name="PasswordInput" PasswordChanged="PasswordChanged" ToolTip="كلمة المرور" />
-                            <PasswordBox x:Name="PasswordConfirmationInput" PasswordChanged="PasswordChanged" ToolTip="تأكيد كلمة المرور" />
-                            <ComboBox ItemsSource="{Binding Genders}" SelectedItem="{Binding Gender}" ToolTip="الجنس" />
-                            <DatePicker SelectedDate="{Binding BirthDate}" />
-                            <TextBox Text="{Binding Country}" ToolTip="الدولة" />
-                            <TextBox Text="{Binding City}" ToolTip="المدينة" />
-                            <TextBox Text="{Binding PhoneZone}" ToolTip="مفتاح الدولة" />
-                            <TextBox Text="{Binding Phone}" ToolTip="رقم الهاتف" />
+                            <TextBlock Text="بيانات الحساب والتواصل" Style="{StaticResource SectionTitle}" Margin="0,0,0,10" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="الاسم الكامل" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" ToolTip="الاسم الكامل" />
+                                    <TextBlock Text="البريد الإلكتروني" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Email, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="name@example.com" />
+                                    <TextBlock Text="كلمة المرور" Style="{StaticResource CaptionText}" />
+                                    <PasswordBox x:Name="PasswordInput" PasswordChanged="PasswordChanged" FlowDirection="LeftToRight" ToolTip="كلمة المرور" />
+                                    <TextBlock Text="تأكيد كلمة المرور" Style="{StaticResource CaptionText}" />
+                                    <PasswordBox x:Name="PasswordConfirmationInput" PasswordChanged="PasswordChanged" FlowDirection="LeftToRight" ToolTip="تأكيد كلمة المرور" />
+                                    <TextBlock Text="الجنس" Style="{StaticResource CaptionText}" />
+                                    <ComboBox ItemsSource="{Binding Genders}" SelectedItem="{Binding Gender}" ToolTip="الجنس" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="تاريخ الميلاد" Style="{StaticResource CaptionText}" />
+                                    <DatePicker SelectedDate="{Binding BirthDate}" />
+                                    <TextBlock Text="الدولة" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Country}" ToolTip="الدولة" />
+                                    <TextBlock Text="المدينة" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding City}" ToolTip="المدينة" />
+                                    <TextBlock Text="مفتاح الدولة" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding PhoneZone}" FlowDirection="LeftToRight" ToolTip="مثل +966" />
+                                    <TextBlock Text="رقم الهاتف" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Phone}" FlowDirection="LeftToRight" ToolTip="رقم الهاتف" />
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
+
                         <StackPanel Visibility="{Binding IsSecondStep, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <TextBlock Text="وقت الحضور" Style="{StaticResource SectionTitle}" />
-                            <TextBox Text="{Binding Timezone}" ToolTip="المنطقة الزمنية" />
-                            <ComboBox SelectedValue="{Binding AttendanceDay}" ToolTip="رقم يوم الأسبوع (0–6)">
-                                <ComboBoxItem Content="0" /><ComboBoxItem Content="1" /><ComboBoxItem Content="2" /><ComboBoxItem Content="3" /><ComboBoxItem Content="4" /><ComboBoxItem Content="5" /><ComboBoxItem Content="6" />
-                            </ComboBox>
-                            <TextBox Text="{Binding AttendanceFrom}" ToolTip="من (HH:mm)" />
-                            <TextBox Text="{Binding AttendanceTo}" ToolTip="إلى (HH:mm)" />
-                            <TextBox Text="{Binding TeacherCode}" ToolTip="رمز المعلم (اختياري)" />
+                            <TextBlock Text="وقت الحضور" Style="{StaticResource SectionTitle}" Margin="0,0,0,10" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="المنطقة الزمنية" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Timezone}" ToolTip="مثل Asia/Riyadh" />
+                                    <TextBlock Text="يوم الحضور" Style="{StaticResource CaptionText}" />
+                                    <ComboBox SelectedValue="{Binding AttendanceDay}" SelectedValuePath="Tag" ToolTip="يوم الأسبوع">
+                                        <ComboBoxItem Content="الأحد" Tag="0" /><ComboBoxItem Content="الاثنين" Tag="1" /><ComboBoxItem Content="الثلاثاء" Tag="2" /><ComboBoxItem Content="الأربعاء" Tag="3" /><ComboBoxItem Content="الخميس" Tag="4" /><ComboBoxItem Content="الجمعة" Tag="5" /><ComboBoxItem Content="السبت" Tag="6" />
+                                    </ComboBox>
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="من" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding AttendanceFrom}" FlowDirection="LeftToRight" ToolTip="HH:mm" />
+                                    <TextBlock Text="إلى" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding AttendanceTo}" FlowDirection="LeftToRight" ToolTip="HH:mm" />
+                                    <TextBlock Text="رمز المعلم (اختياري)" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding TeacherCode}" ToolTip="رمز المعلم" />
+                                </StackPanel>
+                            </Grid>
                         </StackPanel>
+
                         <StackPanel Visibility="{Binding IsThirdStep, Converter={StaticResource BooleanToVisibilityConverter}}">
-                            <TextBlock Text="خطة المتابعة" Style="{StaticResource SectionTitle}" />
-                            <ComboBox ItemsSource="{Binding Frequencies}" SelectedItem="{Binding Frequency}" ToolTip="التكرار" />
-                            <ComboBox ItemsSource="{Binding TaskTypes}" SelectedItem="{Binding TaskType}" ToolTip="نوع المهمة" />
-                            <TextBox Text="{Binding PlanUnit}" ToolTip="الوحدة: page أو juz أو hizb" />
-                            <TextBox Text="{Binding PlanAmount}" ToolTip="الكمية" />
-                            <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" />
+                            <TextBlock Text="خطة المتابعة" Style="{StaticResource SectionTitle}" Margin="0,0,0,10" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="تكرار الخطة" Style="{StaticResource CaptionText}" />
+                                    <ComboBox ItemsSource="{Binding Frequencies}" SelectedItem="{Binding Frequency}" ToolTip="التكرار" />
+                                    <TextBlock Text="نوع المهمة" Style="{StaticResource CaptionText}" />
+                                    <ComboBox ItemsSource="{Binding TaskTypes}" SelectedItem="{Binding TaskType}" ToolTip="نوع المهمة" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="وحدة الخطة" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding PlanUnit}" ToolTip="page أو juz أو hizb" />
+                                    <TextBlock Text="الكمية" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding PlanAmount}" FlowDirection="LeftToRight" ToolTip="الكمية" />
+                                </StackPanel>
+                            </Grid>
+                            <Border Background="{StaticResource AppPrimarySoftBrush}" CornerRadius="8" Padding="12" Margin="0,8,0,0">
+                                <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" />
+                            </Border>
                         </StackPanel>
                     </Grid>
-                </ScrollViewer>
-                <DockPanel DockPanel.Dock="Bottom">
-                    <Button Content="السابق" Command="{Binding PreviousCommand}" Style="{StaticResource AppSecondaryButton}" DockPanel.Dock="Right" />
-                    <Button Content="التالي" Command="{Binding NextCommand}" DockPanel.Dock="Right" />
-                    <Button Content="إنشاء الحساب" Command="{Binding SubmitCommand}" />
-                </DockPanel>
-            </DockPanel>
-        </Border>
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="Auto" />
+                        </Grid.ColumnDefinitions>
+                        <TextBlock Style="{StaticResource CaptionText}" VerticalAlignment="Center"><Run Text="الخطوة " /><Run Text="{Binding Step}" /><Run Text=" من 3" /></TextBlock>
+                        <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Left">
+                            <Button Content="السابق" Command="{Binding PreviousCommand}" Style="{StaticResource AppSecondaryButton}" />
+                            <Button Content="التالي" Command="{Binding NextCommand}" Style="{StaticResource AppQuietButton}" />
+                            <Button Content="إنشاء الحساب" Command="{Binding SubmitCommand}" />
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </Border>
+        </ScrollViewer>
     </Grid>
 </UserControl>

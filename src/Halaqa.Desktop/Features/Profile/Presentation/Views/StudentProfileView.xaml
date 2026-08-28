@@ -18,7 +18,7 @@
     </UserControl.Resources>
 
     <Grid Background="{StaticResource AppCanvasBrush}">
-        <Border Style="{StaticResource AppCard}"
+        <Border Style="{StaticResource AppElevatedCard}"
                 MaxWidth="980"
                 HorizontalAlignment="Center"
                 VerticalAlignment="Center"

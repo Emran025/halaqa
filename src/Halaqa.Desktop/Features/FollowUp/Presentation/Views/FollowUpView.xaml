@@ -3,8 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
              FlowDirection="RightToLeft">
-    <ScrollViewer VerticalScrollBarVisibility="Auto">
-        <StackPanel Margin="36" MaxWidth="1040">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Background="{StaticResource AppCanvasBrush}">
+        <StackPanel Margin="28,24" MaxWidth="1120" HorizontalAlignment="Center">
             <DockPanel Margin="0,0,0,20">
                 <Button Content="رجوع" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
                 <StackPanel>
@@ -29,7 +29,7 @@
                     <ColumnDefinition Width="*" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" Background="{StaticResource AppSurfaceBrush}" Padding="20" CornerRadius="12">
+                <Border Grid.Column="0" Style="{StaticResource AppSectionCard}">
                     <StackPanel>
                         <TextBlock Text="خطة الحفظ والمراجعة" Style="{StaticResource SectionTitle}" />
                         <TextBlock Text="تدعم الخطة تفصيلاً واحداً أو أكثر؛ راجع النوع والوحدة والكمية لكل تفصيل قبل الحفظ." Style="{StaticResource CaptionText}" TextWrapping="Wrap" Margin="0,4,0,12" />
@@ -63,7 +63,7 @@
                     </StackPanel>
                 </Border>
 
-                <Border Grid.Column="2" Background="{StaticResource AppSurfaceBrush}" Padding="20" CornerRadius="12">
+                <Border Grid.Column="2" Style="{StaticResource AppSectionCard}">
                     <StackPanel>
                         <TextBlock Text="أوقات الحضور" Style="{StaticResource SectionTitle}" />
                         <TextBlock Text="أضف نطاق حضور أسبوعياً واحداً أو أكثر. يجب أن يكون وقت النهاية بعد البداية لكل نطاق." Style="{StaticResource CaptionText}" TextWrapping="Wrap" Margin="0,4,0,12" />
@@ -95,7 +95,7 @@
                 </Border>
             </Grid>
 
-            <Border Background="{StaticResource AppSurfaceBrush}" Padding="20" CornerRadius="12" Margin="0,0,0,18">
+            <Border Style="{StaticResource AppSectionCard}" Margin="0,0,0,18">
                 <StackPanel>
                     <DockPanel>
                         <TextBlock Text="عناصر المتابعة اليومية" Style="{StaticResource SectionTitle}" />
@@ -134,7 +134,7 @@
                 </StackPanel>
             </Border>
 
-            <Border Background="{StaticResource AppSurfaceBrush}" Padding="20" CornerRadius="12">
+            <Border Style="{StaticResource AppSectionCard}">
                 <StackPanel>
                     <TextBlock Text="سجل الحضور والمتابعة" Style="{StaticResource SectionTitle}" />
                     <ListBox ItemsSource="{Binding Trackings}" Margin="0,12,0,0" MinHeight="80">

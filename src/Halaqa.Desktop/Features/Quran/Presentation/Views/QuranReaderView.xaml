@@ -7,7 +7,7 @@
     <UserControl.Resources>
         <converters:QuranPageFontFamilyConverter x:Key="QuranPageFontFamilyConverter" />
     </UserControl.Resources>
-    <Grid Margin="36">
+    <Grid Margin="28,24">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
