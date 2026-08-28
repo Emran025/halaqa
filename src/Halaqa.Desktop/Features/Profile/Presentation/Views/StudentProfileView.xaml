@@ -191,7 +191,7 @@
                         <TextBox Text="{Binding Bio, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="90" TextWrapping="Wrap" ToolTip="تعريف مختصر (حتى 2000 حرف)" />
                         <TextBlock Text="{Binding BioError}" Style="{StaticResource SectionError}" />
 
-                        <TextBlock Text="{Binding Message}" Foreground="{StaticResource AppMutedInkBrush}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,12,0,0" />
+                        <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,12,0,0" />
                     </StackPanel>
                 </ScrollViewer>
 

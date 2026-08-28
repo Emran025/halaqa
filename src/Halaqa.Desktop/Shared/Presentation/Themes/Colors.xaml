@@ -6,7 +6,7 @@
     <Color x:Key="AppSurfaceMutedColor">#FFF0F3F5</Color>
     <Color x:Key="AppBorderColor">#FFC3CDD6</Color>
     <Color x:Key="AppInkColor">#FF111827</Color>
-    <Color x:Key="AppMutedInkColor">#FF465466</Color>
+    <Color x:Key="AppMutedInkColor">#FF26313B</Color>
     <Color x:Key="AppPrimaryColor">#FF24675D</Color>
     <Color x:Key="AppPrimaryHoverColor">#FF1B524A</Color>
     <Color x:Key="AppPrimarySoftColor">#FFD9EAE6</Color>
