@@ -20,6 +20,7 @@ public static class AuthFeatureModule
         services.AddSingleton<ResetPasswordUseCase>();
         services.AddSingleton<ChangePasswordUseCase>();
         services.AddSingleton<RestoreSessionUseCase>();
+        services.AddSingleton<LogoutUseCase>();
         services.AddSingleton<LoginViewModel>();
         services.AddTransient<ForgotPasswordViewModel>();
         services.AddTransient<StudentRegistrationViewModel>();

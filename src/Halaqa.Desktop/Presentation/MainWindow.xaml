@@ -30,10 +30,12 @@
         xmlns:notesViews="clr-namespace:Halaqa.Desktop.Features.Notes.Presentation.Views"
         xmlns:progressVm="clr-namespace:Halaqa.Desktop.Features.Progress.Presentation.ViewModels"
         xmlns:progressViews="clr-namespace:Halaqa.Desktop.Features.Progress.Presentation.Views"
+        xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
         Title="حلقة القرآن" Icon="/Assets/Brand/halaqa-mark.ico" Height="780" Width="1180" MinHeight="640" MinWidth="960"
         WindowStartupLocation="CenterScreen" FlowDirection="RightToLeft"
         FontFamily="{StaticResource AppFontFamily}">
     <Window.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <DataTemplate DataType="{x:Type authVm:LoginViewModel}">
             <authViews:LoginView />
         </DataTemplate>
@@ -134,9 +136,19 @@
                         <TextBlock Text="منصة للحلقات التعليمية المباشرة" Foreground="#DCEDEAE6" FontSize="12" Margin="0,1,0,0" />
                     </StackPanel>
                 </StackPanel>
-                <Border DockPanel.Dock="Left" Background="#1FFFFFFF" BorderBrush="#3DFFFFFF" BorderThickness="1" CornerRadius="3" Padding="10,4" VerticalAlignment="Center">
-                    <TextBlock Text="متصل عبر API آمن" Foreground="White" FontSize="12" />
-                </Border>
+                <Button DockPanel.Dock="Left"
+                        Command="{Binding LogoutCommand}"
+                        Visibility="{Binding IsAuthenticated, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        ToolTip="تسجيل الخروج"
+                        Padding="8,6"
+                        Background="#24FFFFFF"
+                        BorderBrush="#3DFFFFFF"
+                        BorderThickness="1"
+                        Foreground="White"
+                        Cursor="Hand"
+                        VerticalAlignment="Center">
+                    <controls:AppIcon Kind="Logout" Foreground="White" FontSize="16" />
+                </Button>
             </DockPanel>
         </Border>
 

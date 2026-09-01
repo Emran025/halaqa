@@ -3,13 +3,13 @@ using System.Text.Json.Serialization;
 namespace Halaqa.Desktop.Features.Notifications.Data.Models;
 
 internal sealed record NotificationPayloadDto(
-    [property: JsonPropertyName("event_type")] string? EventType,
-    [property: JsonPropertyName("entity_type")] string EntityType,
-    [property: JsonPropertyName("entity_id")] Guid EntityId,
-    [property: JsonPropertyName("session_id")] Guid? SessionId,
-    [property: JsonPropertyName("follow_up_item_id")] Guid? FollowUpItemId,
-    [property: JsonPropertyName("action")] string Action,
-    [property: JsonPropertyName("action_path")] string? ActionPath);
+    [property: JsonPropertyName("event_type")] string? EventType = null,
+    [property: JsonPropertyName("entity_type")] string? EntityType = null,
+    [property: JsonPropertyName("entity_id")] Guid? EntityId = null,
+    [property: JsonPropertyName("session_id")] Guid? SessionId = null,
+    [property: JsonPropertyName("follow_up_item_id")] Guid? FollowUpItemId = null,
+    [property: JsonPropertyName("action")] string? Action = null,
+    [property: JsonPropertyName("action_path")] string? ActionPath = null);
 
 internal sealed record NotificationDto(
     [property: JsonPropertyName("id")] Guid Id,

@@ -6,22 +6,20 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Background="{StaticResource AppCanvasBrush}">
         <StackPanel Margin="28,24" MaxWidth="1120" HorizontalAlignment="Center">
             <DockPanel Margin="0,0,0,20">
-                <Button Content="رجوع" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
+                <Button Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppBackButton}" ToolTip="العودة إلى لوحة التحكم">
+                    <controls:AppIcon Kind="ArrowRight" />
+                </Button>
                 <StackPanel>
                     <TextBlock Text="خطة المتابعة والحضور" Style="{StaticResource PageTitle}" />
                     <TextBlock Text="الخطة والحضور وعناصر المتابعة بيانات رسمية من الخادم. هذه الصفحة مهيأة لحساب الطالب الحالي فقط." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
                 </StackPanel>
             </DockPanel>
 
-            <Border Height="116" CornerRadius="4" Margin="0,0,0,16" ClipToBounds="True">
-                <Grid>
-                    <Image Source="/Assets/Images/TagAlwaqar/Site/illustrations/muslim-woman-reading-quran-medium-shot-from-side_570907-62.jpg" Stretch="UniformToFill" />
-                    <Rectangle Fill="#BF143E47" />
-                    <StackPanel VerticalAlignment="Center" Margin="20,0">
-                        <TextBlock Text="المتابعة تصنع الاستمرارية" Foreground="White" FontSize="20" FontWeight="Bold" />
-                        <TextBlock Text="خطط واضحة، حضور منتظم، وأثر يتراكم" Foreground="#F5FFFFFF" FontSize="13" Margin="0,3,0,0" />
-                    </StackPanel>
-                </Grid>
+            <Border Background="{StaticResource AppPrimarySoftBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Margin="0,0,0,16" Padding="20,14">
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="المتابعة تصنع الاستمرارية" Foreground="{StaticResource AppPrimaryBrush}" FontSize="18" FontWeight="Bold" />
+                    <TextBlock Text="خطط واضحة، حضور منتظم، وأثر يتراكم" Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,3,0,0" />
+                </StackPanel>
             </Border>
 
             <Border Background="#0D155EEF" Padding="14" CornerRadius="4" Margin="0,0,0,16">

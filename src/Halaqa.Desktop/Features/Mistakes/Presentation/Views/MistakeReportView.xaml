@@ -6,7 +6,9 @@
     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
         <StackPanel Margin="28,24" MaxWidth="760">
             <DockPanel Margin="0,0,0,20">
-                <Button Content="رجوع إلى المهام" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
+                <Button Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppBackButton}" ToolTip="العودة إلى المهام">
+                    <controls:AppIcon Kind="ArrowRight" />
+                </Button>
                 <StackPanel>
                     <TextBlock Text="تسجيل خطأ" Style="{StaticResource PageTitle}" />
                     <TextBlock Text="{Binding TaskTitle}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />

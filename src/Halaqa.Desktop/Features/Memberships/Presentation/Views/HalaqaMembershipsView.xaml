@@ -22,8 +22,8 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <DockPanel>
-                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى الحلقات">
-                        <controls:AppIcon Kind="ArrowRight"  />
+                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى الحلقات" Style="{StaticResource AppBackButton}">
+                        <controls:AppIcon Kind="ArrowRight" />
                     </Button>
                     <StackPanel>
                         <TextBlock Text="إدارة عضويات الحلقة" Style="{StaticResource PageTitle}" />

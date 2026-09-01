@@ -9,22 +9,22 @@ internal static class QuranMapper
         new(
             page.EditionId,
             page.PageNumber,
-            page.Surahs.Select(surah => new QuranSurah(
+            (page.Surahs ?? Array.Empty<QuranSurahDto>()).Select(surah => new QuranSurah(
                 surah.Id,
                 surah.EditionId,
                 surah.Number,
                 surah.Name,
                 surah.AyahCount,
                 surah.RevelationPlace)).ToArray(),
-            page.Ayahs.Select(ayah => new QuranAyah(
+            (page.Ayahs ?? Array.Empty<QuranAyahDto>()).Select(ayah => new QuranAyah(
                 ayah.Id,
                 ayah.EditionId,
                 ayah.SurahId,
-                ayah.Number,
+                ayah.ResolvedNumber,
                 ayah.PageNumber,
-                ayah.Text,
-                ayah.Text,
-                ayah.Juz,
-                ayah.Words.Select(word => new QuranWord(word.Index, word.Text)).ToArray())).ToArray(),
+                ayah.ResolvedText,
+                ayah.ResolvedText,
+                ayah.ResolvedJuz,
+                (ayah.Words ?? Array.Empty<QuranWordDto>()).Select(word => new QuranWord(word.Index, word.Text)).ToArray())).ToArray(),
             isFromLocalCache);
 }

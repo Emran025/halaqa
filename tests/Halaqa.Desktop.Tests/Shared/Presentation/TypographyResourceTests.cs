@@ -37,4 +37,13 @@ public sealed class TypographyResourceTests
             "pack://application:,,,/Assets/Fonts/UthmanicHafs_V20.ttf#KFGQPC HAFS Uthmanic Script",
             fontFamily.ToString());
     }
+
+    [Fact]
+    public void QuranPageFontFamilyConverter_CanResolvePage1Typeface()
+    {
+        var converter = new Halaqa.Desktop.Shared.Presentation.Converters.QuranPageFontFamilyConverter();
+        var fontFamily = converter.Convert(1, typeof(FontFamily), null!, System.Globalization.CultureInfo.InvariantCulture) as FontFamily;
+        Assert.NotNull(fontFamily);
+        Assert.NotNull(fontFamily!.Source);
+    }
 }

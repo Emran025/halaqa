@@ -23,7 +23,7 @@
 
   <ItemGroup>
     <None Update="appsettings.json">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Content Include="Assets\Quran\QuranV3.sqlite">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

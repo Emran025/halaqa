@@ -4,10 +4,11 @@
              xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
              FlowDirection="RightToLeft">
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <Style x:Key="DashboardCard" TargetType="{x:Type Border}" BasedOn="{StaticResource AppCard}">
             <Setter Property="Width" Value="272" />
-            <Setter Property="MinHeight" Value="210" />
-            <Setter Property="Margin" Value="6" />
+            <Setter Property="MinHeight" Value="200" />
+            <Setter Property="Margin" Value="8" />
             <Setter Property="Padding" Value="20" />
         </Style>
         <Style x:Key="DashboardCardButton" TargetType="{x:Type Button}" BasedOn="{StaticResource AppQuietButton}">
@@ -16,153 +17,183 @@
         </Style>
     </UserControl.Resources>
 
-    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled" Background="{StaticResource AppCanvasBrush}">
+    <ScrollViewer VerticalScrollBarVisibility="Hidden" HorizontalScrollBarVisibility="Disabled" Background="{StaticResource AppCanvasBrush}">
         <Grid Margin="28,24">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
-                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="176" />
-                </Grid.ColumnDefinitions>
+            <!-- Top Welcome Header -->
+            <Grid Grid.Row="0">
                 <StackPanel>
                     <TextBlock Text="{Binding UserName, StringFormat=مرحباً بك، {0}}" Style="{StaticResource DisplayTitle}" />
-                    <TextBlock Text="{Binding RoleLabel, StringFormat=لوحة {0}}" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                    <TextBlock Text="{Binding RoleLabel, StringFormat=لوحة تحكم {0}}" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
                 </StackPanel>
-                <Border Grid.Column="1" Height="76" CornerRadius="4" Background="{StaticResource AppSurfaceMutedBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" ClipToBounds="True">
-                    <Grid>
-                        <Image Source="/Assets/Images/TagAlwaqar/prayer-rug-mushaf.jpg" Stretch="UniformToFill" />
-                        <Rectangle Fill="#79163C38" />
-                        <TextBlock Text="مسار الإتقان" Foreground="White" FontWeight="SemiBold" VerticalAlignment="Bottom" Margin="12,0,12,9" />
-                    </Grid>
-                </Border>
             </Grid>
 
-            <Border Grid.Row="1" Background="{StaticResource AppInfoSoftBrush}" BorderBrush="#332367C9" BorderThickness="1" Padding="16" CornerRadius="4" Margin="0,22,0,18">
-                <DockPanel LastChildFill="True">
-                    <Border Width="32" Height="32" CornerRadius="4" Background="#1A2367C9" DockPanel.Dock="Right" Margin="0,0,12,0">
-                        <controls:AppIcon Kind="InformationOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="18" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <!-- Cards Container -->
+            <StackPanel Grid.Row="1" Margin="0,24,0,0">
+                <!-- Teacher Cards -->
+                <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="{Binding IsTeacher, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="AccountGroupOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
+                            <TextBlock Text="إدارة الحلقات" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="أنشئ حلقة، راجع طلبات الانضمام، وأدر شؤون الحلقات والطلاب." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح إدارة الحلقات" Command="{Binding OpenHalaqasCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
                     </Border>
-                    <TextBlock Text="البيانات التعليمية الرسمية تُحمّل من الخادم، بينما تتوفر صفحات المصحف وعمليات الأخطاء غير المتزامنة محلياً عند الحاجة." VerticalAlignment="Center" />
-                </DockPanel>
-            </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="AccountMultipleCheckOutline" Foreground="{StaticResource AppSuccessBrush}" FontSize="28" />
+                            <TextBlock Text="طلبات الطلاب المتاحة" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="راجع طلبات التسجيل العامة للمتقدمين واتخذ قرار القبول بعد المراجعة." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح صندوق الطلبات" Command="{Binding OpenTeacherApplicationsCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="FileCertificateOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
+                            <TextBlock Text="الوثائق والمؤهلات" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="ارفع الشهادات والإجازات والمؤهلات الرسمية الخاصة بحساب المعلم." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح الوثائق والمؤهلات" Command="{Binding OpenTeacherDocumentsCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="AccountEditOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
+                            <TextBlock Text="الملف الشخصي" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="راجع البيانات المهنية والاتصال الرسمية وروايات الإجازة المعتمدة." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح الملف المهني" Command="{Binding OpenProfileCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="AccountBoxOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
+                            <TextBlock Text="البيانات العامة" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="حدّث الاسم ورقم الهاتف والبيانات الأساسية المرتبطة بالحساب." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح البيانات العامة" Command="{Binding OpenGeneralProfileCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="VideoOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="28" />
+                            <TextBlock Text="جلساتي" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="اعرض الجلسات الرسمية المتاحة لحسابك وحالتها ومهامها." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح الجلسات" Command="{Binding OpenSessionsCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppWarningBrush}" FontSize="28" />
+                            <TextBlock Text="قارئ المصحف" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="اقرأ صفحات المصحف محلياً بالخط العثماني المعتمد." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح قارئ المصحف" Command="{Binding OpenQuranReaderCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="BellOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="28" />
+                            <TextBlock Text="الإشعارات" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="راجع الرسائل والتنبيهات الرسمية الواردة لحسابك." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح الإشعارات" Command="{Binding OpenNotificationsCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="LockReset" Foreground="{StaticResource AppWarningBrush}" FontSize="28" />
+                            <TextBlock Text="أمان الحساب" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="غيّر كلمة المرور الحالية لحسابك بأمان." Style="{StaticResource BodyMuted}" />
+                            <Button Content="تغيير كلمة المرور" Command="{Binding OpenPasswordChangeCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
 
-            <WrapPanel Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Top">
-                <Border Style="{StaticResource DashboardCard}">
-                    <StackPanel>
-                        <controls:AppIcon Kind="AccountGroupOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="28" />
-                        <TextBlock Text="{Binding PrimaryActionTitle}" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                        <TextBlock Text="{Binding PrimaryActionDescription}" Style="{StaticResource BodyMuted}" />
-                        <Button Content="{Binding PrimaryActionTitle}" Command="{Binding OpenPrimaryActionCommand}" Style="{StaticResource DashboardCardButton}" />
-                    </StackPanel>
-                </Border>
-                <Border Style="{StaticResource DashboardCard}">
-                    <StackPanel>
-                        <controls:AppIcon Kind="AccountEditOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
-                        <TextBlock Text="الملف الشخصي" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                        <TextBlock Text="راجع الاسم ورقم الهاتف ومستوى الحفظ والمراجعة المرتبط بحسابك." Style="{StaticResource BodyMuted}" />
-                        <Button Content="فتح الملف الشخصي" Command="{Binding OpenProfileCommand}" Style="{StaticResource DashboardCardButton}" />
-                    </StackPanel>
-                </Border>
-                <Border Style="{StaticResource DashboardCard}">
-                    <StackPanel>
-                        <controls:AppIcon Kind="AccountBoxOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
-                        <TextBlock Text="البيانات العامة" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                        <TextBlock Text="حدّث الاسم ورقم الهاتف ومستوى الحفظ والمراجعة المرتبطين بحسابك." Style="{StaticResource BodyMuted}" />
-                        <Button Content="فتح البيانات العامة" Command="{Binding OpenGeneralProfileCommand}" Style="{StaticResource DashboardCardButton}" />
-                    </StackPanel>
-                </Border>
-                <Border Style="{StaticResource DashboardCard}">
-                    <StackPanel>
-                        <controls:AppIcon Kind="LockReset" Foreground="{StaticResource AppWarningBrush}" FontSize="28" />
-                        <TextBlock Text="أمان الحساب" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                        <TextBlock Text="غيّر كلمة المرور الحالية من داخل حسابك، ولا تُحفظ كلمة المرور محلياً." Style="{StaticResource BodyMuted}" />
-                        <Button Content="تغيير كلمة المرور" Command="{Binding OpenPasswordChangeCommand}" Style="{StaticResource DashboardCardButton}" />
-                    </StackPanel>
-                </Border>
-                <Border Style="{StaticResource DashboardCard}">
-                    <StackPanel>
-                        <controls:AppIcon Kind="AccountMultipleCheckOutline" Foreground="{StaticResource AppSuccessBrush}" FontSize="28" />
-                        <TextBlock Text="طلبات الطلاب" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                        <TextBlock Text="راجع الملخصات العامة للمتقدمين واتخذ القرار المعلن بعد المراجعة." Style="{StaticResource BodyMuted}" />
-                        <Button Content="فتح صندوق الطلبات" Command="{Binding OpenTeacherApplicationsCommand}">
-                            <Button.Style>
-                                <Style TargetType="Button" BasedOn="{StaticResource DashboardCardButton}">
-                                    <Style.Triggers>
-                                        <DataTrigger Binding="{Binding IsStudent}" Value="True"><Setter Property="IsEnabled" Value="False" /></DataTrigger>
-                                    </Style.Triggers>
-                                </Style>
-                            </Button.Style>
-                        </Button>
-                    </StackPanel>
-                </Border>
-                <Border Style="{StaticResource DashboardCard}">
-                    <StackPanel>
-                        <controls:AppIcon Kind="CalendarCheckOutline" Foreground="{StaticResource AppSuccessBrush}" FontSize="28" />
-                        <TextBlock Text="خطة المتابعة والحضور" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                        <TextBlock Text="راجع خطتك الرسمية وأوقات حضورك وعناصر المتابعة اليومية." Style="{StaticResource BodyMuted}" />
-                        <Button Content="فتح المتابعة" Command="{Binding OpenFollowUpCommand}" IsEnabled="{Binding IsStudent}" Style="{StaticResource DashboardCardButton}" />
-                    </StackPanel>
-                </Border>
-                <Border Style="{StaticResource DashboardCard}">
-                    <StackPanel>
-                        <controls:AppIcon Kind="ChartLine" Foreground="{StaticResource AppSuccessBrush}" FontSize="28" />
-                        <TextBlock Text="تقدمي وتقاريري" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                        <TextBlock Text="اعرض تقدم حسابك الشخصي وسجل تقارير جلساتك الرسمية." Style="{StaticResource BodyMuted}" />
-                        <Button Content="فتح تقدمي" Command="{Binding OpenProgressCommand}" IsEnabled="{Binding IsStudent}" Style="{StaticResource DashboardCardButton}" />
-                    </StackPanel>
-                </Border>
-                <Border Style="{StaticResource DashboardCard}">
-                    <StackPanel>
-                        <controls:AppIcon Kind="BellOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="28" />
-                        <TextBlock Text="الإشعارات" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                        <TextBlock Text="راجع الإشعارات الرسمية وحدد المقروء منها دون تنفيذ أي إجراء تلقائي." Style="{StaticResource BodyMuted}" />
-                        <Button Content="فتح الإشعارات" Command="{Binding OpenNotificationsCommand}" Style="{StaticResource DashboardCardButton}" />
-                    </StackPanel>
-                </Border>
-                <Border Style="{StaticResource DashboardCard}">
-                    <StackPanel>
-                        <controls:AppIcon Kind="VideoOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="28" />
-                        <TextBlock Text="جلساتي" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                        <TextBlock Text="اعرض الجلسات الرسمية المتاحة لحسابك وحالتها وموعدها." Style="{StaticResource BodyMuted}" />
-                        <Button Content="فتح جلساتي" Command="{Binding OpenSessionsCommand}" Style="{StaticResource DashboardCardButton}" />
-                    </StackPanel>
-                </Border>
-                <Border Style="{StaticResource DashboardCard}">
-                    <StackPanel>
-                        <controls:AppIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppWarningBrush}" FontSize="28" />
-                        <TextBlock Text="المصحف والأخطاء" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                        <TextBlock Text="اقرأ صفحات المصحف محلياً بخط الصفحة المخصص مع تمييز واضح عند استخدام بديل الخادم." Style="{StaticResource BodyMuted}" />
-                        <Button Content="فتح قارئ المصحف" Command="{Binding OpenQuranReaderCommand}" Style="{StaticResource DashboardCardButton}" />
-                    </StackPanel>
-                </Border>
-            </WrapPanel>
-
-            <Border Grid.Row="3" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="16" Margin="0,22,0,0">
-                <StackPanel>
-                    <TextBlock Text="من معرض تاج الوقار" Style="{StaticResource SectionTitle}" />
-                    <TextBlock Text="صور تعليمية وإيمانية من الموقع موزعة داخل التطبيق لتبقى الهوية البصرية حاضرة في كل مسار." Style="{StaticResource BodyMuted}" Margin="0,3,0,12" />
-                    <ItemsControl ItemsSource="{Binding SiteGalleryImages}">
-                        <ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <WrapPanel HorizontalAlignment="Center" />
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Border Width="132" Height="84" Margin="4" CornerRadius="3" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" ClipToBounds="True">
-                                    <Image Source="{Binding}" Stretch="UniformToFill" />
-                                </Border>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
-            </Border>
+                <!-- Student Cards -->
+                <WrapPanel HorizontalAlignment="Center" VerticalAlignment="Top" Visibility="{Binding IsStudent, Converter={StaticResource BooleanToVisibilityConverter}}">
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="AccountGroupOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
+                            <TextBlock Text="البحث عن معلم" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="تصفح المعلمين المتاحين وقدّم طلب انضمام إلى حلقات التحفيظ." Style="{StaticResource BodyMuted}" />
+                            <Button Content="تصفح المعلمين" Command="{Binding OpenStudentTeacherDirectoryCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="AccountMultipleCheckOutline" Foreground="{StaticResource AppSuccessBrush}" FontSize="28" />
+                            <TextBlock Text="طلبات التسجيل" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="تابع حالة طلبات التسجيل التي أرسلتها للمعلمين والحلقات." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح طلباتي" Command="{Binding OpenStudentRequestsCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="CalendarCheckOutline" Foreground="{StaticResource AppSuccessBrush}" FontSize="28" />
+                            <TextBlock Text="خطة المتابعة والحضور" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="راجع خطتك الرسمية وأوقات الحضور وسجل المتابعة اليومي." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح المتابعة" Command="{Binding OpenFollowUpCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="ChartLine" Foreground="{StaticResource AppSuccessBrush}" FontSize="28" />
+                            <TextBlock Text="تقدمي وتقاريري" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="اعرض سجل إنجازك في الحفظ والمراجعة وتقارير الجلسات." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح سجل التقدم" Command="{Binding OpenProgressCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="AccountEditOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
+                            <TextBlock Text="الملف الشخصي" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="راجع مستوى الحفظ ومسار المراجعة والبيانات التعليمية للطالب." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح الملف التعليمي" Command="{Binding OpenProfileCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="AccountBoxOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
+                            <TextBlock Text="البيانات العامة" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="حدّث الاسم ورقم الهاتف والبيانات الأساسية للحساب." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح البيانات العامة" Command="{Binding OpenGeneralProfileCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="VideoOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="28" />
+                            <TextBlock Text="جلساتي" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="اعرض الجلسات المقررة وحالتها ومهام التسميع المرتبطة بها." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح الجلسات" Command="{Binding OpenSessionsCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppWarningBrush}" FontSize="28" />
+                            <TextBlock Text="قارئ المصحف" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="اقرأ صفحات المصحف محلياً بالرسم العثماني المعتمد." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح قارئ المصحف" Command="{Binding OpenQuranReaderCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="BellOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="28" />
+                            <TextBlock Text="الإشعارات" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="راجع الرسائل والتنبيهات الموجهة لحسابك." Style="{StaticResource BodyMuted}" />
+                            <Button Content="فتح الإشعارات" Command="{Binding OpenNotificationsCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                    <Border Style="{StaticResource DashboardCard}">
+                        <StackPanel>
+                            <controls:AppIcon Kind="LockReset" Foreground="{StaticResource AppWarningBrush}" FontSize="28" />
+                            <TextBlock Text="أمان الحساب" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
+                            <TextBlock Text="غيّر كلمة المرور الحالية لحسابك بأمان." Style="{StaticResource BodyMuted}" />
+                            <Button Content="تغيير كلمة المرور" Command="{Binding OpenPasswordChangeCommand}" Style="{StaticResource DashboardCardButton}" />
+                        </StackPanel>
+                    </Border>
+                </WrapPanel>
+            </StackPanel>
         </Grid>
     </ScrollViewer>
 </UserControl>

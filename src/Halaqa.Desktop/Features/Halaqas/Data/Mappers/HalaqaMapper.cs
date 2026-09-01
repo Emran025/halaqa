@@ -45,8 +45,9 @@ internal static class HalaqaMapper
 
     public static Result<HalaqaPage> ToDomain(HalaqaCollectionResponseDto dto)
     {
-        if (dto.Halaqas is null || dto.Meta is null ||
-            dto.Meta.CurrentPage < 1 || dto.Meta.LastPage < 1 || dto.Meta.PerPage < 1 || dto.Meta.Total < 0)
+        var meta = dto.ResolvedMeta;
+        if (dto.Halaqas is null ||
+            meta.CurrentPage < 1 || meta.LastPage < 1 || meta.PerPage < 1 || meta.Total < 0)
         {
             return Result<HalaqaPage>.Failure(UnexpectedResponseError());
         }
@@ -60,10 +61,10 @@ internal static class HalaqaMapper
 
         return Result<HalaqaPage>.Success(new HalaqaPage(
             halaqas.Select(result => result.Value!).ToArray(),
-            dto.Meta.CurrentPage,
-            dto.Meta.LastPage,
-            dto.Meta.PerPage,
-            dto.Meta.Total));
+            meta.CurrentPage,
+            meta.LastPage,
+            meta.PerPage,
+            meta.Total));
     }
 
     public static CreateHalaqaRequestDto ToDto(CreateHalaqaCommand command) => new(

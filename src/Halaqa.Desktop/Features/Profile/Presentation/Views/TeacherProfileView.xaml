@@ -31,8 +31,8 @@
                 </Grid.RowDefinitions>
 
                 <DockPanel LastChildFill="True">
-                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى لوحة التحكم">
-                        <controls:AppIcon Kind="ArrowRight"  />
+                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى لوحة التحكم" Style="{StaticResource AppBackButton}">
+                        <controls:AppIcon Kind="ArrowRight" />
                     </Button>
                     <StackPanel>
                         <TextBlock Text="الملف التفصيلي للمعلم" Style="{StaticResource PageTitle}" />

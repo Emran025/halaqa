@@ -15,7 +15,9 @@
         </Grid.RowDefinitions>
 
         <DockPanel Margin="0,0,0,16">
-            <Button Content="رجوع" Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
+            <Button Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppBackButton}" ToolTip="العودة إلى لوحة التحكم">
+                <controls:AppIcon Kind="ArrowRight" />
+            </Button>
             <StackPanel>
                 <TextBlock Text="قارئ المصحف" Style="{StaticResource PageTitle}" />
                 <TextBlock Text="قراءة مستقلة محلية أولاً؛ لا تحفظ حالة جلسة ولا تشارك موضعاً مع أي طرف." Style="{StaticResource BodyMuted}" />
@@ -50,7 +52,7 @@
             <Border Background="#FFFDFBF5" BorderBrush="#14000000" BorderThickness="1" CornerRadius="4" Padding="20" Margin="0,0,12,0">
                 <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                     <TextBlock Text="{Binding QuranPage.PageGlyphText}"
-                               FontFamily="{Binding QuranPage.PageNumber, Converter={StaticResource QuranPageFontFamilyConverter}}"
+                               FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}"
                                FontSize="34"
                                LineHeight="54"
                                TextAlignment="Center"

@@ -13,109 +13,212 @@
             <Setter Property="Margin" Value="0,4,0,8" />
         </Style>
     </UserControl.Resources>
+
     <Grid Background="{StaticResource AppCanvasBrush}">
-        <Border Style="{StaticResource AppElevatedCard}" MaxWidth="1100" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="28">
+        <!-- Main Content -->
+        <Border Style="{StaticResource AppElevatedCard}" MaxWidth="1100" Margin="24" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
             <Grid>
                 <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto" />
                     <RowDefinition Height="Auto" />
                     <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
-                <DockPanel>
-                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى لوحة التحكم">
-                        <controls:AppIcon Kind="ArrowRight"  />
+
+                <!-- Top Header -->
+                <DockPanel Grid.Row="0" Margin="0,0,0,16">
+                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى لوحة التحكم" Style="{StaticResource AppBackButton}">
+                        <controls:AppIcon Kind="ArrowRight" />
                     </Button>
-                    <StackPanel>
+                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                        <Button Content="+ إنشاء حلقة جديدة" Command="{Binding OpenCreateDialogCommand}" Margin="0,0,12,0" />
+                        <Button Content="تحديث" Command="{Binding LoadCommand}" Style="{StaticResource AppSecondaryButton}" />
+                    </StackPanel>
+                    <StackPanel VerticalAlignment="Center">
                         <TextBlock Text="إدارة الحلقات" Style="{StaticResource PageTitle}" />
-                        <TextBlock Text="أنشئ حلقاتك وعدّل بياناتها أو فعّلها وأوقفها وفق صلاحيات المعلم." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                        <TextBlock Text="تصفح حلقاتك التعليمية، إدارة العضويات، ومتابعة طلبات التسجيل." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
                     </StackPanel>
                 </DockPanel>
-                <Grid Grid.Row="1" Margin="0,16,0,0">
+
+                <!-- Banner & Stats -->
+                <Border Grid.Row="1" Background="{StaticResource AppPrimarySoftBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Margin="0,0,0,14" Padding="20,12">
+                    <DockPanel VerticalAlignment="Center">
+                        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
+                            <Border Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="3" Padding="12,6" Margin="0,0,8,0">
+                                <TextBlock Text="{Binding Total, StringFormat=إجمالي الحلقات: {0}}" Foreground="{StaticResource AppPrimaryBrush}" FontWeight="SemiBold" FontSize="13" />
+                            </Border>
+                        </StackPanel>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="بيئة تنظيم الحلقات" Foreground="{StaticResource AppPrimaryBrush}" FontSize="16" FontWeight="Bold" />
+                            <TextBlock Text="نظّم حلقاتك وتابع إنجاز طلابك نحو الإتقان" Style="{StaticResource BodyMuted}" FontSize="12" Margin="0,2,0,0" />
+                        </StackPanel>
+                    </DockPanel>
+                </Border>
+
+                <!-- Feedback & Progress -->
+                <ProgressBar Grid.Row="1" VerticalAlignment="Bottom" Height="4" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,4" />
+
+                <!-- Halaqas List View -->
+                <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel>
+                        <Border Background="{StaticResource AppInfoSoftBrush}" BorderBrush="#332367C9" BorderThickness="1" CornerRadius="3" Padding="10" Margin="0,0,0,12" Visibility="{Binding Message, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
+                        </Border>
+
+                        <ItemsControl ItemsSource="{Binding Halaqas}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="16" Margin="0,0,0,10" Background="{StaticResource AppSurfaceBrush}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="*" />
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Halaqa Info -->
+                                            <StackPanel Grid.Column="0">
+                                                <DockPanel Margin="0,0,0,6">
+                                                    <StackPanel Orientation="Horizontal" DockPanel.Dock="Left">
+                                                        <Border Background="#1210B981" BorderBrush="#3010B981" BorderThickness="1" CornerRadius="3" Padding="8,2" Margin="0,0,6,0">
+                                                            <TextBlock Text="{Binding Status}" Foreground="#FF059669" FontSize="12" FontWeight="SemiBold" />
+                                                        </Border>
+                                                        <Border Background="#123B82F6" BorderBrush="#303B82F6" BorderThickness="1" CornerRadius="3" Padding="8,2">
+                                                            <TextBlock Text="{Binding Gender}" Foreground="#FF2563EB" FontSize="12" />
+                                                        </Border>
+                                                    </StackPanel>
+                                                    <TextBlock Text="{Binding Name}" FontSize="16" FontWeight="Bold" />
+                                                </DockPanel>
+
+                                                <TextBlock Text="{Binding Description}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,0,0,8" Visibility="{Binding Description, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                                                <WrapPanel Margin="0,4,0,0">
+                                                    <TextBlock Text="{Binding Country, StringFormat=الدولة: {0}}" Style="{StaticResource CaptionText}" Margin="0,0,16,0" />
+                                                    <TextBlock Text="{Binding Residence, StringFormat=المقر: {0}}" Style="{StaticResource CaptionText}" Margin="0,0,16,0" />
+                                                    <TextBlock Text="{Binding Timezone, StringFormat=المنطقة الزمنية: {0}}" Style="{StaticResource CaptionText}" Margin="0,0,16,0" />
+                                                    <TextBlock Text="{Binding StudentCount, StringFormat=الطلاب المسجلون: {0}}" FontWeight="SemiBold" Style="{StaticResource CaptionText}" Margin="0,0,16,0" />
+                                                    <TextBlock Text="{Binding MaxStudents, StringFormat=الحد الأقصى: {0}}" Style="{StaticResource CaptionText}" />
+                                                </WrapPanel>
+                                            </StackPanel>
+
+                                            <!-- Actions on Item -->
+                                            <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center" Margin="16,0,0,0">
+                                                <Button Content="تعديل"
+                                                        Command="{Binding DataContext.OpenEditDialogCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource AppSecondaryButton}"
+                                                        Margin="0,0,6,0" />
+                                                <Button Content="العضويات"
+                                                        Command="{Binding DataContext.OpenMembershipsForItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource AppSecondaryButton}"
+                                                        Margin="0,0,6,0" />
+                                                <Button Content="طلبات التسجيل"
+                                                        Command="{Binding DataContext.OpenRegistrationRequestsForItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource AppSecondaryButton}"
+                                                        Margin="0,0,6,0" />
+                                                <Button Content="تغيير الحالة"
+                                                        Command="{Binding DataContext.ToggleStatusForItemCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource AppSecondaryButton}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </StackPanel>
+                </ScrollViewer>
+
+                <!-- Pagination Footer -->
+                <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,16,0,0">
+                    <Button Content="السابق" Command="{Binding LoadPreviousPageCommand}" Style="{StaticResource AppSecondaryButton}" />
+                    <TextBlock Text="{Binding CurrentPage, StringFormat=الصفحة {0}}" VerticalAlignment="Center" Margin="16,0" FontWeight="SemiBold" />
+                    <Button Content="التالي" Command="{Binding LoadNextPageCommand}" Style="{StaticResource AppSecondaryButton}" />
+                </StackPanel>
+            </Grid>
+        </Border>
+
+        <!-- Overlay Dialog for Create / Edit Halaqa -->
+        <Grid Background="#7F000000" Visibility="{Binding IsDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Style="{StaticResource AppElevatedCard}" MaxWidth="600" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="24" Background="{StaticResource AppSurfaceBrush}">
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="1.1*" /><ColumnDefinition Width="1.4*" /></Grid.ColumnDefinitions>
-                    <Border Grid.Row="0" Grid.ColumnSpan="2" Height="112" CornerRadius="4" Margin="0,0,0,14" ClipToBounds="True">
-                        <Grid>
-                            <Image Source="/Assets/Images/TagAlwaqar/Site/illustrations/hero.jpg" Stretch="UniformToFill" />
-                            <Rectangle Fill="#C9143E47" />
-                            <StackPanel VerticalAlignment="Center" Margin="20,0">
-                                <TextBlock Text="بيئة تعليمية بنَفَس قرآني" Foreground="White" FontSize="20" FontWeight="Bold" />
-                                <TextBlock Text="نظّم حلقاتك وواصل طريق الإتقان" Foreground="#F5FFFFFF" FontSize="13" Margin="0,3,0,0" />
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <Border Grid.Row="1" Background="#0A000000" CornerRadius="4" Padding="12" Margin="0,0,12,0">
-                        <Grid>
-                            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-                            <DockPanel>
-                                <TextBlock Text="حلقاتي" Style="{StaticResource SectionTitle}" />
-                                <TextBlock DockPanel.Dock="Left" Text="{Binding Total, StringFormat=الإجمالي: {0}}" Style="{StaticResource BodyMuted}" />
-                            </DockPanel>
-                            <ListBox Grid.Row="1" ItemsSource="{Binding Halaqas}" SelectedItem="{Binding SelectedHalaqa}" Margin="0,12,0,8" BorderThickness="0" Background="Transparent">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="3" Padding="10" Margin="0,3">
-                                            <StackPanel>
-                                                <DockPanel>
-                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" />
-                                                    <TextBlock DockPanel.Dock="Left" Text="{Binding Status}" Style="{StaticResource BodyMuted}" />
-                                                </DockPanel>
-                                                <TextBlock Text="{Binding Country}" Style="{StaticResource BodyMuted}" />
-                                                <TextBlock Text="{Binding StudentCount, StringFormat=الطلاب: {0}}" Style="{StaticResource BodyMuted}" />
-                                            </StackPanel>
-                                        </Border>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="السابق" Command="{Binding LoadPreviousPageCommand}" />
-                                <TextBlock Text="{Binding CurrentPage, StringFormat=الصفحة {0}}" VerticalAlignment="Center" Margin="12,0" />
-                                <Button Content="التالي" Command="{Binding LoadNextPageCommand}" />
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <ScrollViewer Grid.Row="1" Grid.Column="1" VerticalScrollBarVisibility="Auto">
+
+                    <!-- Dialog Header -->
+                    <DockPanel Grid.Row="0" Margin="0,0,0,16">
+                        <Button DockPanel.Dock="Left" Command="{Binding CloseDialogCommand}" ToolTip="إغلاق">
+                            <controls:AppIcon Kind="Close" />
+                        </Button>
+                        <TextBlock Text="{Binding EditorTitle}" Style="{StaticResource PageTitle}" FontSize="18" />
+                    </DockPanel>
+
+                    <!-- Dialog Form -->
+                    <ScrollViewer Grid.Row="1" MaxHeight="450" VerticalScrollBarVisibility="Auto">
                         <StackPanel>
                             <ProgressBar Height="4" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,12" />
-                            <DockPanel>
-                                <TextBlock Text="{Binding EditorTitle}" Style="{StaticResource SectionTitle}" />
-                                <Button DockPanel.Dock="Left" Content="حلقة جديدة" Command="{Binding NewHalaqaCommand}" />
-                            </DockPanel>
-                            <Grid Margin="0,12,0,0">
-                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+
+                            <TextBlock Text="اسم الحلقة *" Style="{StaticResource CaptionText}" />
+                            <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="اسم الحلقة" Margin="0,0,0,2" />
+                            <TextBlock Text="{Binding NameError}" Style="{StaticResource FieldError}" />
+
+                            <Grid Margin="0,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
                                 <StackPanel Margin="0,0,8,0">
-                                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="اسم الحلقة" />
-                                    <TextBlock Text="{Binding NameError}" Style="{StaticResource FieldError}" />
-                                    <ComboBox ItemsSource="{Binding GenderOptions}" SelectedValue="{Binding Gender}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="جنس الحلقة" />
+                                    <TextBlock Text="الجنس *" Style="{StaticResource CaptionText}" />
+                                    <ComboBox ItemsSource="{Binding GenderOptions}" SelectedValue="{Binding Gender}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="جنس الحلقة" Margin="0,0,0,2" />
                                     <TextBlock Text="{Binding GenderError}" Style="{StaticResource FieldError}" />
-                                    <TextBox Text="{Binding Country, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="الدولة" />
-                                    <TextBlock Text="{Binding CountryError}" Style="{StaticResource FieldError}" />
-                                    <TextBox Text="{Binding Residence, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="مقر الحلقة" />
-                                    <TextBlock Text="{Binding ResidenceError}" Style="{StaticResource FieldError}" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                    <TextBox Text="{Binding MaxStudents, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="الحد الأقصى للطلاب (اختياري)" />
+                                    <TextBlock Text="الحد الأقصى للطلاب" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding MaxStudents, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="الحد الأقصى للطلاب (اختياري)" Margin="0,0,0,2" />
                                     <TextBlock Text="{Binding MaxStudentsError}" Style="{StaticResource FieldError}" />
-                                    <TextBox Text="{Binding Timezone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="المنطقة الزمنية" />
-                                    <TextBlock Text="{Binding TimezoneError}" Style="{StaticResource FieldError}" />
-                                    <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="100" TextWrapping="Wrap" ToolTip="وصف الحلقة (اختياري)" />
-                                    <TextBlock Text="{Binding DescriptionError}" Style="{StaticResource FieldError}" />
                                 </StackPanel>
                             </Grid>
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,12,0,0">
-                                <Button Content="{Binding SaveTitle}" Command="{Binding SaveCommand}" Margin="0,0,8,0" />
-                                <Button Content="{Binding ToggleStatusTitle}" Command="{Binding ToggleStatusCommand}" Margin="0,0,8,0" />
-                                <Button Content="إدارة العضويات" Command="{Binding OpenMembershipsCommand}" Margin="0,0,8,0" />
-                                <Button Content="طلبات التسجيل" Command="{Binding OpenRegistrationRequestsCommand}" />
-                            </StackPanel>
-                            <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,12,0,0" />
+
+                            <Grid Margin="0,0,0,0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Margin="0,0,8,0">
+                                    <TextBlock Text="الدولة *" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Country, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="الدولة" Margin="0,0,0,2" />
+                                    <TextBlock Text="{Binding CountryError}" Style="{StaticResource FieldError}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="1" Margin="8,0,0,0">
+                                    <TextBlock Text="مقر الحلقة *" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Residence, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="مقر الحلقة" Margin="0,0,0,2" />
+                                    <TextBlock Text="{Binding ResidenceError}" Style="{StaticResource FieldError}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="المنطقة الزمنية *" Style="{StaticResource CaptionText}" />
+                            <TextBox Text="{Binding Timezone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="المنطقة الزمنية" Margin="0,0,0,2" />
+                            <TextBlock Text="{Binding TimezoneError}" Style="{StaticResource FieldError}" />
+
+                            <TextBlock Text="وصف الحلقة (اختياري)" Style="{StaticResource CaptionText}" />
+                            <TextBox Text="{Binding Description, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="70" TextWrapping="Wrap" ToolTip="وصف الحلقة" Margin="0,0,0,2" />
+                            <TextBlock Text="{Binding DescriptionError}" Style="{StaticResource FieldError}" />
+
+                            <TextBlock Text="{Binding Message}" Foreground="{StaticResource AppErrorBrush}" TextWrapping="Wrap" Margin="0,4,0,0" Visibility="{Binding IsError, Converter={StaticResource BooleanToVisibilityConverter}}" />
                         </StackPanel>
                     </ScrollViewer>
+
+                    <!-- Dialog Footer Actions -->
+                    <DockPanel Grid.Row="2" Margin="0,16,0,0">
+                        <Button DockPanel.Dock="Left" Content="إلغاء" Command="{Binding CloseDialogCommand}" Style="{StaticResource AppSecondaryButton}" Margin="0,0,8,0" />
+                        <Button Content="{Binding SaveTitle}" Command="{Binding SaveCommand}" HorizontalAlignment="Right" />
+                    </DockPanel>
                 </Grid>
-                <Button Grid.Row="2" Content="إعادة تحميل الحلقات" Command="{Binding LoadCommand}" HorizontalAlignment="Left" Margin="0,16,0,0" />
-            </Grid>
-        </Border>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

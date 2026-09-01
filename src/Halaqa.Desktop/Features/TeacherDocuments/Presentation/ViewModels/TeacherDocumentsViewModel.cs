@@ -47,6 +47,7 @@ public sealed partial class TeacherDocumentsViewModel : ObservableObject
     [ObservableProperty] private string? _issuingPlaceError;
     [ObservableProperty] private string? _issuingDateError;
     [ObservableProperty] private string? _fileError;
+    [ObservableProperty] private bool _isDialogOpen;
 
     public event EventHandler? BackRequested;
 
@@ -72,6 +73,21 @@ public sealed partial class TeacherDocumentsViewModel : ObservableObject
         {
             await LoadPageAsync(CurrentPage - 1);
         }
+    }
+
+    [RelayCommand]
+    private void OpenUploadDialog()
+    {
+        ClearForm();
+        ClearFeedback();
+        IsDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseDialog()
+    {
+        IsDialogOpen = false;
+        ClearFeedback();
     }
 
     [RelayCommand(CanExecute = nameof(CanChooseFile))]
@@ -135,7 +151,8 @@ public sealed partial class TeacherDocumentsViewModel : ObservableObject
             Documents.Insert(0, result.Value);
             Total++;
             ClearForm();
-            Message = "تم حفظ وثيقة المعلم.";
+            Message = "تم حفظ وثيقة المعلم بنجاح.";
+            IsDialogOpen = false;
         }
         finally
         {

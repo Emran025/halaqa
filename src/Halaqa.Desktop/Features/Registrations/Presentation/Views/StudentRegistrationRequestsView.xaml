@@ -17,8 +17,8 @@
                     <RowDefinition Height="Auto" />
                 </Grid.RowDefinitions>
                 <DockPanel>
-                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى البحث عن معلم">
-                        <controls:AppIcon Kind="ArrowRight"  />
+                    <Button DockPanel.Dock="Left" Command="{Binding BackCommand}" ToolTip="العودة إلى البحث عن معلم" Style="{StaticResource AppBackButton}">
+                        <controls:AppIcon Kind="ArrowRight" />
                     </Button>
                     <StackPanel>
                         <TextBlock Text="طلباتي" Style="{StaticResource PageTitle}" />

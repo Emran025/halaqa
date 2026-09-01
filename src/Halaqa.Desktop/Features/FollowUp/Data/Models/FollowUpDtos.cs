@@ -33,14 +33,14 @@ internal sealed record FollowUpPlanDto(
     [property: JsonPropertyName("status")] string Status,
     [property: JsonPropertyName("timezone")] string Timezone,
     [property: JsonPropertyName("details")] IReadOnlyList<PlanDetailDto> Details,
-    [property: JsonPropertyName("attendance_preferences")] AttendancePreferencesDto AttendancePreferences,
-    [property: JsonPropertyName("starts_on")] string? StartsOn,
-    [property: JsonPropertyName("ends_on")] string? EndsOn,
-    [property: JsonPropertyName("version")] int Version,
-    [property: JsonPropertyName("approved_by_user_id")] Guid? ApprovedByUserId,
-    [property: JsonPropertyName("approved_at")] DateTimeOffset? ApprovedAt,
-    [property: JsonPropertyName("created_at")] DateTimeOffset CreatedAt,
-    [property: JsonPropertyName("updated_at")] DateTimeOffset UpdatedAt);
+    [property: JsonPropertyName("attendance_preferences")] AttendancePreferencesDto? AttendancePreferences = null,
+    [property: JsonPropertyName("starts_on")] string? StartsOn = null,
+    [property: JsonPropertyName("ends_on")] string? EndsOn = null,
+    [property: JsonPropertyName("version")] int Version = 1,
+    [property: JsonPropertyName("approved_by_user_id")] Guid? ApprovedByUserId = null,
+    [property: JsonPropertyName("approved_at")] DateTimeOffset? ApprovedAt = null,
+    [property: JsonPropertyName("created_at")] DateTimeOffset CreatedAt = default,
+    [property: JsonPropertyName("updated_at")] DateTimeOffset UpdatedAt = default);
 
 internal sealed record FollowUpPlanResponseDto(
     [property: JsonPropertyName("follow_up_plan")] FollowUpPlanDto FollowUpPlan);

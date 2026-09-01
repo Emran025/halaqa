@@ -130,7 +130,7 @@
                         <Border Grid.Row="2" Background="#FFFDFBF5" BorderBrush="#14000000" BorderThickness="1" CornerRadius="3" Padding="16">
                             <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                                 <TextBlock Text="{Binding QuranPage.PageGlyphText}"
-                                           FontFamily="{Binding QuranPage.PageNumber, Converter={StaticResource QuranPageFontFamilyConverter}}"
+                                           FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}"
                                            FontSize="34"
                                            LineHeight="54"
                                            TextAlignment="Center"

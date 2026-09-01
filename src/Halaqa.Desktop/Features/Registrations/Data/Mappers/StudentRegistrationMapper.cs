@@ -10,13 +10,12 @@ internal static class StudentRegistrationMapper
     public static Result<AvailableTeacher> ToDomain(AvailableTeacherDto dto)
     {
         if (dto.Id == Guid.Empty || string.IsNullOrWhiteSpace(dto.DisplayName) ||
-            string.IsNullOrWhiteSpace(dto.TeacherCode) || string.IsNullOrWhiteSpace(dto.Country) ||
-            string.IsNullOrWhiteSpace(dto.City) || string.IsNullOrWhiteSpace(dto.Qualification) ||
-            dto.ExperienceYears is < 0 or > 80 || dto.ActiveHalaqaCount is < 0 ||
-            !TryParseGender(dto.Gender, out var gender))
+            string.IsNullOrWhiteSpace(dto.TeacherCode))
         {
             return Result<AvailableTeacher>.Failure(UnexpectedResponseError());
         }
+
+        TryParseGender(dto.Gender, out var gender);
 
         var halaqas = (dto.PublicHalaqas ?? Array.Empty<PublicHalaqaDto>()).Select(ToDomain).ToArray();
         var error = halaqas.Select(result => result.Error).FirstOrDefault(value => value is not null);
@@ -31,9 +30,9 @@ internal static class StudentRegistrationMapper
             dto.TeacherCode,
             dto.Avatar,
             gender,
-            dto.Country,
-            dto.City,
-            dto.Qualification,
+            dto.Country ?? string.Empty,
+            dto.City ?? string.Empty,
+            dto.Qualification ?? string.Empty,
             dto.ExperienceYears,
             dto.CapacityAvailable,
             dto.Bio,

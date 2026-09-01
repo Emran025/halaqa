@@ -24,7 +24,11 @@ internal sealed record MembershipResponseDto(
 
 internal sealed record MembershipCollectionResponseDto(
     [property: JsonPropertyName("memberships")] IReadOnlyList<HalaqaMembershipDto> Memberships,
-    [property: JsonPropertyName("meta")] MembershipPaginationMetaDto Meta);
+    [property: JsonPropertyName("meta")] MembershipPaginationMetaDto? Meta = null,
+    [property: JsonPropertyName("pagination")] MembershipPaginationMetaDto? Pagination = null)
+{
+    public MembershipPaginationMetaDto ResolvedMeta => Meta ?? Pagination ?? new MembershipPaginationMetaDto(1, 1, 20, Memberships?.Count ?? 0);
+}
 
 internal sealed record MembershipPaginationMetaDto(
     [property: JsonPropertyName("current_page")] int CurrentPage,

@@ -28,5 +28,7 @@ public sealed record QuranPage(
     IReadOnlyList<QuranAyah> Ayahs,
     bool IsFromLocalCache)
 {
-    public string PageGlyphText => string.Concat(Ayahs.Select(ayah => ayah.PageGlyphText));
+    public string PageGlyphText => IsFromLocalCache
+        ? string.Concat(Ayahs.Select(ayah => ayah.PageGlyphText))
+        : string.Join(" ", Ayahs.Select(ayah => $"{ayah.Text} ﴿{ayah.Number}﴾"));
 }

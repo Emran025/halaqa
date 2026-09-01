@@ -34,7 +34,11 @@ internal sealed record HalaqaResponseDto(
 
 internal sealed record HalaqaCollectionResponseDto(
     [property: JsonPropertyName("halaqas")] IReadOnlyList<HalaqaDto> Halaqas,
-    [property: JsonPropertyName("meta")] HalaqaPaginationMetaDto Meta);
+    [property: JsonPropertyName("meta")] HalaqaPaginationMetaDto? Meta,
+    [property: JsonPropertyName("pagination")] HalaqaPaginationMetaDto? Pagination)
+{
+    public HalaqaPaginationMetaDto ResolvedMeta => Meta ?? Pagination ?? new HalaqaPaginationMetaDto(1, 1, 20, Halaqas?.Count ?? 0);
+}
 
 internal sealed record HalaqaPaginationMetaDto(
     [property: JsonPropertyName("current_page")] int CurrentPage,

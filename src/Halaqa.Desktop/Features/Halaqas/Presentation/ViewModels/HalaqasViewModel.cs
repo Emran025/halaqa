@@ -59,6 +59,7 @@ public sealed partial class HalaqasViewModel : ObservableObject
     [ObservableProperty] private string? _residenceError;
     [ObservableProperty] private string? _maxStudentsError;
     [ObservableProperty] private string? _timezoneError;
+    [ObservableProperty] private bool _isDialogOpen;
 
     public bool IsEditing => SelectedHalaqa is not null;
     public string EditorTitle => IsEditing ? "تعديل الحلقة المحددة" : "إنشاء حلقة جديدة";
@@ -90,8 +91,34 @@ public sealed partial class HalaqasViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private void OpenCreateDialog()
+    {
+        ClearForm();
+        ClearFeedback();
+        IsDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void OpenEditDialog(HalaqaItem? item)
+    {
+        if (item is not null)
+        {
+            SelectedHalaqa = item;
+        }
+        ClearFeedback();
+        IsDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseDialog()
+    {
+        IsDialogOpen = false;
+        ClearFeedback();
+    }
+
     [RelayCommand(CanExecute = nameof(CanEdit))]
-    private void NewHalaqa() => ClearForm();
+    private void NewHalaqa() => OpenCreateDialog();
 
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task SaveAsync()
@@ -143,6 +170,7 @@ public sealed partial class HalaqasViewModel : ObservableObject
             Upsert(result.Value);
             SelectedHalaqa = result.Value;
             Message = wasEditing ? "تم حفظ تعديلات الحلقة." : "تم إنشاء الحلقة.";
+            IsDialogOpen = false;
         }
         finally
         {
@@ -160,13 +188,29 @@ public sealed partial class HalaqasViewModel : ObservableObject
             return;
         }
 
+        await ToggleStatusCoreAsync(selected);
+    }
+
+    [RelayCommand]
+    private async Task ToggleStatusForItemAsync(HalaqaItem? item)
+    {
+        if (item is null)
+        {
+            return;
+        }
+
+        await ToggleStatusCoreAsync(item);
+    }
+
+    private async Task ToggleStatusCoreAsync(HalaqaItem halaqa)
+    {
         IsBusy = true;
         ClearFeedback();
         try
         {
-            var result = selected.Status == HalaqaStatus.Active
-                ? await _deactivateHalaqaUseCase.ExecuteAsync(selected.Id)
-                : await _activateHalaqaUseCase.ExecuteAsync(selected.Id);
+            var result = halaqa.Status == HalaqaStatus.Active
+                ? await _deactivateHalaqaUseCase.ExecuteAsync(halaqa.Id)
+                : await _activateHalaqaUseCase.ExecuteAsync(halaqa.Id);
             if (!result.IsSuccess || result.Value is null)
             {
                 SetFailure(result.Error);
@@ -174,7 +218,10 @@ public sealed partial class HalaqasViewModel : ObservableObject
             }
 
             Upsert(result.Value);
-            SelectedHalaqa = result.Value;
+            if (SelectedHalaqa?.Id == result.Value.Id)
+            {
+                SelectedHalaqa = result.Value;
+            }
             Message = result.Value.Status == HalaqaStatus.Active ? "تم تفعيل الحلقة." : "تم إيقاف الحلقة مؤقتاً.";
         }
         finally
@@ -196,12 +243,30 @@ public sealed partial class HalaqasViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private void OpenMembershipsForItem(HalaqaItem? item)
+    {
+        if (item is not null)
+        {
+            MembershipsRequested?.Invoke(this, item);
+        }
+    }
+
     [RelayCommand(CanExecute = nameof(CanOpenRegistrationRequests))]
     private void OpenRegistrationRequests()
     {
         if (SelectedHalaqa is { } halaqa)
         {
             RegistrationRequestsRequested?.Invoke(this, halaqa);
+        }
+    }
+
+    [RelayCommand]
+    private void OpenRegistrationRequestsForItem(HalaqaItem? item)
+    {
+        if (item is not null)
+        {
+            RegistrationRequestsRequested?.Invoke(this, item);
         }
     }
 

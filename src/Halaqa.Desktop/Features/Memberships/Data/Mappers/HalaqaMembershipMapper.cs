@@ -30,8 +30,9 @@ internal static class HalaqaMembershipMapper
 
     public static Result<MembershipPage> ToDomain(MembershipCollectionResponseDto dto)
     {
-        if (dto.Memberships is null || dto.Meta is null ||
-            dto.Meta.CurrentPage < 1 || dto.Meta.LastPage < 1 || dto.Meta.PerPage < 1 || dto.Meta.Total < 0)
+        var meta = dto.ResolvedMeta;
+        if (dto.Memberships is null ||
+            meta.CurrentPage < 1 || meta.LastPage < 1 || meta.PerPage < 1 || meta.Total < 0)
         {
             return Result<MembershipPage>.Failure(UnexpectedResponseError());
         }
@@ -45,10 +46,10 @@ internal static class HalaqaMembershipMapper
 
         return Result<MembershipPage>.Success(new MembershipPage(
             memberships.Select(result => result.Value!).ToArray(),
-            dto.Meta.CurrentPage,
-            dto.Meta.LastPage,
-            dto.Meta.PerPage,
-            dto.Meta.Total));
+            meta.CurrentPage,
+            meta.LastPage,
+            meta.PerPage,
+            meta.Total));
     }
 
     public static AssignStudentRequestDto ToDto(AssignStudentToHalaqaCommand command) => new(command.StudentId);

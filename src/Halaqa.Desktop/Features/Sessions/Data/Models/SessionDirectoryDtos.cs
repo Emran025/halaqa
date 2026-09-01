@@ -6,9 +6,9 @@ internal sealed record SessionParticipantDto(
     [property: JsonPropertyName("id")] Guid Id,
     [property: JsonPropertyName("role")] string Role,
     [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("email")] string Email,
-    [property: JsonPropertyName("phone")] string? Phone,
-    [property: JsonPropertyName("status")] string Status);
+    [property: JsonPropertyName("email")] string? Email = null,
+    [property: JsonPropertyName("phone")] string? Phone = null,
+    [property: JsonPropertyName("status")] string? Status = null);
 
 internal sealed record SessionListItemDto(
     [property: JsonPropertyName("id")] Guid Id,

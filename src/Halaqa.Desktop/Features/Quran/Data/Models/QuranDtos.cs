@@ -8,8 +8,9 @@ internal sealed record QuranPageResponseDto(
 internal sealed record QuranPageDto(
     [property: JsonPropertyName("edition_id")] int EditionId,
     [property: JsonPropertyName("page_number")] int PageNumber,
-    [property: JsonPropertyName("surahs")] IReadOnlyList<QuranSurahDto> Surahs,
-    [property: JsonPropertyName("ayahs")] IReadOnlyList<QuranAyahDto> Ayahs);
+    [property: JsonPropertyName("page_text")] string? PageText,
+    [property: JsonPropertyName("surahs")] IReadOnlyList<QuranSurahDto>? Surahs,
+    [property: JsonPropertyName("ayahs")] IReadOnlyList<QuranAyahDto>? Ayahs);
 
 internal sealed record QuranSurahDto(
     [property: JsonPropertyName("id")] int Id,
@@ -23,11 +24,19 @@ internal sealed record QuranAyahDto(
     [property: JsonPropertyName("id")] int Id,
     [property: JsonPropertyName("edition_id")] int EditionId,
     [property: JsonPropertyName("surah_id")] int SurahId,
-    [property: JsonPropertyName("number")] int Number,
+    [property: JsonPropertyName("number_in_surah")] int? NumberInSurah,
+    [property: JsonPropertyName("number")] int? Number,
     [property: JsonPropertyName("page_number")] int PageNumber,
-    [property: JsonPropertyName("text")] string Text,
+    [property: JsonPropertyName("text_uthmani")] string? TextUthmani,
+    [property: JsonPropertyName("text")] string? Text,
+    [property: JsonPropertyName("juz_number")] int? JuzNumber,
     [property: JsonPropertyName("juz")] int? Juz,
-    [property: JsonPropertyName("words")] IReadOnlyList<QuranWordDto> Words);
+    [property: JsonPropertyName("words")] IReadOnlyList<QuranWordDto>? Words)
+{
+    public int ResolvedNumber => NumberInSurah ?? Number ?? 0;
+    public string ResolvedText => TextUthmani ?? Text ?? string.Empty;
+    public int? ResolvedJuz => JuzNumber ?? Juz;
+}
 
 internal sealed record QuranWordDto(
     [property: JsonPropertyName("index")] int Index,

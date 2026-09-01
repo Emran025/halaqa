@@ -75,7 +75,8 @@ public sealed class HalaqaMembershipMapperTests
             null,
             "active",
             DateTimeOffset.Parse("2026-01-01T00:00:00Z"),
-            DateTimeOffset.Parse("2026-01-02T00:00:00Z")),
+            DateTimeOffset.Parse("2026-01-02T00:00:00Z")
+        ),
         "active",
         DateTimeOffset.Parse("2026-02-01T00:00:00Z"));
 }

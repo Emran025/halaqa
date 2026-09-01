@@ -9,21 +9,12 @@ public sealed class BearerTokenHandler : DelegatingHandler
     private readonly IAuthSessionStore sessionStore;
 
 
-    public BearerTokenHandler(
-
-        IAuthSessionStore sessionStore
-
-    )
-
+    public BearerTokenHandler(IAuthSessionStore sessionStore)
     {
-
         this.sessionStore = sessionStore;
-
     }
 
-    protected override async Task<HttpResponseMessage> SendAsync(
-        HttpRequestMessage request,
-        CancellationToken cancellationToken)
+    protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request,CancellationToken cancellationToken)
     {
         var session = await sessionStore.ReadAsync(cancellationToken);
         if (session is not null && session.ExpiresAt > DateTimeOffset.UtcNow)

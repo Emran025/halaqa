@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 using Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
@@ -48,10 +49,14 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly TaskNotesViewModel _taskNotesViewModel;
     private readonly StudentProgressViewModel _studentProgressViewModel;
     private readonly RestoreSessionUseCase _restoreSessionUseCase;
+    private readonly LogoutUseCase _logoutUseCase;
     private AuthenticatedUser? _authenticatedUser;
 
     [ObservableProperty]
     private object? _currentPage;
+
+    [ObservableProperty]
+    private bool _isAuthenticated;
 
     public MainShellViewModel(
         LoginViewModel loginViewModel,
@@ -79,7 +84,8 @@ public sealed partial class MainShellViewModel : ObservableObject
         TaskEvaluationViewModel taskEvaluationViewModel,
         TaskNotesViewModel taskNotesViewModel,
         StudentProgressViewModel studentProgressViewModel,
-        RestoreSessionUseCase restoreSessionUseCase)
+        RestoreSessionUseCase restoreSessionUseCase,
+        LogoutUseCase logoutUseCase)
     {
         _loginViewModel = loginViewModel;
         _studentRegistrationViewModel = studentRegistrationViewModel;
@@ -107,6 +113,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _taskNotesViewModel = taskNotesViewModel;
         _studentProgressViewModel = studentProgressViewModel;
         _restoreSessionUseCase = restoreSessionUseCase;
+        _logoutUseCase = logoutUseCase;
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
         _loginViewModel.StudentRegistrationRequested += (_, _) => CurrentPage = _studentRegistrationViewModel;
@@ -173,17 +180,20 @@ public sealed partial class MainShellViewModel : ObservableObject
     {
         if (_authenticatedUser is null)
         {
+            IsAuthenticated = false;
             CurrentPage = _loginViewModel;
             return;
         }
 
+        IsAuthenticated = true;
         var dashboardViewModel = new DashboardViewModel(_authenticatedUser.User);
         dashboardViewModel.ProfileRequested += async (_, _) => await ShowProfileAsync();
         dashboardViewModel.StudentProfileRequested += async (_, _) => await ShowStudentProfileAsync();
-        dashboardViewModel.TeacherProfileRequested += async (_, _) => await ShowTeacherProfileAsync();
+        dashboardViewModel.TeacherDocumentsRequested += async (_, _) => await ShowTeacherDocumentsAsync();
         dashboardViewModel.HalaqasRequested += async (_, _) => await ShowHalaqasAsync();
         dashboardViewModel.TeacherApplicationsRequested += async (_, _) => await ShowTeacherApplicationInboxAsync();
         dashboardViewModel.StudentRegistrationsRequested += async (_, _) => await ShowStudentTeacherDirectoryAsync();
+        dashboardViewModel.StudentRequestsRequested += async (_, _) => await ShowStudentRegistrationRequestsAsync();
         dashboardViewModel.FollowUpRequested += async (_, _) => await ShowFollowUpAsync();
         dashboardViewModel.ProgressRequested += async (_, _) => await ShowStudentProgressAsync();
         dashboardViewModel.QuranReaderRequested += async (_, _) => await ShowQuranReaderAsync();
@@ -191,6 +201,15 @@ public sealed partial class MainShellViewModel : ObservableObject
         dashboardViewModel.SessionsRequested += async (_, _) => await ShowSessionsAsync();
         dashboardViewModel.PasswordChangeRequested += (_, _) => ShowChangePassword();
         CurrentPage = dashboardViewModel;
+    }
+
+    [RelayCommand]
+    private async Task LogoutAsync()
+    {
+        await _logoutUseCase.ExecuteAsync();
+        _authenticatedUser = null;
+        IsAuthenticated = false;
+        CurrentPage = _loginViewModel;
     }
 
     private void ShowChangePassword()

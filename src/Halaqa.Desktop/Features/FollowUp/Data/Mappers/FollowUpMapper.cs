@@ -13,7 +13,7 @@ internal static class FollowUpMapper
     {
         if (dto is null || dto.Id == Guid.Empty || dto.StudentId == Guid.Empty || dto.CreatedByUserId == Guid.Empty ||
             string.IsNullOrWhiteSpace(dto.Status) || string.IsNullOrWhiteSpace(dto.Timezone) || dto.Version < 1 ||
-            dto.Details is null || dto.AttendancePreferences is null ||
+            dto.Details is null ||
             !TryParseEnum(dto.Frequency, out FollowUpFrequency frequency) ||
             !TryParseDate(dto.StartsOn, out var startsOn) || !TryParseDate(dto.EndsOn, out var endsOn))
         {
@@ -27,11 +27,9 @@ internal static class FollowUpMapper
             return Result<FollowUpPlan>.Failure(detailError);
         }
 
-        var attendance = ToDomain(dto.AttendancePreferences);
-        if (!attendance.IsSuccess || attendance.Value is null)
-        {
-            return Result<FollowUpPlan>.Failure(attendance.Error!);
-        }
+        var attendance = dto.AttendancePreferences is not null
+            ? ToDomain(dto.AttendancePreferences).Value ?? new AttendancePreferences(dto.Timezone, Array.Empty<WeeklyAvailabilitySlot>(), null)
+            : new AttendancePreferences(dto.Timezone, Array.Empty<WeeklyAvailabilitySlot>(), null);
 
         return Result<FollowUpPlan>.Success(new FollowUpPlan(
             dto.Id,
@@ -42,7 +40,7 @@ internal static class FollowUpMapper
             dto.Status,
             dto.Timezone,
             details.Select(item => item.Value!).ToArray(),
-            attendance.Value,
+            attendance,
             startsOn,
             endsOn,
             dto.Version,

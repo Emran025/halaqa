@@ -39,6 +39,7 @@ public sealed class AppIcon : TextBlock
         "ChevronLeft" => "\uE76B",
         "Close" => "\uE711",
         "Login" => "\uE8AC",
+        "Logout" or "SignOut" => "\uF3B1",
         "Replay" => "\uE72C",
         "MicrophoneOutline" => "\uE720",
         "RecordCircleOutline" => "\uE7C8",

@@ -28,35 +28,33 @@ internal static class NotificationMapper
 
     private static Result<HalaqaNotification> ToDomain(NotificationDto dto)
     {
-        if (dto is null || dto.Id == Guid.Empty || string.IsNullOrWhiteSpace(dto.Title) || string.IsNullOrWhiteSpace(dto.Body) || dto.Payload is null ||
+        if (dto is null || dto.Id == Guid.Empty || string.IsNullOrWhiteSpace(dto.Title) || string.IsNullOrWhiteSpace(dto.Body) ||
             !TryParseEnum(dto.Type, out NotificationType type))
         {
             return Result<HalaqaNotification>.Failure(UnexpectedResponseError());
         }
 
-        var payload = ToDomain(dto.Payload);
-        if (!payload.IsSuccess || payload.Value is null)
-        {
-            return Result<HalaqaNotification>.Failure(payload.Error!);
-        }
+        var payloadResult = ToDomain(dto.Payload ?? new NotificationPayloadDto());
+        var payload = payloadResult.Value ?? new NotificationPayload(null, NotificationEntityType.Halaqa, Guid.Empty, null, null, NotificationAction.Open, null);
 
         return Result<HalaqaNotification>.Success(new HalaqaNotification(
-            dto.Id, type, dto.Title, dto.Body, payload.Value, dto.ReadAt, dto.CreatedAt));
+            dto.Id, type, dto.Title, dto.Body, payload, dto.ReadAt, dto.CreatedAt));
     }
 
     private static Result<NotificationPayload> ToDomain(NotificationPayloadDto dto)
     {
-        if (dto is null || dto.EntityId == Guid.Empty ||
-            !TryParseEnum(dto.EntityType, out NotificationEntityType entityType) ||
-            !TryParseEnum(dto.Action, out NotificationAction action))
+        if (dto is null)
         {
-            return Result<NotificationPayload>.Failure(UnexpectedResponseError());
+            return Result<NotificationPayload>.Success(new NotificationPayload(null, NotificationEntityType.Halaqa, Guid.Empty, null, null, NotificationAction.Open, null));
         }
+
+        TryParseEnum(dto.EntityType, out NotificationEntityType entityType);
+        TryParseEnum(dto.Action, out NotificationAction action);
 
         return Result<NotificationPayload>.Success(new NotificationPayload(
             dto.EventType,
             entityType,
-            dto.EntityId,
+            dto.EntityId ?? Guid.Empty,
             dto.SessionId,
             dto.FollowUpItemId,
             action,

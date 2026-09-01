@@ -23,9 +23,9 @@
                 </Grid.RowDefinitions>
                 <DockPanel>
                     <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                        <Button Content="طلباتي" Command="{Binding OpenMyRequestsCommand}" Margin="0,0,8,0" />
-                        <Button Command="{Binding BackCommand}" ToolTip="العودة إلى لوحة التحكم">
-                            <controls:AppIcon Kind="ArrowRight"  />
+                        <Button Content="طلباتي" Command="{Binding OpenMyRequestsCommand}" Margin="0,0,8,0" Style="{StaticResource AppSecondaryButton}" />
+                        <Button Command="{Binding BackCommand}" ToolTip="العودة إلى لوحة التحكم" Style="{StaticResource AppBackButton}">
+                            <controls:AppIcon Kind="ArrowRight" />
                         </Button>
                     </StackPanel>
                     <StackPanel>

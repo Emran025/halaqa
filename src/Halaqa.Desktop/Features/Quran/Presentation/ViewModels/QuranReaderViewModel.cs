@@ -6,24 +6,85 @@ using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Quran.Presentation.ViewModels;
 
-public sealed partial class QuranReaderViewModel : ObservableObject
+public sealed class QuranReaderViewModel : ObservableObject
 {
     private const int EditionId = 1;
     private const int FirstPage = 1;
     private const int LastPage = 604;
     private readonly GetQuranPageUseCase _getQuranPageUseCase;
 
+    private QuranPage? _quranPage;
+    private QuranAyah? _selectedAyah;
+    private string _pageNumberInput = FirstPage.ToString();
+    private bool _isLoading;
+    private bool _isError;
+    private string? _message;
+
     public QuranReaderViewModel(GetQuranPageUseCase getQuranPageUseCase)
     {
         _getQuranPageUseCase = getQuranPageUseCase;
+        LoadPageCommand = new AsyncRelayCommand(LoadPageAsync, CanLoad);
+        LoadPreviousPageCommand = new AsyncRelayCommand(LoadPreviousPageAsync, CanLoadPrevious);
+        LoadNextPageCommand = new AsyncRelayCommand(LoadNextPageAsync, CanLoadNext);
+        BackCommand = new RelayCommand(Back);
     }
 
-    [ObservableProperty] private QuranPage? _quranPage;
-    [ObservableProperty] private QuranAyah? _selectedAyah;
-    [ObservableProperty] private string _pageNumberInput = FirstPage.ToString();
-    [ObservableProperty] private bool _isLoading;
-    [ObservableProperty] private bool _isError;
-    [ObservableProperty] private string? _message;
+    public AsyncRelayCommand LoadPageCommand { get; }
+    public AsyncRelayCommand LoadPreviousPageCommand { get; }
+    public AsyncRelayCommand LoadNextPageCommand { get; }
+    public RelayCommand BackCommand { get; }
+
+    public QuranPage? QuranPage
+    {
+        get => _quranPage;
+        set
+        {
+            if (SetProperty(ref _quranPage, value))
+            {
+                LoadPreviousPageCommand.NotifyCanExecuteChanged();
+                LoadNextPageCommand.NotifyCanExecuteChanged();
+                OnPropertyChanged(nameof(QuranSourceLabel));
+            }
+        }
+    }
+
+    public QuranAyah? SelectedAyah
+    {
+        get => _selectedAyah;
+        set => SetProperty(ref _selectedAyah, value);
+    }
+
+    public string PageNumberInput
+    {
+        get => _pageNumberInput;
+        set => SetProperty(ref _pageNumberInput, value);
+    }
+
+    public bool IsLoading
+    {
+        get => _isLoading;
+        set
+        {
+            if (SetProperty(ref _isLoading, value))
+            {
+                LoadPageCommand.NotifyCanExecuteChanged();
+                LoadPreviousPageCommand.NotifyCanExecuteChanged();
+                LoadNextPageCommand.NotifyCanExecuteChanged();
+            }
+        }
+    }
+
+    public bool IsError
+    {
+        get => _isError;
+        set => SetProperty(ref _isError, value);
+    }
+
+    public string? Message
+    {
+        get => _message;
+        set => SetProperty(ref _message, value);
+    }
 
     public string QuranSourceLabel => QuranPage is null
         ? "لم تُحمّل صفحة بعد."
@@ -42,7 +103,6 @@ public sealed partial class QuranReaderViewModel : ObservableObject
         Message = null;
     }
 
-    [RelayCommand(CanExecute = nameof(CanLoad))]
     private async Task LoadPageAsync()
     {
         if (!TryReadPageNumber(out var pageNumber))
@@ -73,25 +133,21 @@ public sealed partial class QuranReaderViewModel : ObservableObject
         finally
         {
             IsLoading = false;
-            NotifyCommands();
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanLoadPrevious))]
     private async Task LoadPreviousPageAsync()
     {
         PageNumberInput = (QuranPage?.PageNumber - 1 ?? FirstPage).ToString();
         await LoadPageAsync();
     }
 
-    [RelayCommand(CanExecute = nameof(CanLoadNext))]
     private async Task LoadNextPageAsync()
     {
         PageNumberInput = (QuranPage?.PageNumber + 1 ?? FirstPage).ToString();
         await LoadPageAsync();
     }
 
-    [RelayCommand]
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
 
     private bool CanLoad() => !IsLoading;
@@ -119,13 +175,4 @@ public sealed partial class QuranReaderViewModel : ObservableObject
         IsError = true;
         Message = message;
     }
-
-    private void NotifyCommands()
-    {
-        LoadPageCommand.NotifyCanExecuteChanged();
-        LoadPreviousPageCommand.NotifyCanExecuteChanged();
-        LoadNextPageCommand.NotifyCanExecuteChanged();
-    }
-
-    partial void OnQuranPageChanged(QuranPage? value) => NotifyCommands();
 }

@@ -7,23 +7,28 @@ namespace Halaqa.Desktop.Config.Http;
 
 public static class ApiErrorMapper
 {
-    public static async Task<AppError> MapAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    public static AppError Map(string payload, HttpStatusCode statusCode)
     {
-        var payload = await response.Content.ReadAsStringAsync(cancellationToken);
         var parsed = TryParse(payload);
-        var message = parsed?.Message ?? DefaultMessage(response.StatusCode);
-        var kind = response.StatusCode switch
+        var message = parsed?.Message ?? DefaultMessage(statusCode);
+        var kind = statusCode switch
         {
             HttpStatusCode.Unauthorized => AppErrorKind.Unauthorized,
             HttpStatusCode.Forbidden => AppErrorKind.Forbidden,
             HttpStatusCode.NotFound => AppErrorKind.NotFound,
             HttpStatusCode.Conflict => AppErrorKind.Conflict,
             HttpStatusCode.UnprocessableEntity => AppErrorKind.Validation,
-            _ when (int)response.StatusCode >= 500 => AppErrorKind.Server,
+            _ when (int)statusCode >= 500 => AppErrorKind.Server,
             _ => AppErrorKind.Unknown
         };
 
         return new AppError(kind, message, parsed?.FieldErrors, parsed?.Code);
+    }
+
+    public static async Task<AppError> MapAsync(HttpResponseMessage response, CancellationToken cancellationToken)
+    {
+        var payload = await response.Content.ReadAsStringAsync(cancellationToken);
+        return Map(payload, response.StatusCode);
     }
 
     private static ErrorPayload? TryParse(string payload)

@@ -34,9 +34,9 @@ internal static class SessionDirectoryMapper
         dto.Id,
         dto.Role,
         dto.Name,
-        dto.Email,
+        dto.Email ?? string.Empty,
         dto.Phone,
-        dto.Status);
+        dto.Status ?? "active");
 
     private static TEnum ParseEnum<TEnum>(string value) where TEnum : struct, Enum =>
         Enum.Parse<TEnum>(value, ignoreCase: true);
