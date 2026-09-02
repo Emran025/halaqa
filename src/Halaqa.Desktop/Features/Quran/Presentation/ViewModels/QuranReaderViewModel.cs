@@ -106,7 +106,7 @@ public sealed class QuranReaderViewModel : ObservableObject
         QuranPage = null;
         FacingPage = null;
         SelectedAyah = null;
-        PageNumberInput = Math.Clamp(pageNumber, FirstPage, LastPage).ToString();
+        PageNumberInput = NormalizeSpreadStart(Math.Clamp(pageNumber, FirstPage, LastPage)).ToString();
         IsError = false;
         Message = null;
     }
@@ -119,6 +119,7 @@ public sealed class QuranReaderViewModel : ObservableObject
             return;
         }
 
+        pageNumber = NormalizeSpreadStart(pageNumber);
         IsLoading = true;
         ClearFeedback();
         try
@@ -134,7 +135,7 @@ public sealed class QuranReaderViewModel : ObservableObject
             FacingPage = null;
             if (pageNumber < LastPage)
             {
-                var facingResult = await _getQuranPageUseCase.ExecuteAsync(EditionId, pageNumber + 1);
+                    var facingResult = await _getQuranPageUseCase.ExecuteAsync(EditionId, pageNumber + 1);
                 if (facingResult.IsSuccess)
                 {
                     FacingPage = facingResult.Value;
@@ -155,13 +156,13 @@ public sealed class QuranReaderViewModel : ObservableObject
 
     private async Task LoadPreviousPageAsync()
     {
-        PageNumberInput = (QuranPage?.PageNumber - 1 ?? FirstPage).ToString();
+        PageNumberInput = Math.Max(FirstPage, (QuranPage?.PageNumber ?? FirstPage) - 2).ToString();
         await LoadPageAsync();
     }
 
     private async Task LoadNextPageAsync()
     {
-        PageNumberInput = (QuranPage?.PageNumber + 1 ?? FirstPage).ToString();
+        PageNumberInput = Math.Min(LastPage - 1, (QuranPage?.PageNumber ?? FirstPage) + 2).ToString();
         await LoadPageAsync();
     }
 
@@ -169,7 +170,10 @@ public sealed class QuranReaderViewModel : ObservableObject
 
     private bool CanLoad() => !IsLoading;
     private bool CanLoadPrevious() => CanLoad() && (QuranPage?.PageNumber ?? FirstPage) > FirstPage;
-    private bool CanLoadNext() => CanLoad() && (QuranPage?.PageNumber ?? FirstPage) < LastPage;
+    private bool CanLoadNext() => CanLoad() && (QuranPage?.PageNumber ?? FirstPage) < LastPage - 1;
+
+    private static int NormalizeSpreadStart(int pageNumber) =>
+        pageNumber == LastPage ? LastPage - 1 : pageNumber % 2 == 0 ? pageNumber - 1 : pageNumber;
 
     private bool TryReadPageNumber(out int pageNumber) =>
         int.TryParse(PageNumberInput, out pageNumber) && pageNumber is >= FirstPage and <= LastPage;

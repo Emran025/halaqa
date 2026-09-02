@@ -19,8 +19,11 @@ public sealed class QuranReaderViewModelTests
         await viewModel.LoadPageCommand.ExecuteAsync(null);
 
         Assert.Equal(2, repository.LastPageNumber);
+        Assert.Equal(2, repository.CallCount);
         Assert.NotNull(viewModel.QuranPage);
-        Assert.Equal(2, viewModel.QuranPage!.PageNumber);
+        Assert.Equal(1, viewModel.QuranPage!.PageNumber);
+        Assert.NotNull(viewModel.FacingPage);
+        Assert.Equal(2, viewModel.FacingPage!.PageNumber);
         Assert.Contains("المحلية", viewModel.QuranSourceLabel);
         Assert.False(viewModel.IsError);
     }
@@ -30,12 +33,13 @@ public sealed class QuranReaderViewModelTests
     {
         var repository = new FakeQuranRepository();
         var viewModel = new QuranReaderViewModel(new GetQuranPageUseCase(repository));
-        viewModel.Initialize(603);
+        viewModel.Initialize(601);
         await viewModel.LoadPageCommand.ExecuteAsync(null);
 
         await viewModel.LoadNextPageCommand.ExecuteAsync(null);
 
         Assert.Equal(604, repository.LastPageNumber);
+        Assert.Equal(603, viewModel.QuranPage!.PageNumber);
         Assert.False(viewModel.LoadNextPageCommand.CanExecute(null));
     }
 

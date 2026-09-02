@@ -53,13 +53,13 @@
                 <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="6" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
                 <Border Grid.Column="0" Background="#FFFDFBF5" BorderBrush="#22000000" BorderThickness="1" CornerRadius="4" Padding="16">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <TextBlock Text="{Binding QuranPage.PageGlyphText}" FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="Wrap" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
+                        <TextBlock Text="{Binding QuranPage.PageGlyphText}" FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="NoWrap" HorizontalAlignment="Center" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
                     </ScrollViewer>
                 </Border>
                 <Border Grid.Column="1" Background="#FFB9A47A" />
                 <Border Grid.Column="2" Background="#FFFDFBF5" BorderBrush="#22000000" BorderThickness="1" CornerRadius="4" Padding="16">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <TextBlock Text="{Binding FacingPage.PageGlyphText}" FontFamily="{Binding FacingPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="Wrap" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
+                        <TextBlock Text="{Binding FacingPage.PageGlyphText}" FontFamily="{Binding FacingPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="NoWrap" HorizontalAlignment="Center" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
                     </ScrollViewer>
                 </Border>
             </Grid>
