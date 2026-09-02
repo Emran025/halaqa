@@ -101,6 +101,7 @@ internal static class RegistrationRequestMapper
     {
         if (dto.Id == Guid.Empty || string.IsNullOrWhiteSpace(dto.DisplayName) ||
             dto.SubmittedAt == default ||
+            !dto.SensitiveFieldsHidden ||
             !TryParseState(dto.Status, out var status))
         {
             return Result<RegistrationApplicant>.Failure(UnexpectedResponseError());
