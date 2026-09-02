@@ -5,78 +5,40 @@
              xmlns:converters="clr-namespace:Halaqa.Desktop.Shared.Presentation.Converters"
              FlowDirection="RightToLeft">
     <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:QuranPageFontFamilyConverter x:Key="QuranPageFontFamilyConverter" />
     </UserControl.Resources>
-    <Grid Margin="28,24">
+    <Grid Margin="24,18">
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <DockPanel Margin="0,0,0,16">
-            <Button Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppBackButton}" ToolTip="العودة إلى لوحة التحكم">
+        <DockPanel Grid.Row="0" Margin="0,0,0,16">
+            <Button Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppBackButton}" ToolTip="العودة">
                 <controls:AppIcon Kind="ArrowRight" />
             </Button>
-            <StackPanel>
-                <TextBlock Text="قارئ المصحف" Style="{StaticResource PageTitle}" />
-                <TextBlock Text="قراءة مستقلة محلية أولاً؛ لا تحفظ حالة جلسة ولا تشارك موضعاً مع أي طرف." Style="{StaticResource BodyMuted}" />
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Button Command="{Binding LoadPreviousPageCommand}" ToolTip="الورقة السابقة"><controls:AppIcon Kind="ChevronRight" /></Button>
+                <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="66" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" Margin="6,0" ToolTip="رقم الصفحة" />
+                <Button Content="انتقال" Command="{Binding LoadPageCommand}" />
+                <Button Command="{Binding LoadNextPageCommand}" ToolTip="الورقة التالية" Margin="6,0,0,0"><controls:AppIcon Kind="ChevronLeft" /></Button>
+                <ProgressBar Width="72" Height="4" Margin="10,0,0,0" IsIndeterminate="True" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
             </StackPanel>
         </DockPanel>
 
-        <Border Grid.Row="1" Background="{StaticResource AppSurfaceBrush}" Padding="14" CornerRadius="4" Margin="0,0,0,16">
-            <Grid>
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="Auto" />
-                </Grid.ColumnDefinitions>
-                <StackPanel>
-                    <TextBlock Text="{Binding QuranSourceLabel}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
-                    <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" />
-                </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Command="{Binding LoadPreviousPageCommand}" ToolTip="الصفحة السابقة"><controls:AppIcon Kind="ChevronRight"  /></Button>
-                    <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="66" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" Margin="6,0" ToolTip="صفحة" />
-                    <Button Content="انتقال" Command="{Binding LoadPageCommand}" />
-                    <Button Command="{Binding LoadNextPageCommand}" ToolTip="الصفحة التالية" Margin="6,0,0,0"><controls:AppIcon Kind="ChevronLeft"  /></Button>
-                    <ProgressBar Width="72" Height="4" Margin="10,0,0,0" IsIndeterminate="True" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
-                </StackPanel>
-            </Grid>
-        </Border>
-
-        <Grid Grid.Row="2">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="150" />
-            </Grid.ColumnDefinitions>
-            <Grid Grid.Column="0" Margin="0,0,12,0">
-                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="6" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                <Border Grid.Column="0" Background="#FFFDFBF5" BorderBrush="#22000000" BorderThickness="1" CornerRadius="4" Padding="16">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <TextBlock Text="{Binding QuranPage.PageGlyphText}" FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="NoWrap" HorizontalAlignment="Center" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
-                    </ScrollViewer>
-                </Border>
-                <Border Grid.Column="1" Background="#FFB9A47A" />
-                <Border Grid.Column="2" Background="#FFFDFBF5" BorderBrush="#22000000" BorderThickness="1" CornerRadius="4" Padding="16">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                        <TextBlock Text="{Binding FacingPage.PageGlyphText}" FontFamily="{Binding FacingPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="NoWrap" HorizontalAlignment="Center" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
-                    </ScrollViewer>
-                </Border>
-            </Grid>
-            <Border Grid.Column="1" Background="{StaticResource AppSurfaceBrush}" Padding="12" CornerRadius="4">
-                <StackPanel>
-                    <TextBlock Text="آيات الورقة" Style="{StaticResource SectionTitle}" />
-                    <ListBox ItemsSource="{Binding QuranPage.Ayahs}" SelectedItem="{Binding SelectedAyah, Mode=TwoWay}" Margin="0,10,0,0">
-                        <ListBox.ItemTemplate>
-                            <DataTemplate>
-                                <StackPanel Margin="2">
-                                    <TextBlock Text="{Binding Number, StringFormat=آية {0}}" FontWeight="SemiBold" />
-                                    <TextBlock Text="{Binding Text}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
-                                </StackPanel>
-                            </DataTemplate>
-                        </ListBox.ItemTemplate>
-                    </ListBox>
-                </StackPanel>
+        <Grid Grid.Row="1">
+            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="8" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+            <Border Grid.Column="0" Background="#FFFDFBF5" BorderBrush="#22000000" BorderThickness="1" CornerRadius="4" Padding="18">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <TextBlock Text="{Binding QuranPage.PageGlyphText}" FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="NoWrap" HorizontalAlignment="Center" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
+                </ScrollViewer>
+            </Border>
+            <Border Grid.Column="1" Background="#FFB9A47A" />
+            <Border Grid.Column="2" Background="#FFFDFBF5" BorderBrush="#22000000" BorderThickness="1" CornerRadius="4" Padding="18">
+                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                    <TextBlock Text="{Binding FacingPage.PageGlyphText}" FontFamily="{Binding FacingPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="NoWrap" HorizontalAlignment="Center" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
+                </ScrollViewer>
             </Border>
         </Grid>
     </Grid>
