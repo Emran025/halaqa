@@ -286,7 +286,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
             OnPropertyChanged(nameof(VisibleAyahs));
             var selected = selectedAyahId is { } ayahId
                 ? VisibleAyahs.FirstOrDefault(ayah => ayah.Id == ayahId)
-                : result.Value.Ayahs.FirstOrDefault();
+                : null;
             SelectedAyah = selected;
             Store.SetLocalMushafPresence(Store.LocalMushafPresence with
             {
