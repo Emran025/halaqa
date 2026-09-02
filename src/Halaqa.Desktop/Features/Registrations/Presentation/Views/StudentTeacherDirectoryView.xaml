@@ -58,7 +58,7 @@
                                 </Grid>
                                 <TextBlock Text="{Binding SearchError}" Style="{StaticResource FieldError}" />
                             </StackPanel>
-                            <ListBox Grid.Row="1" ItemsSource="{Binding Teachers}" SelectedItem="{Binding SelectedTeacher}" Margin="0,8,0" BorderThickness="0" Background="Transparent">
+                            <ListBox Grid.Row="1" ItemsSource="{Binding Teachers}" SelectedItem="{Binding SelectedTeacher}" Margin="0,8,0,0" BorderThickness="0" Background="Transparent">
                                 <ListBox.ItemTemplate>
                                     <DataTemplate>
                                         <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="3" Padding="10" Margin="0,3">

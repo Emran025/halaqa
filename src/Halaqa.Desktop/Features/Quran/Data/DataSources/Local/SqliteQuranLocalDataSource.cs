@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Quran.Domain.Entities;
+﻿using Halaqa.Desktop.Features.Quran.Domain.Entities;
 using Halaqa.Desktop.Shared.Domain.Common;
 using Microsoft.Data.Sqlite;
 
@@ -7,6 +7,8 @@ namespace Halaqa.Desktop.Features.Quran.Data.DataSources.Local;
 internal interface IQuranLocalDataSource
 {
     Task<Result<QuranPage>> GetPageAsync(int editionId, int pageNumber, CancellationToken cancellationToken = default);
+    Task<Result<IReadOnlyList<QuranSurahIndexItem>>> GetSurahsIndexAsync(CancellationToken cancellationToken = default);
+    Task<Result<IReadOnlyList<QuranJuzIndexItem>>> GetJuzIndexAsync(CancellationToken cancellationToken = default);
 }
 
 internal sealed class SqliteQuranLocalDataSource : IQuranLocalDataSource
@@ -42,6 +44,74 @@ internal sealed class SqliteQuranLocalDataSource : IQuranLocalDataSource
         catch (IOException)
         {
             return Result<QuranPage>.Failure(new AppError(AppErrorKind.Cache, "تعذر تهيئة نسخة المصحف المحلية."));
+        }
+    }
+
+    public async Task<Result<IReadOnlyList<QuranSurahIndexItem>>> GetSurahsIndexAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var databasePath = await EnsureDatabaseAsync(cancellationToken);
+            await using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+            {
+                DataSource = databasePath,
+                Mode = SqliteOpenMode.ReadOnly
+            }.ToString());
+            await connection.OpenAsync(cancellationToken);
+
+            var command = connection.CreateCommand();
+            command.CommandText = "SELECT Id, Name_ar, AyatCount, PageNum, TypeText_ar FROM Sora ORDER BY Id;";
+            var list = new List<QuranSurahIndexItem>();
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                list.Add(new QuranSurahIndexItem(
+                    Number: reader.GetInt32(0),
+                    Name: reader.IsDBNull(1) ? string.Empty : reader.GetString(1),
+                    AyahCount: reader.IsDBNull(2) ? 0 : reader.GetInt32(2),
+                    StartPage: reader.IsDBNull(3) ? 1 : reader.GetInt32(3),
+                    RevelationPlace: reader.IsDBNull(4) ? null : reader.GetString(4)));
+            }
+
+            return Result<IReadOnlyList<QuranSurahIndexItem>>.Success(list);
+        }
+        catch (Exception ex)
+        {
+            return Result<IReadOnlyList<QuranSurahIndexItem>>.Failure(new AppError(AppErrorKind.Cache, $"تعذر جلب فهرس السور: {ex.Message}"));
+        }
+    }
+
+    public async Task<Result<IReadOnlyList<QuranJuzIndexItem>>> GetJuzIndexAsync(CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            var databasePath = await EnsureDatabaseAsync(cancellationToken);
+            await using var connection = new SqliteConnection(new SqliteConnectionStringBuilder
+            {
+                DataSource = databasePath,
+                Mode = SqliteOpenMode.ReadOnly
+            }.ToString());
+            await connection.OpenAsync(cancellationToken);
+
+            var command = connection.CreateCommand();
+            command.CommandText = "SELECT PartNum, MIN(PageNum), MAX(PageNum) FROM Quran GROUP BY PartNum ORDER BY PartNum;";
+            var list = new List<QuranJuzIndexItem>();
+            await using var reader = await command.ExecuteReaderAsync(cancellationToken);
+            while (await reader.ReadAsync(cancellationToken))
+            {
+                var juzNum = reader.GetInt32(0);
+                list.Add(new QuranJuzIndexItem(
+                    Number: juzNum,
+                    Name: $"الجزء {juzNum}",
+                    StartPage: reader.GetInt32(1),
+                    EndPage: reader.GetInt32(2)));
+            }
+
+            return Result<IReadOnlyList<QuranJuzIndexItem>>.Success(list);
+        }
+        catch (Exception ex)
+        {
+            return Result<IReadOnlyList<QuranJuzIndexItem>>.Failure(new AppError(AppErrorKind.Cache, $"تعذر جلب فهرس الأجزاء: {ex.Message}"));
         }
     }
 

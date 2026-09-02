@@ -16,6 +16,7 @@ public static class QuranFeatureModule
         services.AddSingleton<IQuranLocalDataSource, SqliteQuranLocalDataSource>();
         services.AddSingleton<IQuranRepository, QuranRepository>();
         services.AddSingleton<GetQuranPageUseCase>();
+        services.AddSingleton<GetQuranIndexUseCase>();
         services.AddSingleton<QuranReaderViewModel>();
         return services;
     }

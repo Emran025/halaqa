@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.TeacherDocuments.Data.Models;
+﻿using Halaqa.Desktop.Features.TeacherDocuments.Data.Models;
 using Halaqa.Desktop.Features.TeacherDocuments.Domain.Entities;
 using Halaqa.Desktop.Shared.Domain.Common;
 

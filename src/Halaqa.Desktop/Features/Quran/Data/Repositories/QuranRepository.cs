@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Quran.Data.DataSources.Local;
+﻿using Halaqa.Desktop.Features.Quran.Data.DataSources.Local;
 using Halaqa.Desktop.Features.Quran.Data.DataSources.Remote;
 using Halaqa.Desktop.Features.Quran.Data.Mappers;
 using Halaqa.Desktop.Features.Quran.Domain.Entities;
@@ -9,26 +9,15 @@ namespace Halaqa.Desktop.Features.Quran.Data.Repositories;
 
 internal sealed class QuranRepository : IQuranRepository
 {
-
     private readonly IQuranLocalDataSource localDataSource;
-
     private readonly IQuranRemoteDataSource remoteDataSource;
 
-
     public QuranRepository(
-
         IQuranLocalDataSource localDataSource,
-
-        IQuranRemoteDataSource remoteDataSource
-
-    )
-
+        IQuranRemoteDataSource remoteDataSource)
     {
-
         this.localDataSource = localDataSource;
-
         this.remoteDataSource = remoteDataSource;
-
     }
 
     public async Task<Result<QuranPage>> GetPageAsync(int editionId, int pageNumber, CancellationToken cancellationToken = default)
@@ -49,4 +38,10 @@ internal sealed class QuranRepository : IQuranRepository
             AppErrorKind.Cache,
             "تعذر تحميل صفحة المصحف من SQLite المحلي أو من الخدمة."));
     }
+
+    public Task<Result<IReadOnlyList<QuranSurahIndexItem>>> GetSurahsIndexAsync(CancellationToken cancellationToken = default) =>
+        localDataSource.GetSurahsIndexAsync(cancellationToken);
+
+    public Task<Result<IReadOnlyList<QuranJuzIndexItem>>> GetJuzIndexAsync(CancellationToken cancellationToken = default) =>
+        localDataSource.GetJuzIndexAsync(cancellationToken);
 }

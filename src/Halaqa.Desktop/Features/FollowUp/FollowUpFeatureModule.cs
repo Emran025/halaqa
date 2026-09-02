@@ -23,6 +23,7 @@ public static class FollowUpFeatureModule
         services.AddSingleton<RescheduleFollowUpItemUseCase>();
         services.AddSingleton<ListStudentTrackingsUseCase>();
         services.AddSingleton<FollowUpViewModel>();
+        services.AddSingleton<ComprehensiveTrackingViewModel>();
         return services;
     }
 }

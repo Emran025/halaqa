@@ -25,7 +25,11 @@ public static class SessionsFeatureModule
         services.AddSingleton<CreateSessionTaskUseCase>();
         services.AddSingleton<UpdateSessionTaskUseCase>();
         services.AddSingleton<SaveSessionTaskDraftUseCase>();
+        services.AddSingleton<IPeerMediaConnection, Halaqa.Desktop.Features.Sessions.Data.DataSources.Realtime.DefaultPeerMediaConnection>();
+        services.AddSingleton<IMushafRealtimeChannel, Halaqa.Desktop.Features.Sessions.Data.DataSources.Realtime.DefaultMushafRealtimeChannel>();
+        services.AddSingleton<ILocalVideoRecorder, Halaqa.Desktop.Features.Sessions.Data.DataSources.Recording.DefaultLocalVideoRecorder>();
         services.AddTransient<LiveSessionStore>();
+        services.AddTransient<LiveSessionViewModel>();
         services.AddTransient<SessionsViewModel>();
         services.AddTransient<SessionTasksViewModel>();
         return services;

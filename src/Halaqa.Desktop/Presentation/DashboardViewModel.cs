@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.Input;
+﻿using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 
 namespace Halaqa.Desktop.Presentation;
@@ -18,6 +18,7 @@ public sealed partial class DashboardViewModel
             : "تصفح المعلمين المتاحين وقدّم طلب تسجيل موجهاً بالبيانات الرسمية من ملفك.";
     }
 
+    public event EventHandler? ComprehensiveTrackingRequested;
     public event EventHandler? ProfileRequested;
     public event EventHandler? StudentProfileRequested;
     public event EventHandler? TeacherProfileRequested;
@@ -51,6 +52,9 @@ public sealed partial class DashboardViewModel
 
         HalaqasRequested?.Invoke(this, EventArgs.Empty);
     }
+
+    [RelayCommand]
+    private void OpenComprehensiveTracking() => ComprehensiveTrackingRequested?.Invoke(this, EventArgs.Empty);
 
     [RelayCommand]
     private void OpenHalaqas() => HalaqasRequested?.Invoke(this, EventArgs.Empty);

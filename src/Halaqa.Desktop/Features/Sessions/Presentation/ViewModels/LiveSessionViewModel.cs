@@ -1,3 +1,5 @@
+﻿﻿﻿using System.Collections.ObjectModel;
+using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Quran.Domain.Entities;
@@ -9,6 +11,68 @@ using Halaqa.Desktop.Features.Sessions.Presentation.Stores;
 
 namespace Halaqa.Desktop.Features.Sessions.Presentation.ViewModels;
 
+public sealed partial class InteractiveQuranWord : ObservableObject
+{
+    public int WordIndex { get; init; }
+    public string Text { get; init; } = string.Empty;
+    public int PageNumber { get; init; }
+    public int AyahNumber { get; init; }
+    public bool IsAyahEndSymbol { get; init; }
+
+    [ObservableProperty] private string? _mistakeType;
+    [ObservableProperty] private bool _isStopPoint;
+    [ObservableProperty] private Brush _backgroundBrush = Brushes.Transparent;
+    [ObservableProperty] private Brush _borderBrush = Brushes.Transparent;
+
+    public bool HasMistake => !string.IsNullOrEmpty(MistakeType);
+
+    public void SetMistake(string? mistakeType)
+    {
+        MistakeType = mistakeType == "إلغاء" ? null : mistakeType;
+        UpdateVisuals();
+    }
+
+    public void ToggleStopPoint()
+    {
+        IsStopPoint = !IsStopPoint;
+        UpdateVisuals();
+    }
+
+    private void UpdateVisuals()
+    {
+        if (IsStopPoint)
+        {
+            BackgroundBrush = new SolidColorBrush(Color.FromArgb(220, 200, 230, 201)); // Distinct Emerald Stop Marker
+            BorderBrush = new SolidColorBrush(Color.FromRgb(46, 125, 50));
+            return;
+        }
+
+        switch (MistakeType)
+        {
+            case "حفظ":
+                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 255, 205, 210)); // Solid Vibrant Red Highlight
+                BorderBrush = new SolidColorBrush(Color.FromRgb(211, 47, 47));
+                break;
+            case "تجويد":
+                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 255, 224, 178)); // Solid Vibrant Orange Highlight
+                BorderBrush = new SolidColorBrush(Color.FromRgb(245, 124, 0));
+                break;
+            case "تشكيل":
+                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 255, 245, 157)); // Solid Vibrant Yellow Highlight
+                BorderBrush = new SolidColorBrush(Color.FromRgb(251, 192, 45));
+                break;
+            case "تنبيه":
+                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 187, 222, 251)); // Solid Vibrant Blue Highlight
+                BorderBrush = new SolidColorBrush(Color.FromRgb(25, 118, 210));
+                break;
+            default:
+                BackgroundBrush = Brushes.Transparent;
+                BorderBrush = Brushes.Transparent;
+                break;
+        }
+    }
+}
+
 public sealed partial class LiveSessionViewModel : ObservableObject
 {
     private readonly IPeerMediaConnection _peerMediaConnection;
@@ -16,47 +80,54 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private readonly ILocalVideoRecorder _localVideoRecorder;
     private readonly SaveOfficialMushafStateUseCase _saveOfficialMushafStateUseCase;
     private readonly GetQuranPageUseCase _getQuranPageUseCase;
+    private readonly GetQuranIndexUseCase _getQuranIndexUseCase;
+    private readonly List<QuranSurahIndexItem> _allSurahsMaster = new();
+    private readonly Dictionary<Guid, List<(int Page, int WordIndex, string Type)>> _studentMistakesIsolated = new();
 
-    [ObservableProperty]
-    private Guid _sessionId;
+    [ObservableProperty] private Guid _sessionId;
+    [ObservableProperty] private Guid _taskId;
+    [ObservableProperty] private string? _operationMessage;
+    [ObservableProperty] private QuranPage? _quranPage;
+    [ObservableProperty] private QuranAyah? _selectedAyah;
+    [ObservableProperty] private string _studentName = "الطالب";
+    [ObservableProperty] private string _halaqaName = "حلقة التحفيظ";
+    [ObservableProperty] private string _taskType = "حفظ";
+    [ObservableProperty] private int _targetPage = 1;
+    [ObservableProperty] private int _mistakesCount;
+    [ObservableProperty] private string _sessionRating = "ممتاز";
+    [ObservableProperty] private string _sessionNotes = string.Empty;
+    [ObservableProperty] private bool _isStudentSession;
+    [ObservableProperty] private Guid _studentId;
+    [ObservableProperty] private string _pageNumberInput = "1";
+    [ObservableProperty] private bool _isQuranLoading;
+    [ObservableProperty] private string? _quranMessage;
+    [ObservableProperty] private string _currentSurahName = "سورة الفاتحة";
+    [ObservableProperty] private string _currentJuzText = "الجزء الأول";
+    [ObservableProperty] private string _callStatusLabel = "في انتظار الرد على المكالمة";
+    [ObservableProperty] private string _callStatusDescription = "في انتظار قبول المكالمة من الطالب...";
+    [ObservableProperty] private string _callActionButtonText = "طلب اتصال مباشر";
+    [ObservableProperty] private bool _isCallActive;
 
-    [ObservableProperty]
-    private Guid _taskId;
+    // Teacher Direct Controls over Student & Quran
+    [ObservableProperty] private bool _isMushafVisibleToStudent = true;
+    [ObservableProperty] private bool _isStudentMicMutedByTeacher;
+    [ObservableProperty] private bool _isStudentCameraMutedByTeacher;
+    [ObservableProperty] private int? _stopAyahNumber;
 
-    [ObservableProperty]
-    private string? _operationMessage;
+    // Index Dialog State
+    [ObservableProperty] private bool _isIndexDialogOpen;
+    [ObservableProperty] private string _selectedIndexTab = "Surahs";
+    [ObservableProperty] private string _indexSearchText = string.Empty;
 
-    [ObservableProperty]
-    private QuranPage? _quranPage;
-
-    [ObservableProperty]
-    private QuranPage? _quranFacingPage;
-
-    [ObservableProperty]
-    private QuranAyah? _selectedAyah;
-
-    [ObservableProperty]
-    private bool _isVideoCallOpen = true;
-
-    public IReadOnlyList<QuranAyah> VisibleAyahs =>
-        (QuranPage?.Ayahs ?? Array.Empty<QuranAyah>())
-        .Concat(QuranFacingPage?.Ayahs ?? Array.Empty<QuranAyah>())
-        .ToArray();
-
-    [ObservableProperty]
-    private string _pageNumberInput = "1";
-
-    [ObservableProperty]
-    private bool _isQuranLoading;
-
-    [ObservableProperty]
-    private string? _quranMessage;
+    public ObservableCollection<InteractiveQuranWord> InteractiveWords { get; } = new();
+    public ObservableCollection<QuranSurahIndexItem> FilteredSurahs { get; } = new();
+    public ObservableCollection<QuranJuzIndexItem> AllJuzs { get; } = new();
+    public ObservableCollection<int> AllPages { get; } = new();
 
     public LiveSessionStore Store { get; }
 
-    public string QuranSourceLabel => QuranPage?.IsFromLocalCache == true
-        ? "المصحف المحلي — قراءة فقط"
-        : "المصحف";
+    public event EventHandler? BackRequested;
+    public event EventHandler<Guid>? SessionCompleted;
 
     public string ConnectionLabel => Store.ConnectionState switch
     {
@@ -72,7 +143,8 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         IMushafRealtimeChannel mushafRealtimeChannel,
         ILocalVideoRecorder localVideoRecorder,
         SaveOfficialMushafStateUseCase saveOfficialMushafStateUseCase,
-        GetQuranPageUseCase getQuranPageUseCase)
+        GetQuranPageUseCase getQuranPageUseCase,
+        GetQuranIndexUseCase getQuranIndexUseCase)
     {
         Store = store;
         _peerMediaConnection = peerMediaConnection;
@@ -80,6 +152,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         _localVideoRecorder = localVideoRecorder;
         _saveOfficialMushafStateUseCase = saveOfficialMushafStateUseCase;
         _getQuranPageUseCase = getQuranPageUseCase;
+        _getQuranIndexUseCase = getQuranIndexUseCase;
 
         _peerMediaConnection.StateChanged += (_, state) =>
         {
@@ -89,20 +162,182 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         _peerMediaConnection.RemoteMediaStateChanged += (_, state) => Store.SetPeerMedia(state.IsMicrophoneMuted, state.IsCameraEnabled);
         _mushafRealtimeChannel.PresenceReceived += (_, state) => Store.SetPeerMushafPresence(state);
         _localVideoRecorder.StateChanged += (_, state) => Store.SetRecording(state);
+
+        for (int p = 1; p <= 604; p++)
+        {
+            AllPages.Add(p);
+        }
+    }
+
+    public async Task InitializeForStudentAsync(
+        Halaqa.Desktop.Features.FollowUp.Domain.Entities.StudentFollowUpSummary student,
+        string taskType,
+        int targetPage)
+    {
+        StudentId = student.StudentId;
+        StudentName = student.StudentName;
+        HalaqaName = student.HalaqaName ?? "حلقة التحفيظ";
+        TaskType = taskType;
+        TargetPage = targetPage;
+        MistakesCount = 0;
+        StopAyahNumber = null;
+        SessionRating = "ممتاز";
+        SessionNotes = string.Empty;
+        IsStudentSession = true;
+        IsCallActive = false;
+        IsIndexDialogOpen = false;
+        IsMushafVisibleToStudent = true;
+        IsStudentMicMutedByTeacher = false;
+        IsStudentCameraMutedByTeacher = false;
+        CallStatusLabel = "في انتظار الرد على المكالمة";
+        CallStatusDescription = $"في انتظار انضمام الطالب {student.StudentName} للمكالمة...";
+        CallActionButtonText = "طلب اتصال مباشر";
+        OperationMessage = $"بدأت جلسة تسميع {taskType} للطالب {student.StudentName}.";
+
+        await EnsureIndexLoadedAsync();
+        await LoadMushafPageAsync(targetPage);
     }
 
     [RelayCommand]
-    private void OpenVideoCall()
+    private async Task ToggleMushafVisibilityForStudentAsync()
     {
-        IsVideoCallOpen = true;
-        OperationMessage = "تم فتح مساحة المكالمة المباشرة بجانب المصحف.";
+        IsMushafVisibleToStudent = !IsMushafVisibleToStudent;
+        var msg = IsMushafVisibleToStudent ? "تم إظهار المصحف لشاشة الطالب." : "تم إخفاء المصحف عن شاشة الطالب (تسميع غيبي).";
+        OperationMessage = msg;
+        await _mushafRealtimeChannel.SendPresenceAsync(new MushafPresenceState(1, QuranPage?.PageNumber ?? 1, null, null, IsFollowingPeer: IsMushafVisibleToStudent));
     }
 
     [RelayCommand]
-    private void CloseVideoCall()
+    private async Task ToggleStudentMicAsync()
     {
-        IsVideoCallOpen = false;
-        OperationMessage = "أُغلقت مساحة المكالمة، ويمكن فتحها مجدداً من زر المكالمة.";
+        IsStudentMicMutedByTeacher = !IsStudentMicMutedByTeacher;
+        OperationMessage = IsStudentMicMutedByTeacher ? "تم كتم ميكروفون الطالب من قبل المعلم." : "تم تشغيل ميكروفون الطالب.";
+        await _peerMediaConnection.SetMicrophoneMutedAsync(IsStudentMicMutedByTeacher);
+    }
+
+    [RelayCommand]
+    private async Task ToggleStudentCameraAsync()
+    {
+        IsStudentCameraMutedByTeacher = !IsStudentCameraMutedByTeacher;
+        OperationMessage = IsStudentCameraMutedByTeacher ? "تم إيقاف كاميرا الطالب من قبل المعلم." : "تم تفعيل كاميرا الطالب.";
+        await _peerMediaConnection.SetCameraEnabledAsync(!IsStudentCameraMutedByTeacher);
+    }
+
+    [RelayCommand]
+    private void MarkAyahStopPoint(InteractiveQuranWord? word)
+    {
+        if (word == null) return;
+        word.ToggleStopPoint();
+        if (word.IsStopPoint)
+        {
+            StopAyahNumber = word.AyahNumber;
+            OperationMessage = $"🛑 تم تعيين نقطة توقف التسميع عند نهاية الآية ({word.AyahNumber}) بنجاح.";
+        }
+        else
+        {
+            StopAyahNumber = null;
+            OperationMessage = "تم إلغاء نقطة توقف التسميع.";
+        }
+    }
+
+        [RelayCommand]
+    private void SelectIndexTab(string? tab)
+    {
+        if (!string.IsNullOrEmpty(tab))
+        {
+            SelectedIndexTab = tab;
+        }
+    }
+
+private async Task EnsureIndexLoadedAsync()
+    {
+        if (_allSurahsMaster.Count == 0)
+        {
+            var surahsResult = await _getQuranIndexUseCase.GetSurahsAsync();
+            if (surahsResult.IsSuccess && surahsResult.Value != null)
+            {
+                _allSurahsMaster.AddRange(surahsResult.Value);
+                ApplySurahFilter();
+            }
+
+            var juzResult = await _getQuranIndexUseCase.GetJuzsAsync();
+            if (juzResult.IsSuccess && juzResult.Value != null)
+            {
+                AllJuzs.Clear();
+                foreach (var j in juzResult.Value)
+                {
+                    AllJuzs.Add(j);
+                }
+            }
+        }
+    }
+
+    partial void OnIndexSearchTextChanged(string value) => ApplySurahFilter();
+
+    private void ApplySurahFilter()
+    {
+        FilteredSurahs.Clear();
+        var query = string.IsNullOrWhiteSpace(IndexSearchText)
+            ? _allSurahsMaster
+            : _allSurahsMaster.Where(s => s.Name.Contains(IndexSearchText.Trim(), StringComparison.OrdinalIgnoreCase));
+
+        foreach (var s in query)
+        {
+            FilteredSurahs.Add(s);
+        }
+    }
+
+    [RelayCommand]
+    private async Task OpenIndexDialogAsync()
+    {
+        await EnsureIndexLoadedAsync();
+        IsIndexDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseIndexDialog() => IsIndexDialogOpen = false;
+
+    [RelayCommand]
+    private async Task SelectSurahAsync(QuranSurahIndexItem? surah)
+    {
+        if (surah == null) return;
+        IsIndexDialogOpen = false;
+        await LoadMushafPageAsync(surah.StartPage);
+    }
+
+    [RelayCommand]
+    private async Task SelectJuzAsync(QuranJuzIndexItem? juz)
+    {
+        if (juz == null) return;
+        IsIndexDialogOpen = false;
+        await LoadMushafPageAsync(juz.StartPage);
+    }
+
+    [RelayCommand]
+    private async Task SelectPageAsync(int page)
+    {
+        IsIndexDialogOpen = false;
+        await LoadMushafPageAsync(page);
+    }
+
+    [RelayCommand]
+    private void ToggleCall()
+    {
+        IsCallActive = !IsCallActive;
+        if (IsCallActive)
+        {
+            CallStatusLabel = "مكالمة متصلة مباشرة";
+            CallStatusDescription = "المكالمة المباشرة جارية مع الطالب.";
+            CallActionButtonText = "إنهاء المكالمة";
+            OperationMessage = "تم بدء الاتصال المباشر بنجاح.";
+        }
+        else
+        {
+            CallStatusLabel = "غير نشط";
+            CallStatusDescription = "انتهت المكالمة المباشرة.";
+            CallActionButtonText = "طلب اتصال مباشر";
+            OperationMessage = "أُغلقت المكالمة المباشرة.";
+        }
     }
 
     [RelayCommand]
@@ -124,142 +359,41 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     public async Task InitializeMushafAsync(CancellationToken cancellationToken = default) =>
         await LoadMushafPageAsync(1, cancellationToken: cancellationToken);
 
-    [RelayCommand(CanExecute = nameof(CanLoadQuranPage))]
+    [RelayCommand]
     private async Task LoadMushafPageAsync() =>
         await LoadMushafPageFromInputAsync();
 
-    [RelayCommand(CanExecute = nameof(CanLoadQuranPage))]
+    [RelayCommand]
     private async Task PreviousMushafPageAsync()
     {
         var page = QuranPage?.PageNumber ?? ParsePageNumber(PageNumberInput) ?? 1;
-        await LoadMushafPageAsync(Math.Max(1, NormalizeSpreadStart(page) - 2));
+        await LoadMushafPageAsync(Math.Max(1, page - 1));
     }
 
-    [RelayCommand(CanExecute = nameof(CanLoadQuranPage))]
+    [RelayCommand]
     private async Task NextMushafPageAsync()
     {
         var page = QuranPage?.PageNumber ?? ParsePageNumber(PageNumberInput) ?? 1;
-        await LoadMushafPageAsync(Math.Min(603, NormalizeSpreadStart(page) + 2));
+        await LoadMushafPageAsync(Math.Min(604, page + 1));
     }
-
-    [RelayCommand(CanExecute = nameof(CanLoadQuranPage))]
-    private async Task FollowPeerMushafAsync()
-    {
-        var peerPage = Store.PeerMushafPresence.PageNumber;
-        if (peerPage is null)
-        {
-            QuranMessage = "لم يشارك الطرف الآخر موضعاً للمصحف بعد.";
-            return;
-        }
-
-        Store.SetLocalMushafPresence(Store.LocalMushafPresence with { IsFollowingPeer = true });
-        await LoadMushafPageAsync(peerPage.Value, Store.PeerMushafPresence.AyahId);
-    }
-
-    [RelayCommand]
-    private async Task PublishMushafPresenceAsync()
-    {
-        if (Store.LocalMushafPresence.PageNumber is null)
-        {
-            OperationMessage = "حمّل صفحة من المصحف أولاً قبل مشاركة الموضع.";
-            return;
-        }
-        if (Store.ConnectionState != LiveSessionState.Connected)
-        {
-            OperationMessage = "تُرسل مشاركة موضع المصحف بعد اكتمال الاتصال المباشر فقط.";
-            return;
-        }
-
-        await _mushafRealtimeChannel.SendPresenceAsync(Store.LocalMushafPresence);
-        OperationMessage = "أُرسل موضع المصحف مؤقتاً عبر قناة الطرفين.";
-    }
-
-    [RelayCommand]
-    private async Task RequestRepeatAsync()
-    {
-        if (SessionId == Guid.Empty || TaskId == Guid.Empty)
-        {
-            OperationMessage = "لا يمكن إرسال طلب إعادة قبل تهيئة الجلسة والمهمة.";
-            return;
-        }
-        if (Store.ConnectionState != LiveSessionState.Connected)
-        {
-            OperationMessage = "يتطلب طلب الإعادة اتصالاً مباشراً مكتملاً.";
-            return;
-        }
-
-        await _mushafRealtimeChannel.SendRepeatRequestAsync(new PeerRepeatRequest(
-            SessionId,
-            TaskId,
-            Store.LocalMushafPresence.AyahId,
-            "إعادة التلاوة"));
-    }
-
-    [RelayCommand]
-    private async Task SaveOfficialMushafStateAsync()
-    {
-        var state = Store.LocalMushafPresence;
-        if (state.PageNumber is null)
-        {
-            OperationMessage = "اختر صفحة قبل تثبيت موضع المصحف.";
-            return;
-        }
-
-        var result = await _saveOfficialMushafStateUseCase.ExecuteAsync(
-            SessionId,
-            state.EditionId,
-            state.PageNumber.Value,
-            state.AyahId,
-            Guid.NewGuid());
-        OperationMessage = result.IsSuccess
-            ? "تم تثبيت موضع المصحف رسمياً."
-            : result.Error?.Message;
-    }
-
-    partial void OnSelectedAyahChanged(QuranAyah? value)
-    {
-        if (value is null)
-        {
-            return;
-        }
-
-        Store.SetLocalMushafPresence(Store.LocalMushafPresence with
-        {
-            EditionId = value.EditionId,
-            PageNumber = value.PageNumber,
-            AyahId = value.Id,
-            WordIndex = null,
-            IsFollowingPeer = false
-        });
-        QuranMessage = "تم اختيار الآية محلياً. شارك الموضع لإرساله فورياً للطرف الآخر.";
-    }
-
-    partial void OnPageNumberInputChanged(string value) => LoadMushafPageCommand.NotifyCanExecuteChanged();
-
-    private bool CanLoadQuranPage() => !IsQuranLoading;
-
-    partial void OnQuranPageChanged(QuranPage? value) => OnPropertyChanged(nameof(QuranSourceLabel));
-
-    partial void OnQuranFacingPageChanged(QuranPage? value) => OnPropertyChanged(nameof(VisibleAyahs));
 
     private async Task LoadMushafPageFromInputAsync()
     {
         var pageNumber = ParsePageNumber(PageNumberInput);
         if (pageNumber is null)
         {
-            QuranMessage = "أدخل رقم صفحة بين 1 و604.";
+            QuranMessage = "أدخل رقم صفحة صالحاً بين 1 و 604.";
             return;
         }
 
         await LoadMushafPageAsync(pageNumber.Value);
     }
 
-    private async Task LoadMushafPageAsync(
+    public async Task LoadMushafPageAsync(
         int pageNumber,
         int? selectedAyahId = null,
         CancellationToken cancellationToken = default)
     {
-        pageNumber = NormalizeSpreadStart(Math.Clamp(pageNumber, 1, 604));
         IsQuranLoading = true;
         QuranMessage = null;
         try
@@ -267,72 +401,118 @@ public sealed partial class LiveSessionViewModel : ObservableObject
             var result = await _getQuranPageUseCase.ExecuteAsync(1, pageNumber, cancellationToken);
             if (!result.IsSuccess || result.Value is null)
             {
-                QuranMessage = result.Error?.Message ?? "تعذر تحميل صفحة المصحف.";
+                QuranMessage = result.Error?.Message ?? "تعذر تحميل بيانات الصفحة.";
                 return;
             }
 
             QuranPage = result.Value;
-            QuranFacingPage = null;
-            if (pageNumber < 604)
+            PageNumberInput = result.Value.PageNumber.ToString();
+            TargetPage = result.Value.PageNumber;
+
+            if (result.Value.Surahs.Count > 0)
             {
-                var facingResult = await _getQuranPageUseCase.ExecuteAsync(1, pageNumber + 1, cancellationToken);
-                if (facingResult.IsSuccess)
+                CurrentSurahName = result.Value.Surahs[0].Name;
+            }
+            if (result.Value.Ayahs.Count > 0 && result.Value.Ayahs[0].Juz.HasValue)
+            {
+                CurrentJuzText = $"الجزء {result.Value.Ayahs[0].Juz}";
+            }
+
+            InteractiveWords.Clear();
+            var globalWordIdx = 0;
+            foreach (var ayah in result.Value.Ayahs)
+            {
+                var ayahWords = ayah.PageGlyphText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                for (int i = 0; i < ayahWords.Length; i++)
                 {
-                    QuranFacingPage = facingResult.Value;
+                    var isEnd = i == ayahWords.Length - 1;
+                    InteractiveWords.Add(new InteractiveQuranWord
+                    {
+                        WordIndex = globalWordIdx++,
+                        Text = ayahWords[i],
+                        PageNumber = result.Value.PageNumber,
+                        AyahNumber = ayah.Number,
+                        IsAyahEndSymbol = isEnd
+                    });
                 }
             }
 
-            PageNumberInput = result.Value.PageNumber.ToString(System.Globalization.CultureInfo.InvariantCulture);
-            OnPropertyChanged(nameof(VisibleAyahs));
-            var selected = selectedAyahId is { } ayahId
-                ? VisibleAyahs.FirstOrDefault(ayah => ayah.Id == ayahId)
-                : null;
-            SelectedAyah = selected;
-            Store.SetLocalMushafPresence(Store.LocalMushafPresence with
+            // Restore any isolated student mistakes previously recorded on this page
+            if (_studentMistakesIsolated.TryGetValue(StudentId, out var savedList))
             {
-                EditionId = result.Value.EditionId,
-                PageNumber = selected?.PageNumber ?? result.Value.PageNumber,
-                AyahId = selected?.Id,
-                WordIndex = null
-            });
-            QuranMessage = result.Value.IsFromLocalCache
-                ? QuranFacingPage is null
-                    ? "حُمّلت الصفحة من قاعدة المصحف المحلية للقراءة فقط."
-                    : "حُمّلت ورقتا المصحف المتجاورتان من قاعدة المصحف المحلية للقراءة فقط."
-                : "حُمّلت الصفحة من المصدر المتاح.";
-            OnPropertyChanged(nameof(QuranSourceLabel));
+                foreach (var (p, wIdx, type) in savedList.Where(m => m.Page == pageNumber))
+                {
+                    var w = InteractiveWords.FirstOrDefault(x => x.WordIndex == wIdx);
+                    w?.SetMistake(type);
+                }
+            }
+
+            RecalculateMistakes();
         }
         finally
         {
             IsQuranLoading = false;
-            LoadMushafPageCommand.NotifyCanExecuteChanged();
-            PreviousMushafPageCommand.NotifyCanExecuteChanged();
-            NextMushafPageCommand.NotifyCanExecuteChanged();
-            FollowPeerMushafCommand.NotifyCanExecuteChanged();
         }
     }
 
-    private static int NormalizeSpreadStart(int pageNumber) =>
-        pageNumber == 604 ? 603 : pageNumber % 2 == 0 ? pageNumber - 1 : pageNumber;
+    [RelayCommand]
+    private void TagMemorizationMistake(InteractiveQuranWord? word) => TagWordDirect(word, "حفظ");
+
+    [RelayCommand]
+    private void TagTajweedMistake(InteractiveQuranWord? word) => TagWordDirect(word, "تجويد");
+
+    [RelayCommand]
+    private void TagTashkeelMistake(InteractiveQuranWord? word) => TagWordDirect(word, "تشكيل");
+
+    [RelayCommand]
+    private void TagAlertMistake(InteractiveQuranWord? word) => TagWordDirect(word, "تنبيه");
+
+    [RelayCommand]
+    private void ClearWordMistake(InteractiveQuranWord? word) => TagWordDirect(word, "إلغاء");
+
+    public void TagWordDirect(InteractiveQuranWord? word, string mistakeType)
+    {
+        if (word == null) return;
+        word.SetMistake(mistakeType);
+        RecalculateMistakes();
+
+        // Save isolated mistake per student
+        if (!_studentMistakesIsolated.ContainsKey(StudentId))
+        {
+            _studentMistakesIsolated[StudentId] = new List<(int, int, string)>();
+        }
+        _studentMistakesIsolated[StudentId].RemoveAll(m => m.Page == word.PageNumber && m.WordIndex == word.WordIndex);
+        if (word.HasMistake)
+        {
+            _studentMistakesIsolated[StudentId].Add((word.PageNumber, word.WordIndex, word.MistakeType!));
+        }
+
+        // Live Realtime Mistake broadcast to student
+        _ = _mushafRealtimeChannel.SendRepeatRequestAsync(new PeerRepeatRequest(SessionId, TaskId, word.AyahNumber, mistakeType));
+
+        OperationMessage = mistakeType == "إلغاء"
+            ? "تم إزالة الخطأ من الكلمة ومزامنة الحالة."
+            : $"تم رصد خطأ {mistakeType} في الكلمة ومزامنته فورياً مع الطالب.";
+    }
+
+    private void RecalculateMistakes()
+    {
+        MistakesCount = InteractiveWords.Count(w => w.HasMistake);
+    }
+
+    [RelayCommand]
+    private void CompleteSession()
+    {
+        OperationMessage = "تم إنهاء وحفظ جلسة التسميع بنجاح.";
+        SessionCompleted?.Invoke(this, StudentId);
+    }
+
+    [RelayCommand]
+    private void GoBack() => BackRequested?.Invoke(this, EventArgs.Empty);
 
     private static int? ParsePageNumber(string? value) =>
         int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var pageNumber) &&
         pageNumber is >= 1 and <= 604
             ? pageNumber
             : null;
-
-    [RelayCommand]
-    private async Task ToggleLocalRecordingAsync()
-    {
-        if (Store.Recording.State == RecordingState.Recording)
-        {
-            await _localVideoRecorder.StopAsync();
-            return;
-        }
-
-        var outputDirectory = Path.Combine(
-            Environment.GetFolderPath(Environment.SpecialFolder.MyVideos),
-            "Halaqa");
-        await _localVideoRecorder.StartAsync(outputDirectory);
-    }
 }

@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Evaluations.Domain.Entities;
+﻿using Halaqa.Desktop.Features.Evaluations.Domain.Entities;
 using Halaqa.Desktop.Features.Evaluations.Domain.Repositories;
 using Halaqa.Desktop.Shared.Domain.Common;
 

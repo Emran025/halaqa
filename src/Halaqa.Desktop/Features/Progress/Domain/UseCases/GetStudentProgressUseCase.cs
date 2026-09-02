@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Progress.Domain.Entities;
+﻿using Halaqa.Desktop.Features.Progress.Domain.Entities;
 using Halaqa.Desktop.Features.Progress.Domain.Repositories;
 using Halaqa.Desktop.Shared.Domain.Common;
 

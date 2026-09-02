@@ -32,3 +32,16 @@ public sealed record QuranPage(
         ? string.Concat(Ayahs.Select(ayah => ayah.PageGlyphText))
         : string.Join(" ", Ayahs.Select(ayah => $"{ayah.Text} ﴿{ayah.Number}﴾"));
 }
+
+public sealed record QuranSurahIndexItem(
+    int Number,
+    string Name,
+    int AyahCount,
+    int StartPage,
+    string? RevelationPlace);
+
+public sealed record QuranJuzIndexItem(
+    int Number,
+    string Name,
+    int StartPage,
+    int EndPage);

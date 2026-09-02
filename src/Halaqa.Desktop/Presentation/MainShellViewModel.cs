@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
@@ -40,10 +40,12 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly StudentTeacherDirectoryViewModel _studentTeacherDirectoryViewModel;
     private readonly StudentRegistrationRequestsViewModel _studentRegistrationRequestsViewModel;
     private readonly FollowUpViewModel _followUpViewModel;
+    private readonly ComprehensiveTrackingViewModel _comprehensiveTrackingViewModel;
     private readonly QuranReaderViewModel _quranReaderViewModel;
     private readonly NotificationsViewModel _notificationsViewModel;
     private readonly SessionsViewModel _sessionsViewModel;
     private readonly SessionTasksViewModel _sessionTasksViewModel;
+    private readonly LiveSessionViewModel _liveSessionViewModel;
     private readonly MistakeReportViewModel _mistakeReportViewModel;
     private readonly TaskEvaluationViewModel _taskEvaluationViewModel;
     private readonly TaskNotesViewModel _taskNotesViewModel;
@@ -57,6 +59,18 @@ public sealed partial class MainShellViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isAuthenticated;
+
+    public bool CanGoToLogin => !IsAuthenticated && CurrentPage != null && CurrentPage != _loginViewModel;
+
+    partial void OnCurrentPageChanged(object? value)
+    {
+        OnPropertyChanged(nameof(CanGoToLogin));
+    }
+
+    partial void OnIsAuthenticatedChanged(bool value)
+    {
+        OnPropertyChanged(nameof(CanGoToLogin));
+    }
 
     public MainShellViewModel(
         LoginViewModel loginViewModel,
@@ -76,10 +90,12 @@ public sealed partial class MainShellViewModel : ObservableObject
         StudentTeacherDirectoryViewModel studentTeacherDirectoryViewModel,
         StudentRegistrationRequestsViewModel studentRegistrationRequestsViewModel,
         FollowUpViewModel followUpViewModel,
+        ComprehensiveTrackingViewModel comprehensiveTrackingViewModel,
         QuranReaderViewModel quranReaderViewModel,
         NotificationsViewModel notificationsViewModel,
         SessionsViewModel sessionsViewModel,
         SessionTasksViewModel sessionTasksViewModel,
+        LiveSessionViewModel liveSessionViewModel,
         MistakeReportViewModel mistakeReportViewModel,
         TaskEvaluationViewModel taskEvaluationViewModel,
         TaskNotesViewModel taskNotesViewModel,
@@ -104,16 +120,31 @@ public sealed partial class MainShellViewModel : ObservableObject
         _studentTeacherDirectoryViewModel = studentTeacherDirectoryViewModel;
         _studentRegistrationRequestsViewModel = studentRegistrationRequestsViewModel;
         _followUpViewModel = followUpViewModel;
+        _comprehensiveTrackingViewModel = comprehensiveTrackingViewModel;
         _quranReaderViewModel = quranReaderViewModel;
         _notificationsViewModel = notificationsViewModel;
         _sessionsViewModel = sessionsViewModel;
         _sessionTasksViewModel = sessionTasksViewModel;
+        _liveSessionViewModel = liveSessionViewModel;
         _mistakeReportViewModel = mistakeReportViewModel;
         _taskEvaluationViewModel = taskEvaluationViewModel;
         _taskNotesViewModel = taskNotesViewModel;
         _studentProgressViewModel = studentProgressViewModel;
         _restoreSessionUseCase = restoreSessionUseCase;
         _logoutUseCase = logoutUseCase;
+
+        _comprehensiveTrackingViewModel.BackRequested += (_, _) => ShowDashboard();
+        _comprehensiveTrackingViewModel.RecitationRequested += async (_, args) =>
+        {
+            await _liveSessionViewModel.InitializeForStudentAsync(args.Student, args.TaskType, args.TargetPage);
+            CurrentPage = _liveSessionViewModel;
+        };
+        _liveSessionViewModel.BackRequested += (_, _) => CurrentPage = _comprehensiveTrackingViewModel;
+        _liveSessionViewModel.SessionCompleted += (_, studentId) =>
+        {
+            _comprehensiveTrackingViewModel.MarkStudentCompleted(studentId);
+            CurrentPage = _comprehensiveTrackingViewModel;
+        };
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
         _loginViewModel.StudentRegistrationRequested += (_, _) => CurrentPage = _studentRegistrationViewModel;
@@ -124,9 +155,13 @@ public sealed partial class MainShellViewModel : ObservableObject
             _resetPasswordViewModel.Email = email;
             CurrentPage = _resetPasswordViewModel;
         };
+        _forgotPasswordViewModel.LoginRequested += (_, _) => CurrentPage = _loginViewModel;
+        _resetPasswordViewModel.LoginRequested += (_, _) => CurrentPage = _loginViewModel;
         _changePasswordViewModel.BackRequested += (_, _) => ShowDashboard();
         _studentRegistrationViewModel.Registered += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
+        _studentRegistrationViewModel.LoginRequested += (_, _) => CurrentPage = _loginViewModel;
         _teacherRegistrationViewModel.Registered += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
+        _teacherRegistrationViewModel.LoginRequested += (_, _) => CurrentPage = _loginViewModel;
         _generalProfileViewModel.BackRequested += (_, _) => ShowDashboard();
         _generalProfileViewModel.ProfileUpdated += (_, profile) => UpdateAuthenticatedUser(profile);
         _studentProfileViewModel.BackRequested += (_, _) => ShowDashboard();
@@ -187,6 +222,7 @@ public sealed partial class MainShellViewModel : ObservableObject
 
         IsAuthenticated = true;
         var dashboardViewModel = new DashboardViewModel(_authenticatedUser.User);
+        dashboardViewModel.ComprehensiveTrackingRequested += async (_, _) => await ShowComprehensiveTrackingAsync();
         dashboardViewModel.ProfileRequested += async (_, _) => await ShowProfileAsync();
         dashboardViewModel.StudentProfileRequested += async (_, _) => await ShowStudentProfileAsync();
         dashboardViewModel.TeacherDocumentsRequested += async (_, _) => await ShowTeacherDocumentsAsync();
@@ -203,12 +239,24 @@ public sealed partial class MainShellViewModel : ObservableObject
         CurrentPage = dashboardViewModel;
     }
 
+    private async Task ShowComprehensiveTrackingAsync()
+    {
+        await _comprehensiveTrackingViewModel.InitializeAsync();
+        CurrentPage = _comprehensiveTrackingViewModel;
+    }
+
     [RelayCommand]
     private async Task LogoutAsync()
     {
         await _logoutUseCase.ExecuteAsync();
         _authenticatedUser = null;
         IsAuthenticated = false;
+        CurrentPage = _loginViewModel;
+    }
+
+    [RelayCommand]
+    private void GoToLogin()
+    {
         CurrentPage = _loginViewModel;
     }
 

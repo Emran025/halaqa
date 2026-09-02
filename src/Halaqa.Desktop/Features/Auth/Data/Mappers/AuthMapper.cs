@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Auth.Data.Models;
+﻿using Halaqa.Desktop.Features.Auth.Data.Models;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 
 namespace Halaqa.Desktop.Features.Auth.Data.Mappers;

@@ -1,4 +1,4 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
 
@@ -29,6 +29,11 @@ public sealed partial class ResetPasswordViewModel : ObservableObject
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private string? _message;
     [ObservableProperty] private bool _isError;
+
+    public event EventHandler? LoginRequested;
+
+    [RelayCommand]
+    private void OpenLogin() => LoginRequested?.Invoke(this, EventArgs.Empty);
 
     [RelayCommand(CanExecute = nameof(CanSubmit))]
     private async Task SubmitAsync()

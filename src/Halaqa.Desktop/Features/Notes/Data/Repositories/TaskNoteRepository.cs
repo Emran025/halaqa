@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Notes.Data.DataSources.Remote;
+﻿using Halaqa.Desktop.Features.Notes.Data.DataSources.Remote;
 using Halaqa.Desktop.Features.Notes.Data.Mappers;
 using Halaqa.Desktop.Features.Notes.Domain.Entities;
 using Halaqa.Desktop.Features.Notes.Domain.Repositories;

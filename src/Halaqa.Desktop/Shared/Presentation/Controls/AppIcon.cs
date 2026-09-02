@@ -10,6 +10,22 @@ namespace Halaqa.Desktop.Shared.Presentation.Controls;
 /// </summary>
 public sealed class AppIcon : TextBlock
 {
+    private static readonly FontFamily IconFontFamily = new("Segoe MDL2 Assets, Segoe UI Emoji, Segoe UI Symbol");
+
+    static AppIcon()
+    {
+        FontFamilyProperty.OverrideMetadata(
+            typeof(AppIcon),
+            new FrameworkPropertyMetadata(IconFontFamily, FrameworkPropertyMetadataOptions.AffectsMeasure | FrameworkPropertyMetadataOptions.AffectsRender));
+    }
+
+    public AppIcon()
+    {
+        SetValue(FontFamilyProperty, IconFontFamily);
+        TextAlignment = TextAlignment.Center;
+        VerticalAlignment = VerticalAlignment.Center;
+    }
+
     public static readonly DependencyProperty KindProperty = DependencyProperty.Register(
         nameof(Kind),
         typeof(string),
@@ -26,10 +42,7 @@ public sealed class AppIcon : TextBlock
     {
         var icon = (AppIcon)dependencyObject;
         icon.Text = GetGlyph(args.NewValue as string);
-        icon.FontFamily = new FontFamily("Segoe MDL2 Assets");
-        icon.FontSize = 18;
-        icon.TextAlignment = TextAlignment.Center;
-        icon.VerticalAlignment = VerticalAlignment.Center;
+        icon.SetValue(FontFamilyProperty, IconFontFamily);
     }
 
     private static string GetGlyph(string? kind) => kind switch

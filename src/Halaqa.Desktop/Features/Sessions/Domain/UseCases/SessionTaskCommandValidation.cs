@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Sessions.Domain.Entities;
+﻿using Halaqa.Desktop.Features.Sessions.Domain.Entities;
 using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Sessions.Domain.UseCases;

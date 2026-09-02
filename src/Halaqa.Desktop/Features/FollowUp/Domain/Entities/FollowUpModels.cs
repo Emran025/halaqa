@@ -156,3 +156,22 @@ public sealed record RescheduleFollowUpItemCommand(
     string? Timezone,
     string? Reason,
     Guid ClientOperationId);
+
+public sealed record StudentFollowUpSummary(
+    Guid StudentId,
+    string StudentName,
+    string? StudentCode,
+    Guid? HalaqaId,
+    string? HalaqaName,
+    FollowUpFrequency Frequency,
+    int AttendanceDay,
+    string AttendanceFrom,
+    string AttendanceTo,
+    int CurrentMemorizationPage,
+    int CurrentReviewPage,
+    int CurrentRecitationPage,
+    bool IsScheduledToday,
+    bool HasRecitedToday,
+    DateTimeOffset? LastRecitedAt,
+    string? LastEvaluation,
+    int TotalMistakesRecorded = 0);

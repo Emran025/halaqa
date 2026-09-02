@@ -1,4 +1,4 @@
-<UserControl x:Class="Halaqa.Desktop.Features.Quran.Presentation.Views.QuranReaderView"
+﻿<UserControl x:Class="Halaqa.Desktop.Features.Quran.Presentation.Views.QuranReaderView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
@@ -8,38 +8,82 @@
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <converters:QuranPageFontFamilyConverter x:Key="QuranPageFontFamilyConverter" />
     </UserControl.Resources>
-    <Grid Margin="24,18">
+    
+    <Grid Background="#FFF8F4EC">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Margin="0,0,0,16">
-            <Button Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppBackButton}" ToolTip="العودة">
-                <controls:AppIcon Kind="ArrowRight" />
-            </Button>
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Button Command="{Binding LoadPreviousPageCommand}" ToolTip="الورقة السابقة"><controls:AppIcon Kind="ChevronRight" /></Button>
-                <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="66" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" Margin="6,0" ToolTip="رقم الصفحة" />
-                <Button Content="انتقال" Command="{Binding LoadPageCommand}" />
-                <Button Command="{Binding LoadNextPageCommand}" ToolTip="الورقة التالية" Margin="6,0,0,0"><controls:AppIcon Kind="ChevronLeft" /></Button>
-                <ProgressBar Width="72" Height="4" Margin="10,0,0,0" IsIndeterminate="True" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
-            </StackPanel>
-        </DockPanel>
+        <!-- Top Navigation Bar -->
+        <Border Grid.Row="0" Background="{StaticResource AppSurfaceBrush}" Padding="20,10" BorderBrush="#14000000" BorderThickness="0,0,0,1">
+            <DockPanel LastChildFill="False">
+                <Button Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppBackButton}" ToolTip="العودة للرئيسية">
+                    <controls:AppIcon Kind="ArrowRight" />
+                </Button>
+                
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                    <controls:AppIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="20" Margin="0,0,8,0" />
+                    <TextBlock Text="المصحف الشريف" Style="{StaticResource SectionTitle}" VerticalAlignment="Center" />
+                </StackPanel>
 
-        <Grid Grid.Row="1">
-            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="8" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-            <Border Grid.Column="0" Background="#FFFDFBF5" BorderBrush="#22000000" BorderThickness="1" CornerRadius="4" Padding="18">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <TextBlock Text="{Binding QuranPage.PageGlyphText}" FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="NoWrap" HorizontalAlignment="Center" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
-                </ScrollViewer>
-            </Border>
-            <Border Grid.Column="1" Background="#FFB9A47A" />
-            <Border Grid.Column="2" Background="#FFFDFBF5" BorderBrush="#22000000" BorderThickness="1" CornerRadius="4" Padding="18">
-                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                    <TextBlock Text="{Binding FacingPage.PageGlyphText}" FontFamily="{Binding FacingPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="NoWrap" HorizontalAlignment="Center" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
-                </ScrollViewer>
-            </Border>
+                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <Button Command="{Binding LoadPreviousPageCommand}" Style="{StaticResource AppQuietButton}" Padding="8,6" ToolTip="الصفحة السابقة">
+                        <controls:AppIcon Kind="ChevronRight" FontSize="16" />
+                    </Button>
+                    <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="56" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" Margin="8,0" ToolTip="رقم الصفحة (1 - 604)" />
+                    <Button Content="انتقال" Command="{Binding LoadPageCommand}" Style="{StaticResource AppPrimaryButton}" Padding="12,6" />
+                    <Button Command="{Binding LoadNextPageCommand}" Style="{StaticResource AppQuietButton}" Padding="8,6" ToolTip="الصفحة التالية" Margin="8,0,0,0">
+                        <controls:AppIcon Kind="ChevronLeft" FontSize="16" />
+                    </Button>
+                    <ProgressBar Width="72" Height="4" Margin="12,0,0,0" IsIndeterminate="True" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
+                </StackPanel>
+            </DockPanel>
+        </Border>
+
+        <!-- Centered Full-Height Quran Page with Authentic Boundary Frame -->
+        <Grid Grid.Row="1" Margin="12,8">
+            <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Grid Width="600" Height="853">
+                    <!-- Quran Page Background -->
+                    <Border Background="#FFFDFBF5" CornerRadius="4" Effect="{StaticResource AppSoftShadow}" />
+
+                    <!-- Decorative Boundary Frame from boundery.svg / boundery.png -->
+                    <Image Source="/Assets/Images/boundery.png" Stretch="Fill" Opacity="0.9" />
+
+                    <!-- Quran Page Lines -->
+                    <Grid Margin="52,60,52,60">
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="*" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Header info: Surah Name & Page -->
+                        <DockPanel Grid.Row="0" Margin="0,0,0,8" LastChildFill="False">
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding QuranPage.Surahs[0].NameAr, FallbackValue=سورة الفاتحة}" FontSize="12" FontWeight="SemiBold" Foreground="#FF8C6B2D" />
+                            <TextBlock DockPanel.Dock="Left" Text="{Binding QuranPage.PageNumber, StringFormat=صفحة {0}}" FontSize="12" FontWeight="SemiBold" Foreground="#FF8C6B2D" />
+                        </DockPanel>
+
+                        <!-- Quran 15 Lines Text -->
+                        <TextBlock Grid.Row="1"
+                                   Text="{Binding QuranPage.PageGlyphText}"
+                                   FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}"
+                                   FontSize="20"
+                                   LineHeight="34"
+                                   TextAlignment="Center"
+                                   TextWrapping="NoWrap"
+                                   HorizontalAlignment="Center"
+                                   VerticalAlignment="Center"
+                                   Foreground="#FF1A1A1A"
+                                   TextOptions.TextFormattingMode="Display"
+                                   TextOptions.TextRenderingMode="ClearType" />
+
+                        <!-- Bottom Page Number -->
+                        <TextBlock Grid.Row="2" Text="{Binding QuranPage.PageNumber}" FontSize="12" FontWeight="Bold" Foreground="#FF8C6B2D" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                    </Grid>
+                </Grid>
+            </Viewbox>
         </Grid>
     </Grid>
 </UserControl>

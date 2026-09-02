@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Memberships.Data.Models;
+﻿using Halaqa.Desktop.Features.Memberships.Data.Models;
 using Halaqa.Desktop.Features.Memberships.Domain.Entities;
 using Halaqa.Desktop.Shared.Domain.Common;
 

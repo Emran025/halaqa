@@ -9,4 +9,7 @@ public interface IQuranRepository
         int editionId,
         int pageNumber,
         CancellationToken cancellationToken = default);
+
+    Task<Result<IReadOnlyList<QuranSurahIndexItem>>> GetSurahsIndexAsync(CancellationToken cancellationToken = default);
+    Task<Result<IReadOnlyList<QuranJuzIndexItem>>> GetJuzIndexAsync(CancellationToken cancellationToken = default);
 }

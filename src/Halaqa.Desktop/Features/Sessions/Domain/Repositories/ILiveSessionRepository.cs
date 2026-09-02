@@ -27,7 +27,7 @@ public sealed record ChannelAuthorization(
     Guid RecipientId,
     DateTimeOffset? ExpiresAt);
 
-public interface IPeerMediaConnection : IAsyncDisposable
+public interface IPeerMediaConnection : IDisposable, IAsyncDisposable
 {
     event EventHandler<PeerConnectionStateChangedEventArgs>? StateChanged;
     event EventHandler<PeerMediaStateChangedEventArgs>? RemoteMediaStateChanged;
@@ -50,7 +50,7 @@ public sealed record HostIceCandidate(
 public sealed record PeerConnectionStateChangedEventArgs(LiveSessionState State, string? Reason = null);
 public sealed record PeerMediaStateChangedEventArgs(bool IsMicrophoneMuted, bool IsCameraEnabled);
 
-public interface IMushafRealtimeChannel : IAsyncDisposable
+public interface IMushafRealtimeChannel : IDisposable, IAsyncDisposable
 {
     event EventHandler<MushafPresenceState>? PresenceReceived;
     event EventHandler<PeerRepeatRequest>? RepeatRequested;
@@ -65,7 +65,7 @@ public sealed record PeerRepeatRequest(
     int? AyahId,
     string? Reason);
 
-public interface ILocalVideoRecorder : IAsyncDisposable
+public interface ILocalVideoRecorder : IDisposable, IAsyncDisposable
 {
     event EventHandler<LocalRecordingState>? StateChanged;
 

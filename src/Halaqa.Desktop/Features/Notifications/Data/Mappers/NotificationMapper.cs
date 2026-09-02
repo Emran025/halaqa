@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Notifications.Data.Models;
+﻿using Halaqa.Desktop.Features.Notifications.Data.Models;
 using Halaqa.Desktop.Features.Notifications.Domain.Entities;
 using Halaqa.Desktop.Shared.Domain.Common;
 

@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Shared.Domain.Common;
+﻿using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.Sessions.Data.DataSources.Recording;
 

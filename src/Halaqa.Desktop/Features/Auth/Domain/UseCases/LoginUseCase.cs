@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Auth.Domain.Entities;
+﻿using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.Repositories;
 using Halaqa.Desktop.Shared.Domain.Common;
 

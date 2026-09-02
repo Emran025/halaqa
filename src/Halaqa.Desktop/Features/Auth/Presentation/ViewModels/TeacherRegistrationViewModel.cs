@@ -1,28 +1,26 @@
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
+using Halaqa.Desktop.Shared.Data.Models;
 using Halaqa.Desktop.Shared.Domain.Common;
 using Halaqa.Desktop.Shared.Presentation.Models;
+using Halaqa.Desktop.Shared.Services;
 
 namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 
 public sealed partial class TeacherRegistrationViewModel : ObservableObject
 {
-
     private readonly RegisterTeacherUseCase registerTeacherUseCase;
-
+    private readonly ICountryService _countryService;
 
     public TeacherRegistrationViewModel(
-
-        RegisterTeacherUseCase registerTeacherUseCase
-
-    )
-
+        RegisterTeacherUseCase registerTeacherUseCase,
+        ICountryService countryService)
     {
-
         this.registerTeacherUseCase = registerTeacherUseCase;
-
+        _countryService = countryService;
+        Countries = _countryService.GetAllCountries();
     }
 
     private readonly Guid _clientOperationId = Guid.NewGuid();
@@ -34,6 +32,8 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
     [ObservableProperty] private string _passwordConfirmation = string.Empty;
     [ObservableProperty] private Gender _gender = Gender.Male;
     [ObservableProperty] private DateTime _birthDate = DateTime.Today.AddYears(-21);
+    [ObservableProperty] private CountryItem? _selectedCountry;
+    [ObservableProperty] private CountryItem? _selectedPhoneZoneCountry;
     [ObservableProperty] private string _country = string.Empty;
     [ObservableProperty] private string _city = string.Empty;
     [ObservableProperty] private string _phone = string.Empty;
@@ -48,12 +48,35 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
     [ObservableProperty] private bool _isError;
 
     public event EventHandler<AuthenticatedUser>? Registered;
+    public event EventHandler? LoginRequested;
+
+    public IReadOnlyList<CountryItem> Countries { get; }
 
     public IReadOnlyList<LocalizedOption<Gender>> Genders { get; } = new[]
     {
         new LocalizedOption<Gender>(Gender.Male, "ذكر"),
         new LocalizedOption<Gender>(Gender.Female, "أنثى")
     };
+
+    partial void OnSelectedCountryChanged(CountryItem? value)
+    {
+        if (value != null)
+        {
+            Country = value.NameAr;
+            if (string.IsNullOrWhiteSpace(PhoneZone) && SelectedPhoneZoneCountry == null)
+            {
+                SelectedPhoneZoneCountry = value;
+            }
+        }
+    }
+
+    partial void OnSelectedPhoneZoneCountryChanged(CountryItem? value)
+    {
+        if (value != null && !string.IsNullOrWhiteSpace(value.PhoneCode))
+        {
+            PhoneZone = value.PhoneCode;
+        }
+    }
     public bool IsFirstStep => Step == 1;
     public bool IsSecondStep => Step == 2;
 
@@ -99,6 +122,9 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
             SubmitCommand.NotifyCanExecuteChanged();
         }
     }
+
+    [RelayCommand]
+    private void OpenLogin() => LoginRequested?.Invoke(this, EventArgs.Empty);
 
     private bool CanGoPrevious() => Step > 1 && !IsBusy;
     private bool CanGoNext() => Step < 2 && !IsBusy;

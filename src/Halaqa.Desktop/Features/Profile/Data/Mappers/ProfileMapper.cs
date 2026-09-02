@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Features.Auth.Domain.Entities;
+﻿using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Profile.Data.Models;
 using Halaqa.Desktop.Features.Profile.Domain.Entities;
 using Halaqa.Desktop.Shared.Domain.Common;

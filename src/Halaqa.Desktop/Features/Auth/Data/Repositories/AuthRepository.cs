@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Config.Persistence;
+﻿using Halaqa.Desktop.Config.Persistence;
 using Halaqa.Desktop.Features.Auth.Data.DataSources.Remote;
 using Halaqa.Desktop.Features.Auth.Data.Mappers;
 using Halaqa.Desktop.Features.Auth.Data.Models;

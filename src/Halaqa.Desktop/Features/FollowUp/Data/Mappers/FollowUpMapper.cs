@@ -1,4 +1,4 @@
-using System.Globalization;
+﻿using System.Globalization;
 using Halaqa.Desktop.Features.FollowUp.Data.Models;
 using Halaqa.Desktop.Features.FollowUp.Domain.Entities;
 using Halaqa.Desktop.Shared.Domain.Common;

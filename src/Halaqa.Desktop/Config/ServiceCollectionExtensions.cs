@@ -1,4 +1,4 @@
-using Halaqa.Desktop.Config.Connectivity;
+﻿using Halaqa.Desktop.Config.Connectivity;
 using Halaqa.Desktop.Config.Http;
 using Halaqa.Desktop.Config.Persistence;
 using Microsoft.Extensions.DependencyInjection;
@@ -13,6 +13,7 @@ public static class ServiceCollectionExtensions
         services.AddSingleton<IAuthSessionStore, WindowsProtectedAuthSessionStore>();
         services.AddSingleton<ILocalDatabase, SqliteLocalDatabase>();
         services.AddSingleton<IConnectivityService, NetworkConnectivityService>();
+        services.AddSingleton<Halaqa.Desktop.Shared.Services.ICountryService, Halaqa.Desktop.Shared.Services.CountryService>();
         services.AddTransient<BearerTokenHandler>();
         services.AddHttpClient<IApiClient, ApiClient>((provider, client) =>
         {

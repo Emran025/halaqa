@@ -1,4 +1,4 @@
-using System.Text.Json;
+﻿using System.Text.Json;
 using System.Text.Json.Serialization;
 using Halaqa.Desktop.Features.Sessions.Domain.Repositories;
 using Halaqa.Desktop.Shared.Domain.Common;
