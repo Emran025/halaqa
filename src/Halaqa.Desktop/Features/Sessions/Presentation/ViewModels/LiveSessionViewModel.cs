@@ -30,7 +30,18 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private QuranPage? _quranPage;
 
     [ObservableProperty]
+    private QuranPage? _quranFacingPage;
+
+    [ObservableProperty]
     private QuranAyah? _selectedAyah;
+
+    [ObservableProperty]
+    private bool _isVideoCallOpen = true;
+
+    public IReadOnlyList<QuranAyah> VisibleAyahs =>
+        (QuranPage?.Ayahs ?? Array.Empty<QuranAyah>())
+        .Concat(QuranFacingPage?.Ayahs ?? Array.Empty<QuranAyah>())
+        .ToArray();
 
     [ObservableProperty]
     private string _pageNumberInput = "1";
@@ -81,6 +92,20 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void OpenVideoCall()
+    {
+        IsVideoCallOpen = true;
+        OperationMessage = "تم فتح مساحة المكالمة المباشرة بجانب المصحف.";
+    }
+
+    [RelayCommand]
+    private void CloseVideoCall()
+    {
+        IsVideoCallOpen = false;
+        OperationMessage = "أُغلقت مساحة المكالمة، ويمكن فتحها مجدداً من زر المكالمة.";
+    }
+
+    [RelayCommand]
     private async Task ToggleMicrophoneAsync()
     {
         var isMuted = !Store.Media.IsMicrophoneMuted;
@@ -107,14 +132,14 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private async Task PreviousMushafPageAsync()
     {
         var page = QuranPage?.PageNumber ?? ParsePageNumber(PageNumberInput) ?? 1;
-        await LoadMushafPageAsync(Math.Max(1, page - 1));
+        await LoadMushafPageAsync(Math.Max(1, NormalizeSpreadStart(page) - 2));
     }
 
     [RelayCommand(CanExecute = nameof(CanLoadQuranPage))]
     private async Task NextMushafPageAsync()
     {
         var page = QuranPage?.PageNumber ?? ParsePageNumber(PageNumberInput) ?? 1;
-        await LoadMushafPageAsync(Math.Min(604, page + 1));
+        await LoadMushafPageAsync(Math.Min(603, NormalizeSpreadStart(page) + 2));
     }
 
     [RelayCommand(CanExecute = nameof(CanLoadQuranPage))]
@@ -213,6 +238,10 @@ public sealed partial class LiveSessionViewModel : ObservableObject
 
     private bool CanLoadQuranPage() => !IsQuranLoading;
 
+    partial void OnQuranPageChanged(QuranPage? value) => OnPropertyChanged(nameof(QuranSourceLabel));
+
+    partial void OnQuranFacingPageChanged(QuranPage? value) => OnPropertyChanged(nameof(VisibleAyahs));
+
     private async Task LoadMushafPageFromInputAsync()
     {
         var pageNumber = ParsePageNumber(PageNumberInput);
@@ -230,6 +259,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         int? selectedAyahId = null,
         CancellationToken cancellationToken = default)
     {
+        pageNumber = NormalizeSpreadStart(Math.Clamp(pageNumber, 1, 604));
         IsQuranLoading = true;
         QuranMessage = null;
         try
@@ -242,20 +272,33 @@ public sealed partial class LiveSessionViewModel : ObservableObject
             }
 
             QuranPage = result.Value;
+            QuranFacingPage = null;
+            if (pageNumber < 604)
+            {
+                var facingResult = await _getQuranPageUseCase.ExecuteAsync(1, pageNumber + 1, cancellationToken);
+                if (facingResult.IsSuccess)
+                {
+                    QuranFacingPage = facingResult.Value;
+                }
+            }
+
             PageNumberInput = result.Value.PageNumber.ToString(System.Globalization.CultureInfo.InvariantCulture);
+            OnPropertyChanged(nameof(VisibleAyahs));
             var selected = selectedAyahId is { } ayahId
-                ? result.Value.Ayahs.FirstOrDefault(ayah => ayah.Id == ayahId)
-                : null;
+                ? VisibleAyahs.FirstOrDefault(ayah => ayah.Id == ayahId)
+                : result.Value.Ayahs.FirstOrDefault();
             SelectedAyah = selected;
             Store.SetLocalMushafPresence(Store.LocalMushafPresence with
             {
                 EditionId = result.Value.EditionId,
-                PageNumber = result.Value.PageNumber,
+                PageNumber = selected?.PageNumber ?? result.Value.PageNumber,
                 AyahId = selected?.Id,
                 WordIndex = null
             });
             QuranMessage = result.Value.IsFromLocalCache
-                ? "حُمّلت الصفحة من قاعدة المصحف المحلية للقراءة فقط."
+                ? QuranFacingPage is null
+                    ? "حُمّلت الصفحة من قاعدة المصحف المحلية للقراءة فقط."
+                    : "حُمّلت ورقتا المصحف المتجاورتان من قاعدة المصحف المحلية للقراءة فقط."
                 : "حُمّلت الصفحة من المصدر المتاح.";
             OnPropertyChanged(nameof(QuranSourceLabel));
         }
@@ -268,6 +311,9 @@ public sealed partial class LiveSessionViewModel : ObservableObject
             FollowPeerMushafCommand.NotifyCanExecuteChanged();
         }
     }
+
+    private static int NormalizeSpreadStart(int pageNumber) =>
+        pageNumber == 604 ? 603 : pageNumber % 2 == 0 ? pageNumber - 1 : pageNumber;
 
     private static int? ParsePageNumber(string? value) =>
         int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var pageNumber) &&

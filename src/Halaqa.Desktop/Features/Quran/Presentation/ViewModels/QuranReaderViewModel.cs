@@ -14,6 +14,7 @@ public sealed class QuranReaderViewModel : ObservableObject
     private readonly GetQuranPageUseCase _getQuranPageUseCase;
 
     private QuranPage? _quranPage;
+    private QuranPage? _facingPage;
     private QuranAyah? _selectedAyah;
     private string _pageNumberInput = FirstPage.ToString();
     private bool _isLoading;
@@ -46,6 +47,12 @@ public sealed class QuranReaderViewModel : ObservableObject
                 OnPropertyChanged(nameof(QuranSourceLabel));
             }
         }
+    }
+
+    public QuranPage? FacingPage
+    {
+        get => _facingPage;
+        private set => SetProperty(ref _facingPage, value);
     }
 
     public QuranAyah? SelectedAyah
@@ -97,6 +104,7 @@ public sealed class QuranReaderViewModel : ObservableObject
     public void Initialize(int pageNumber = FirstPage)
     {
         QuranPage = null;
+        FacingPage = null;
         SelectedAyah = null;
         PageNumberInput = Math.Clamp(pageNumber, FirstPage, LastPage).ToString();
         IsError = false;
@@ -123,6 +131,15 @@ public sealed class QuranReaderViewModel : ObservableObject
             }
 
             QuranPage = result.Value;
+            FacingPage = null;
+            if (pageNumber < LastPage)
+            {
+                var facingResult = await _getQuranPageUseCase.ExecuteAsync(EditionId, pageNumber + 1);
+                if (facingResult.IsSuccess)
+                {
+                    FacingPage = facingResult.Value;
+                }
+            }
             SelectedAyah = result.Value.Ayahs.FirstOrDefault();
             PageNumberInput = result.Value.PageNumber.ToString();
             Message = result.Value.IsFromLocalCache

@@ -75,28 +75,12 @@
             </Border>
 
             <Grid Grid.Column="1" Margin="0,0,12,0">
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="0.30*" />
-                    <RowDefinition Height="*" />
-                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="1.25*" MinWidth="360" />
+                    <ColumnDefinition Width="0.85*" MinWidth="260" />
+                </Grid.ColumnDefinitions>
 
-                <Border Grid.Row="0" Background="#FF17201D" CornerRadius="4" Padding="18" Margin="0,0,0,12">
-                    <Grid>
-                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                            <controls:AppIcon Kind="VideoOutline" Width="34" Height="34" Foreground="#FFB5E4DB" HorizontalAlignment="Center"  />
-                            <TextBlock Text="مساحة فيديو الطرف الآخر" Foreground="White" FontSize="18" Margin="0,8,0,0" HorizontalAlignment="Center" />
-                            <TextBlock Text="يظهر البث عند اكتمال الاتصال المباشر المتوافق مع سياسة Host-only." Foreground="#FFB5E4DB" Margin="0,4,0,0" HorizontalAlignment="Center" />
-                        </StackPanel>
-                        <Border Width="170" Height="106" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="#FF34433C" CornerRadius="3" Padding="8">
-                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <controls:AppIcon Kind="AccountVideoOutline" Width="22" Height="22" Foreground="White" HorizontalAlignment="Center"  />
-                                <TextBlock Text="المعاينة المحلية" Foreground="White" HorizontalAlignment="Center" Margin="0,5,0,0" />
-                            </StackPanel>
-                        </Border>
-                    </Grid>
-                </Border>
-
-                <Border Grid.Row="1" Style="{StaticResource AppSectionCard}">
+                <Border Grid.Column="0" Style="{StaticResource AppSectionCard}" Margin="0,0,12,0">
                     <Grid>
                         <Grid.RowDefinitions>
                             <RowDefinition Height="Auto" />
@@ -106,43 +90,71 @@
                         </Grid.RowDefinitions>
                         <DockPanel>
                             <StackPanel>
-                                <TextBlock Text="المصحف التفاعلي" Style="{StaticResource SectionTitle}" />
+                                <TextBlock Text="المصحف المفتوح" Style="{StaticResource SectionTitle}" />
                                 <TextBlock Text="{Binding QuranSourceLabel}" Style="{StaticResource CaptionText}" />
                             </StackPanel>
                             <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Command="{Binding PreviousMushafPageCommand}" ToolTip="الصفحة السابقة"><controls:AppIcon Kind="ChevronRight"  /></Button>
-                                <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="66" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" IsReadOnly="{Binding IsQuranLoading}" Margin="6,0" ToolTip="صفحة" />
+                                <Button Command="{Binding PreviousMushafPageCommand}" ToolTip="الصفحة السابقة"><controls:AppIcon Kind="ChevronRight" /></Button>
+                                <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="66" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" IsReadOnly="{Binding IsQuranLoading}" Margin="6,0" ToolTip="رقم الصفحة" />
                                 <Button Command="{Binding LoadMushafPageCommand}" Content="انتقال" />
-                                <Button Command="{Binding NextMushafPageCommand}" ToolTip="الصفحة التالية" Margin="6,0,0,0"><controls:AppIcon Kind="ChevronLeft"  /></Button>
+                                <Button Command="{Binding NextMushafPageCommand}" ToolTip="الصفحة التالية" Margin="6,0,0,0"><controls:AppIcon Kind="ChevronLeft" /></Button>
                             </StackPanel>
                         </DockPanel>
                         <Grid Grid.Row="1" Margin="0,10,0,8">
                             <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
                             <TextBlock Text="{Binding QuranMessage}" Style="{StaticResource CaptionText}" TextWrapping="Wrap" />
                             <ComboBox Grid.Column="1"
-                                      ItemsSource="{Binding QuranPage.Ayahs}"
-                                      SelectedItem="{Binding SelectedAyah}"
+                                      ItemsSource="{Binding VisibleAyahs}"
+                                      SelectedItem="{Binding SelectedAyah, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
                                       DisplayMemberPath="Number"
-                                      Width="74"
-                                      Margin="8,0" ToolTip="آية" />
+                                      IsSynchronizedWithCurrentItem="False"
+                                      Width="100"
+                                      Margin="8,0" ToolTip="اختر آية من الورقة المفتوحة" />
                             <ProgressBar Grid.Column="2" Width="90" Height="4" IsIndeterminate="True" Visibility="{Binding IsQuranLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
                         </Grid>
-                        <Border Grid.Row="2" Background="#FFFDFBF5" BorderBrush="#14000000" BorderThickness="1" CornerRadius="3" Padding="16">
-                            <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
-                                <TextBlock Text="{Binding QuranPage.PageGlyphText}"
-                                           FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}"
-                                           FontSize="34"
-                                           LineHeight="54"
-                                           TextAlignment="Center"
-                                           TextWrapping="Wrap"
-                                           TextOptions.TextFormattingMode="Display"
-                                           TextOptions.TextRenderingMode="ClearType" />
-                            </ScrollViewer>
-                        </Border>
-                        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,10,0,0">
+                        <Grid Grid.Row="2" Margin="0,0,0,4">
+                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="6" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                            <Border Grid.Column="0" Background="#FFFDFBF5" BorderBrush="#22000000" BorderThickness="1" CornerRadius="3" Padding="12">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <TextBlock Text="{Binding QuranPage.PageGlyphText}" FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="Wrap" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
+                                </ScrollViewer>
+                            </Border>
+                            <Border Grid.Column="1" Background="#FFB9A47A" />
+                            <Border Grid.Column="2" Background="#FFFDFBF5" BorderBrush="#22000000" BorderThickness="1" CornerRadius="3" Padding="12">
+                                <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                                    <TextBlock Text="{Binding QuranFacingPage.PageGlyphText}" FontFamily="{Binding QuranFacingPage, Converter={StaticResource QuranPageFontFamilyConverter}}" FontSize="30" LineHeight="48" TextAlignment="Center" TextWrapping="Wrap" TextOptions.TextFormattingMode="Display" TextOptions.TextRenderingMode="ClearType" />
+                                </ScrollViewer>
+                            </Border>
+                        </Grid>
+                        <StackPanel Grid.Row="3" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,8,0,0">
                             <Button Content="مشاركة الموضع" Command="{Binding PublishMushafPresenceCommand}" />
                             <Button Content="متابعة الطرف الآخر" Command="{Binding FollowPeerMushafCommand}" Style="{StaticResource AppOutlinedButton}" Margin="10,0,0,0" />
                         </StackPanel>
+                    </Grid>
+                </Border>
+
+                <Border Grid.Column="1" Background="#FF17201D" CornerRadius="4" Padding="14">
+                    <Grid>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <DockPanel>
+                            <TextBlock Text="المكالمة المباشرة" Foreground="White" FontSize="17" FontWeight="SemiBold" />
+                            <Button DockPanel.Dock="Left" Content="إغلاق" Command="{Binding CloseVideoCallCommand}" Visibility="{Binding IsVideoCallOpen, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </DockPanel>
+                        <Grid Grid.Row="1" Visibility="{Binding IsVideoCallOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+                            <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <controls:AppIcon Kind="VideoOutline" Width="34" Height="34" Foreground="#FFB5E4DB" HorizontalAlignment="Center" />
+                                <TextBlock Text="فيديو الطرف الآخر" Foreground="White" FontSize="18" Margin="0,8,0,0" HorizontalAlignment="Center" />
+                                <TextBlock Text="يظهر البث عند اكتمال الاتصال المباشر." Foreground="#FFB5E4DB" Margin="0,4,0,0" HorizontalAlignment="Center" TextWrapping="Wrap" TextAlignment="Center" />
+                            </StackPanel>
+                            <Border Width="150" Height="96" HorizontalAlignment="Left" VerticalAlignment="Bottom" Background="#FF34433C" CornerRadius="3" Padding="8">
+                                <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                                    <controls:AppIcon Kind="AccountVideoOutline" Width="22" Height="22" Foreground="White" HorizontalAlignment="Center" />
+                                    <TextBlock Text="معاينتي" Foreground="White" HorizontalAlignment="Center" Margin="0,5,0,0" />
+                                </StackPanel>
+                            </Border>
+                        </Grid>
+                        <Button Grid.Row="1" Content="فتح المكالمة" Command="{Binding OpenVideoCallCommand}" Visibility="{Binding IsVideoCallOpen, Converter={StaticResource InverseBooleanConverter}}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                        <TextBlock Grid.Row="2" Text="الصوت والصورة مباشران بين الطرفين فقط." Foreground="#FFB5E4DB" TextWrapping="Wrap" Margin="0,12,0,0" />
                     </Grid>
                 </Border>
             </Grid>
