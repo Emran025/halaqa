@@ -11,7 +11,6 @@ public sealed class QuranPageFontFamilyConverter : IValueConverter
     private const int FirstPage = 1;
     private const int LastPage = 604;
     private const int FontFileOffset = 2000;
-    private static readonly Uri ApplicationBaseUri = new("pack://application:,,,/", UriKind.RelativeOrAbsolute);
     private static readonly FontFamily FallbackQuranFont = CreateFontFamily(
         "./Assets/Fonts/UthmanicHafs_V20.ttf#KFGQPC HAFS Uthmanic Script");
     private static readonly ConcurrentDictionary<int, FontFamily> PageFonts = new();
@@ -51,6 +50,5 @@ public sealed class QuranPageFontFamilyConverter : IValueConverter
         });
     }
 
-    private static FontFamily CreateFontFamily(string fontReference) =>
-        new(ApplicationBaseUri, fontReference);
+    private static FontFamily CreateFontFamily(string fontReference) => new(fontReference);
 }
