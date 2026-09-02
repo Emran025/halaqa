@@ -11,8 +11,9 @@ public sealed class QuranPageFontFamilyConverter : IValueConverter
     private const int FirstPage = 1;
     private const int LastPage = 604;
     private const int FontFileOffset = 2000;
-    private static readonly FontFamily FallbackQuranFont = new(
-        "pack://application:,,,/Assets/Fonts/UthmanicHafs_V20.ttf#KFGQPC HAFS Uthmanic Script");
+    private static readonly Uri ApplicationBaseUri = new("pack://application:,,,/");
+    private static readonly FontFamily FallbackQuranFont = CreateFontFamily(
+        "./Assets/Fonts/UthmanicHafs_V20.ttf#KFGQPC HAFS Uthmanic Script");
     private static readonly ConcurrentDictionary<int, FontFamily> PageFonts = new();
 
     public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
@@ -45,8 +46,11 @@ public sealed class QuranPageFontFamilyConverter : IValueConverter
         return PageFonts.GetOrAdd(pageNumber, static page =>
         {
             var fontNumber = page + FontFileOffset;
-            return new FontFamily(
-                $"pack://application:,,,/Assets/Fonts/QuranPages/p{fontNumber}.ttf#QCF{fontNumber}");
+            return CreateFontFamily(
+                $"./Assets/Fonts/QuranPages/p{fontNumber}.ttf#QCF{fontNumber}");
         });
     }
+
+    private static FontFamily CreateFontFamily(string fontReference) =>
+        new(ApplicationBaseUri, fontReference);
 }
