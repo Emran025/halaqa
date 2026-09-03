@@ -264,6 +264,17 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         }
 
         TaskId = taskResult.Value.Id;
+        await PrepareRealtimeSessionAsync();
+
+        await EnsureIndexLoadedAsync();
+        await LoadMushafPageAsync(targetPage);
+    }
+
+    private async Task<bool> PrepareRealtimeSessionAsync()
+    {
+        if (SessionId == Guid.Empty)
+            return false;
+
         var prepareResult = await _prepareLiveSessionUseCase.ExecuteAsync(
             SessionId,
             clientConnectionId: Guid.NewGuid().ToString("N"));
@@ -273,19 +284,24 @@ public sealed partial class LiveSessionViewModel : ObservableObject
             CallStatusLabel = "في انتظار قبول الطالب";
             CallStatusDescription = prepareResult.Error?.Message ?? "تم إنشاء الجلسة، ويجب قبولها من الطالب قبل الاتصال المباشر.";
             OperationMessage = CallStatusDescription;
-        }
-        else
-        {
-            var prepared = prepareResult.Value;
-            await _peerMediaConnection.InitializeAsync(prepared.Config);
-            Store.SetConnectionState(LiveSessionState.Negotiating, "تم تفويض قناة الجلسة، وجارِ انتظار تفاوض الاتصال المباشر.");
-            CallStatusLabel = "الجلسة الرسمية جاهزة";
-            CallStatusDescription = "تم إنشاء الجلسة والمهمة وتفويض قناة الاتصال. يبدأ الفيديو بعد قبول الطالب والتفاوض المباشر.";
-            OperationMessage = CallStatusDescription;
+            return false;
         }
 
-        await EnsureIndexLoadedAsync();
-        await LoadMushafPageAsync(targetPage);
+        var prepared = prepareResult.Value;
+        await _peerMediaConnection.InitializeAsync(prepared.Config);
+        if (Store.ConnectionState == LiveSessionState.DirectConnectionUnavailable)
+        {
+            CallStatusLabel = "الاتصال المباشر غير متاح";
+            CallStatusDescription = Store.ConnectionMessage ?? "تعذر تشغيل محول الوسائط المباشر.";
+            OperationMessage = CallStatusDescription;
+            return false;
+        }
+
+        Store.SetConnectionState(LiveSessionState.Negotiating, "تم تفويض قناة الجلسة، وجارِ انتظار تفاوض الاتصال المباشر.");
+        CallStatusLabel = "الجلسة الرسمية جاهزة";
+        CallStatusDescription = "تم إنشاء الجلسة والمهمة وتفويض قناة الاتصال. يبدأ الفيديو بعد قبول الطالب والتفاوض المباشر.";
+        OperationMessage = CallStatusDescription;
+        return true;
     }
 
     [RelayCommand]
@@ -295,7 +311,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         OperationMessage = IsMushafVisibleToStudent
             ? "\u062a\u0645 \u0625\u0638\u0647\u0627\u0631 \u0627\u0644\u0645\u0635\u062d\u0641 \u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0637\u0627\u0644\u0628."
             : "\u062a\u0645 \u0625\u062e\u0641\u0627\u0621 \u0627\u0644\u0645\u0635\u062d\u0641 \u0639\u0646 \u0634\u0627\u0634\u0629 \u0627\u0644\u0637\u0627\u0644\u0628 (\u062a\u0633\u0645\u064a\u0639 \u063a\u064a\u0628\u064a).";
-        await _mushafRealtimeChannel.SendPresenceAsync(new MushafPresenceState(1, QuranPage?.PageNumber ?? 1, null, null, IsFollowingPeer: IsMushafVisibleToStudent));
+        await _mushafRealtimeChannel.SendPresenceAsync(new MushafPresenceState(QuranPage?.EditionId ?? 1, QuranPage?.PageNumber ?? 1, null, null, IsFollowingPeer: IsMushafVisibleToStudent));
     }
 
     [RelayCommand]
@@ -428,11 +444,9 @@ public sealed partial class LiveSessionViewModel : ObservableObject
             return;
         }
 
-        if (Store.ConnectionState != LiveSessionState.Negotiating && Store.ConnectionState != LiveSessionState.Connected)
+        if (Store.ConnectionState != LiveSessionState.Negotiating && Store.ConnectionState != LiveSessionState.Connected &&
+            !await PrepareRealtimeSessionAsync())
         {
-            CallStatusLabel = "في انتظار قبول الطالب";
-            CallStatusDescription = "يجب أن يقبل الطالب الجلسة الرسمية قبل بدء الاتصال المباشر.";
-            OperationMessage = CallStatusDescription;
             return;
         }
 

@@ -14,6 +14,35 @@ namespace Halaqa.Desktop.Tests.Features.Sessions;
 public sealed class LiveSessionViewModelTests
 {
     [Fact]
+    public async Task InitializeForStudent_CreatesOfficialSessionAndTaskBeforeLoadingMushaf()
+    {
+        var viewModel = CreateViewModel(new FakeQuranRepository());
+        var student = new Halaqa.Desktop.Features.FollowUp.Domain.Entities.StudentFollowUpSummary(
+            Guid.Parse("11111111-1111-1111-1111-111111111111"),
+            "طالب الاختبار",
+            null,
+            Guid.Parse("22222222-2222-2222-2222-222222222222"),
+            "الحلقة",
+            Halaqa.Desktop.Features.FollowUp.Domain.Entities.FollowUpFrequency.Daily,
+            0,
+            string.Empty,
+            string.Empty,
+            1,
+            1,
+            1,
+            false,
+            false,
+            null,
+            null);
+
+        await viewModel.InitializeForStudentAsync(student, "حفظ", 1);
+
+        Assert.NotEqual(Guid.Empty, viewModel.SessionId);
+        Assert.NotEqual(Guid.Empty, viewModel.TaskId);
+        Assert.Equal(1, viewModel.QuranPage?.PageNumber);
+    }
+
+    [Fact]
     public async Task InitializeMushaf_LoadsLocalPageAndSetsLocalPresence()
     {
         var viewModel = CreateViewModel(new FakeQuranRepository());
