@@ -20,6 +20,7 @@ public sealed partial class StudentsViewModel : ObservableObject
     private readonly ListStudentTrackingsUseCase _listTrackingsUseCase;
     private readonly GetStudentProgressUseCase _getProgressUseCase;
     private readonly List<StudentFollowUpSummary> _allStudents = new();
+    private bool _hasLoaded;
 
     [ObservableProperty] private string _searchText = string.Empty;
     [ObservableProperty] private string _selectedFilterTab = "All";
@@ -50,11 +51,20 @@ public sealed partial class StudentsViewModel : ObservableObject
         _getProgressUseCase = getProgressUseCase;
     }
 
-    public async Task InitializeAsync() => await LoadStudentsAsync();
+    public async Task InitializeAsync()
+    {
+        if (_hasLoaded || IsBusy)
+            return;
+
+        await LoadStudentsAsync();
+    }
 
     [RelayCommand]
     public async Task LoadStudentsAsync()
     {
+        if (IsBusy)
+            return;
+
         IsBusy = true;
         Message = null;
         IsError = false;
@@ -74,6 +84,7 @@ public sealed partial class StudentsViewModel : ObservableObject
                 return;
             }
 
+            var loadedStudentIds = new HashSet<Guid>();
             foreach (var halaqa in halaqasResult.Value)
             {
                 var membershipsResult = await LoadAllMembershipsAsync(halaqa.Id);
@@ -84,17 +95,16 @@ public sealed partial class StudentsViewModel : ObservableObject
                     continue;
                 }
 
-                foreach (var membership in membershipsResult.Value)
-                {
-                    var summary = await BuildSummaryAsync(
+                var summaries = membershipsResult.Value
+                    .Where(membership => loadedStudentIds.Add(membership.Student.Id))
+                    .Select(membership => BuildSummaryAsync(
                         membership.Student.Id,
                         membership.Student.Name,
                         halaqa.Id,
                         halaqa.Name,
                         today,
-                        todayDayOfWeek);
-                    _allStudents.Add(summary);
-                }
+                        todayDayOfWeek));
+                _allStudents.AddRange(await Task.WhenAll(summaries));
             }
 
             if (_allStudents.Count == 0 && !IsError)
@@ -102,6 +112,7 @@ public sealed partial class StudentsViewModel : ObservableObject
 
             UpdateStats();
             ApplyFilters();
+            _hasLoaded = true;
         }
         catch (Exception ex)
         {

@@ -21,6 +21,7 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
     private readonly ListStudentTrackingsUseCase _listTrackingsUseCase;
     private readonly GetStudentProgressUseCase _getProgressUseCase;
     private readonly List<StudentFollowUpSummary> _allStudents = new();
+    private bool _hasLoaded;
 
     [ObservableProperty] private string _selectedFilterTab = "ExpectedToday";
     [ObservableProperty] private string _selectedTaskType = "All";
@@ -53,11 +54,20 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
     public event EventHandler<StudentFollowUpSummary>? ReportsRequested;
     public event EventHandler<StudentFollowUpSummary>? ProfileRequested;
 
-    public async Task InitializeAsync() => await LoadStudentsAsync();
+    public async Task InitializeAsync()
+    {
+        if (_hasLoaded || IsBusy)
+            return;
+
+        await LoadStudentsAsync();
+    }
 
     [RelayCommand]
     public async Task LoadStudentsAsync()
     {
+        if (IsBusy)
+            return;
+
         IsBusy = true;
         Message = null;
         IsError = false;
@@ -77,6 +87,7 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
                 return;
             }
 
+            var loadedStudentIds = new HashSet<Guid>();
             foreach (var halaqa in halaqasResult.Value)
             {
                 var membershipsResult = await LoadAllMembershipsAsync(halaqa.Id);
@@ -87,22 +98,23 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
                     continue;
                 }
 
-                foreach (var membership in membershipsResult.Value)
-                {
-                    _allStudents.Add(await BuildSummaryAsync(
+                var summaries = membershipsResult.Value
+                    .Where(membership => loadedStudentIds.Add(membership.Student.Id))
+                    .Select(membership => BuildSummaryAsync(
                         membership.Student.Id,
                         membership.Student.Name,
                         halaqa.Id,
                         halaqa.Name,
                         today,
                         todayDayOfWeek));
-                }
+                _allStudents.AddRange(await Task.WhenAll(summaries));
             }
 
             if (_allStudents.Count == 0 && !IsError)
                 Message = "لا توجد عضويات فعالة مسجلة في الحلقات.";
 
             ApplyFilters();
+            _hasLoaded = true;
         }
         catch (Exception ex)
         {
@@ -199,6 +211,13 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
         range?.StartPage ?? range?.EndPage;
 
     partial void OnSelectedFilterTabChanged(string value) => ApplyFilters();
+
+    [RelayCommand]
+    private void SelectFilterTab(string? tab)
+    {
+        if (!string.IsNullOrWhiteSpace(tab))
+            SelectedFilterTab = tab;
+    }
     partial void OnSelectedTaskTypeChanged(string value) => ApplyFilters();
     partial void OnSearchTextChanged(string value) => ApplyFilters();
 

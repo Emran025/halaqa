@@ -32,7 +32,7 @@
             <!-- Top Header -->
             <DockPanel Grid.Row="0" Margin="0,0,0,18" LastChildFill="False">
                 <Button DockPanel.Dock="Left"
-                        Command="{Binding GoBackCommand}"
+                        Command="{Binding BackCommand}"
                         Style="{StaticResource AppBackButton}"
                         ToolTip="العودة للرئيسية">
                     <controls:AppIcon Kind="ArrowRight" />
@@ -240,8 +240,7 @@
                                                 Padding="2,6"
                                                 ToolTip="فتح المصحف وبدء جلسة تسميع الحفظ">
                                             <StackPanel Orientation="Horizontal">
-                                                <controls:AppIcon Kind="BookOpenPageVariantOutline" Foreground="White" FontSize="11" Margin="0,0,3,0" />
-                                                <TextBlock Text="حفظ" FontSize="11" FontWeight="Bold" />
+                                                <controls:AppIcon Kind="BookOpenPageVariantOutline" Foreground="White" FontSize="15" />
                                             </StackPanel>
                                         </Button>
 
@@ -253,8 +252,7 @@
                                                 Padding="2,6"
                                                 ToolTip="فتح المصحف وبدء جلسة تسميع المراجعة">
                                             <StackPanel Orientation="Horizontal">
-                                                <controls:AppIcon Kind="Replay" Foreground="{StaticResource AppPrimaryBrush}" FontSize="11" Margin="0,0,3,0" />
-                                                <TextBlock Text="مراجعة" FontSize="11" FontWeight="Bold" />
+                                                <controls:AppIcon Kind="Replay" Foreground="{StaticResource AppPrimaryBrush}" FontSize="15" />
                                             </StackPanel>
                                         </Button>
 
@@ -266,8 +264,7 @@
                                                 Padding="2,6"
                                                 ToolTip="فتح المصحف وبدء جلسة تسميع السرد والتلاوة">
                                             <StackPanel Orientation="Horizontal">
-                                                <controls:AppIcon Kind="Microphone" Foreground="{StaticResource AppInkBrush}" FontSize="11" Margin="0,0,3,0" />
-                                                <TextBlock Text="سرد" FontSize="11" FontWeight="Bold" />
+                                                <controls:AppIcon Kind="Microphone" Foreground="{StaticResource AppInkBrush}" FontSize="15" />
                                             </StackPanel>
                                         </Button>
                                     </Grid>
