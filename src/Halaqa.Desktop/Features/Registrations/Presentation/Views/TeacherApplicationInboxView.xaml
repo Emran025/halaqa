@@ -22,7 +22,7 @@
             </Button>
             <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center">
                 <TextBlock Text="طلبات الطلاب المتاحة" Style="{StaticResource PageTitle}" />
-                <TextBlock Text="يعرض الصندوق الملخص العام للطلبات لمراجعتها واتخاذ قرار القبول أو الرفض أو طلب الاستكمال." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                <TextBlock Text="يعرض الصندوق الطلبات الواردة لمراجعتها وإسناد الطالب المقبول إلى الحلقة." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
             </StackPanel>
         </DockPanel>
 
@@ -139,7 +139,7 @@
                         <controls:AppIcon Kind="AccountQuestionOutline" Foreground="{StaticResource AppMutedInkBrush}" FontSize="32" HorizontalAlignment="Center" VerticalAlignment="Center" />
                     </Border>
                     <TextBlock Text="لم يتم اختيار متقدم" FontSize="16" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" HorizontalAlignment="Center" />
-                    <TextBlock Text="اختر طلباً من القائمة لعرض تفاصيله ورسالته واتخاذ إجراء القبول أو الرفض أو طلب الاستكمال."
+                    <TextBlock Text="اختر طلباً من القائمة لعرض تفاصيله واتخاذ إجراء القبول."
                                FontSize="12" Foreground="{StaticResource AppMutedInkBrush}" TextAlignment="Center" TextWrapping="Wrap"
                                MaxWidth="280" Margin="0,8,0,0" HorizontalAlignment="Center" />
                 </StackPanel>
@@ -177,34 +177,6 @@
                                 Height="42" FontSize="13" FontWeight="Bold"
                                 Margin="0,0,0,18" />
 
-                        <Border Height="1" Background="{StaticResource AppBorderBrush}" Margin="0,0,0,16" />
-
-                        <!-- Completion Request Section -->
-                        <Border Background="#08F57F17" BorderBrush="#22F57F17" BorderThickness="1" CornerRadius="8" Padding="14,12" Margin="0,0,0,14">
-                            <StackPanel>
-                                <TextBlock Text="طلب استكمال بيانات" FontSize="12" FontWeight="Bold" Foreground="#FFE65100" Margin="0,0,0,8" />
-                                <TextBlock Text="الحقول المطلوبة (مفصولة بفواصل)" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,0,0,4" />
-                                <TextBox Text="{Binding RequiredFields, UpdateSourceTrigger=PropertyChanged}"
-                                         ToolTip="مثال: الهوية الوطنية، إجازة القرآن" Height="34" Margin="0,0,0,8" />
-                                <TextBlock Text="ملاحظة الاستكمال للمتقدم (اختيارية)" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,0,0,4" />
-                                <TextBox Text="{Binding CompletionNote, UpdateSourceTrigger=PropertyChanged}"
-                                         TextWrapping="Wrap" AcceptsReturn="True" MinHeight="44" Margin="0,0,0,10" />
-                                <Button Content="إرسال طلب الاستكمال" Command="{Binding RequestCompletionCommand}"
-                                        Style="{StaticResource AppOutlinedButton}" Height="34" />
-                            </StackPanel>
-                        </Border>
-
-                        <!-- Rejection Section -->
-                        <Border Background="#08D32F2F" BorderBrush="#22D32F2F" BorderThickness="1" CornerRadius="8" Padding="14,12">
-                            <StackPanel>
-                                <TextBlock Text="رفض الطلب" FontSize="12" FontWeight="Bold" Foreground="#FFD32F2F" Margin="0,0,0,8" />
-                                <TextBlock Text="سبب الرفض (اختياري)" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,0,0,4" />
-                                <TextBox Text="{Binding RejectionNote, UpdateSourceTrigger=PropertyChanged}"
-                                         TextWrapping="Wrap" AcceptsReturn="True" MinHeight="44" Margin="0,0,0,10" />
-                                <Button Content="تأكيد رفض الطلب" Command="{Binding RejectCommand}"
-                                        Style="{StaticResource AppOutlinedButton}" Foreground="#FFD32F2F" BorderBrush="#FFD32F2F" Height="34" />
-                            </StackPanel>
-                        </Border>
                     </StackPanel>
                 </ScrollViewer>
             </Border>
