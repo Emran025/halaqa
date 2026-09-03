@@ -179,14 +179,6 @@
                     </Border>
                     <Border Style="{StaticResource DashboardCard}">
                         <StackPanel>
-                            <controls:AppIcon Kind="BellOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="28" />
-                            <TextBlock Text="الإشعارات" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                            <TextBlock Text="راجع الرسائل والتنبيهات الموجهة لحسابك." Style="{StaticResource BodyMuted}" />
-                            <Button Content="فتح الإشعارات" Command="{Binding OpenNotificationsCommand}" Style="{StaticResource DashboardCardButton}" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource DashboardCard}">
-                        <StackPanel>
                             <controls:AppIcon Kind="LockReset" Foreground="{StaticResource AppWarningBrush}" FontSize="28" />
                             <TextBlock Text="أمان الحساب" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
                             <TextBlock Text="غيّر كلمة المرور الحالية لحسابك بأمان." Style="{StaticResource BodyMuted}" />
