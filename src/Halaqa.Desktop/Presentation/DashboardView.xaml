@@ -71,14 +71,6 @@
                     </Border>
                     <Border Style="{StaticResource DashboardCard}">
                         <StackPanel>
-                            <controls:AppIcon Kind="FileCertificateOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
-                            <TextBlock Text="الوثائق والمؤهلات" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                            <TextBlock Text="ارفع الشهادات والإجازات والمؤهلات الرسمية الخاصة بحساب المعلم." Style="{StaticResource BodyMuted}" />
-                            <Button Content="فتح الوثائق والمؤهلات" Command="{Binding OpenTeacherDocumentsCommand}" Style="{StaticResource DashboardCardButton}" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource DashboardCard}">
-                        <StackPanel>
                             <controls:AppIcon Kind="AccountEditOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="28" />
                             <TextBlock Text="الملف الشخصي" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
                             <TextBlock Text="راجع البيانات المهنية والاتصال الرسمية وروايات الإجازة المعتمدة." Style="{StaticResource BodyMuted}" />
@@ -107,14 +99,6 @@
                             <TextBlock Text="قارئ المصحف" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
                             <TextBlock Text="اقرأ صفحات المصحف محلياً بالخط العثماني المعتمد." Style="{StaticResource BodyMuted}" />
                             <Button Content="فتح قارئ المصحف" Command="{Binding OpenQuranReaderCommand}" Style="{StaticResource DashboardCardButton}" />
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource DashboardCard}">
-                        <StackPanel>
-                            <controls:AppIcon Kind="BellOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="28" />
-                            <TextBlock Text="الإشعارات" Style="{StaticResource SectionTitle}" Margin="0,14,0,4" />
-                            <TextBlock Text="راجع الرسائل والتنبيهات الرسمية الواردة لحسابك." Style="{StaticResource BodyMuted}" />
-                            <Button Content="فتح الإشعارات" Command="{Binding OpenNotificationsCommand}" Style="{StaticResource DashboardCardButton}" />
                         </StackPanel>
                     </Border>
                     <Border Style="{StaticResource DashboardCard}">

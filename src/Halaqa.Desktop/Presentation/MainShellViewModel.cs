@@ -350,6 +350,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         await _teacherApplicationInboxViewModel.LoadCommand.ExecuteAsync(null);
     }
 
+    [RelayCommand]
     private async Task ShowNotificationsAsync()
     {
         _notificationsViewModel.Initialize();

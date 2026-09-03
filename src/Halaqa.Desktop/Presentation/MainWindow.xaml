@@ -146,6 +146,20 @@
                     </StackPanel>
                 </StackPanel>
                 <Button DockPanel.Dock="Left"
+                        Command="{Binding OpenNotificationsCommand}"
+                        Visibility="{Binding IsAuthenticated, Converter={StaticResource BooleanToVisibilityConverter}}"
+                        ToolTip="الإشعارات"
+                        Padding="8,6"
+                        Background="#24FFFFFF"
+                        BorderBrush="#3DFFFFFF"
+                        BorderThickness="1"
+                        Foreground="White"
+                        Cursor="Hand"
+                        Margin="0,0,8,0"
+                        VerticalAlignment="Center">
+                    <controls:AppIcon Kind="BellOutline" Foreground="White" FontSize="16" />
+                </Button>
+                <Button DockPanel.Dock="Left"
                         Command="{Binding LogoutCommand}"
                         Visibility="{Binding IsAuthenticated, Converter={StaticResource BooleanToVisibilityConverter}}"
                         ToolTip="تسجيل الخروج"
