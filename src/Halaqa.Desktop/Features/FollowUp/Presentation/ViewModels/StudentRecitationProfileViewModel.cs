@@ -88,7 +88,7 @@ public sealed partial class StudentRecitationProfileViewModel : ObservableObject
     private void StartReviewRecitation()
     {
         if (_student != null)
-            RecitationRequested?.Invoke(this, (_student, "\u0645\u0631\u0627\u062c\u0639\u0629", _student.CurrentReviewPage));
+            RecitationRequested?.Invoke(this, (_student, "\u0645\u0631\u0627\u062c\u0639\u0629", _student.CurrentReviewPage ?? 1));
     }
 
     [RelayCommand]

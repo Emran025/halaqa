@@ -296,8 +296,8 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
         {
             HasRecitedToday = true,
             LastRecitedAt = report.CompletedAt,
-            LastEvaluation = report.RatingLabel,
-            TotalMistakesRecorded = old.TotalMistakesRecorded + report.Mistakes.TotalMistakes
+            LastEvaluation = report.Rating,
+            TotalMistakesRecorded = old.TotalMistakesRecorded + report.Mistakes.Total
         };
         ApplyFilters();
     }
