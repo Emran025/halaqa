@@ -30,67 +30,44 @@
                         <TextBlock Text="{Binding HalaqaName, StringFormat=الحلقة: {0}}" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
                     </StackPanel>
                 </DockPanel>
-                <Grid Grid.Row="1" Margin="0,16,0,0">
-                    <Grid.ColumnDefinitions><ColumnDefinition Width="1.25*" /><ColumnDefinition Width="1*" /></Grid.ColumnDefinitions>
-                    <Border Background="#0A000000" CornerRadius="4" Padding="12" Margin="0,0,12,0">
-                        <Grid>
-                            <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
-                            <DockPanel>
-                                <TextBlock Text="العضويات" Style="{StaticResource SectionTitle}" />
-                                <TextBlock DockPanel.Dock="Left" Text="{Binding Total, StringFormat=الإجمالي: {0}}" Style="{StaticResource BodyMuted}" />
-                            </DockPanel>
-                            <ListBox Grid.Row="1" ItemsSource="{Binding Memberships}" SelectedItem="{Binding SelectedMembership}" Margin="0,12,0,8" BorderThickness="0" Background="Transparent">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="3" Padding="10" Margin="0,3">
+                <Border Grid.Row="1" Background="#0A000000" CornerRadius="4" Padding="12" Margin="0,16,0,0">
+                    <Grid>
+                        <Grid.RowDefinitions><RowDefinition Height="Auto" /><RowDefinition Height="Auto" /><RowDefinition Height="*" /><RowDefinition Height="Auto" /></Grid.RowDefinitions>
+                        <DockPanel>
+                            <TextBlock Text="الطلاب في الحلقة" Style="{StaticResource SectionTitle}" />
+                            <TextBlock DockPanel.Dock="Left" Text="{Binding Total, StringFormat=الإجمالي: {0}}" Style="{StaticResource BodyMuted}" />
+                        </DockPanel>
+                        <DockPanel Grid.Row="1" Margin="0,12,0,8">
+                            <Button DockPanel.Dock="Left" Content="إسناد الطالب" Command="{Binding AssignCommand}" Style="{StaticResource AppPrimaryButton}" Margin="8,0,0,0" />
+                            <TextBox Text="{Binding StudentId, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="معرّف الطالب المقبول (UUID)" />
+                        </DockPanel>
+                        <ListBox Grid.Row="2" ItemsSource="{Binding Memberships}" SelectedItem="{Binding SelectedMembership}" Margin="0,4,0,8" BorderThickness="0" Background="Transparent">
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="3" Padding="10" Margin="0,3">
+                                        <DockPanel>
+                                            <TextBlock DockPanel.Dock="Left" Text="{Binding Status}" Style="{StaticResource BodyMuted}" />
                                             <StackPanel>
-                                                <DockPanel>
-                                                    <TextBlock Text="{Binding Student.Name}" FontWeight="SemiBold" />
-                                                    <TextBlock DockPanel.Dock="Left" Text="{Binding Status}" Style="{StaticResource BodyMuted}" />
-                                                </DockPanel>
+                                                <TextBlock Text="{Binding Student.Name}" FontWeight="SemiBold" />
                                                 <TextBlock Text="{Binding Student.Email}" Style="{StaticResource BodyMuted}" FlowDirection="LeftToRight" />
                                                 <TextBlock Text="{Binding JoinedAt, StringFormat=انضم في: {0:yyyy-MM-dd}}" Style="{StaticResource BodyMuted}" />
                                             </StackPanel>
-                                        </Border>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
+                                        </DockPanel>
+                                    </Border>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                        <StackPanel Grid.Row="3">
+                            <TextBlock Text="{Binding StudentIdError}" Style="{StaticResource FieldError}" />
+                            <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,0,0,8" />
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                 <Button Content="السابق" Command="{Binding LoadPreviousPageCommand}" />
                                 <TextBlock Text="{Binding CurrentPage, StringFormat=الصفحة {0}}" VerticalAlignment="Center" Margin="12,0" />
                                 <Button Content="التالي" Command="{Binding LoadNextPageCommand}" />
                             </StackPanel>
-                        </Grid>
-                    </Border>
-                    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
-                            <ProgressBar Height="4" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,12" />
-                            <TextBlock Text="إسناد طالب مقبول" Style="{StaticResource SectionTitle}" />
-                            <TextBlock Text="أدخل معرّف UUID لطالب مقبول. يتحقق الخادم من النشاط، والتوافق، والسعة، ومنع الإسناد المكرر." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,6,0,8" />
-                            <TextBox Text="{Binding StudentId, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="معرّف الطالب (UUID)" />
-                            <TextBlock Text="{Binding StudentIdError}" Style="{StaticResource FieldError}" />
-                            <Button Content="إسناد الطالب" Command="{Binding AssignCommand}" HorizontalAlignment="Left" />
-
-                            <DockPanel Margin="0,20,0,0">
-                                <TextBlock Text="{Binding EditorTitle}" Style="{StaticResource SectionTitle}" />
-                                <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                                    <ComboBox ItemsSource="{Binding FilterOptions}" SelectedValue="{Binding FilterStatus}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Width="150" ToolTip="تصفية" />
-                                    <Button Content="تطبيق" Command="{Binding ApplyFilterCommand}" Margin="8,0,0,0" />
-                                </StackPanel>
-                            </DockPanel>
-                            <TextBlock Text="اختر عضوية من القائمة لتحديث حالتها أو إزالتها." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,6,0,8" />
-                            <ComboBox ItemsSource="{Binding MembershipStatusOptions}" SelectedValue="{Binding SelectedStatus}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الحالة الجديدة" />
-                            <TextBlock Text="{Binding StatusError}" Style="{StaticResource FieldError}" />
-                            <TextBox Text="{Binding Reason, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="70" TextWrapping="Wrap" ToolTip="سبب التغيير (اختياري)" />
-                            <TextBlock Text="{Binding ReasonError}" Style="{StaticResource FieldError}" />
-                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
-                                <Button Content="حفظ الحالة" Command="{Binding UpdateStatusCommand}" Margin="0,0,8,0" />
-                                <Button Content="إزالة العضوية" Command="{Binding RemoveCommand}" Style="{StaticResource AppDangerButton}" />
-                            </StackPanel>
-                            <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,12,0,0" />
                         </StackPanel>
-                    </ScrollViewer>
-                </Grid>
+                    </Grid>
+                </Border>
                 <Button Grid.Row="2" Content="إعادة تحميل العضويات" Command="{Binding LoadCommand}" HorizontalAlignment="Left" Margin="0,16,0,0" />
             </Grid>
         </Border>
