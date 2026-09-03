@@ -1,9 +1,13 @@
-using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.FollowUp.Domain.Entities;
+using Halaqa.Desktop.Features.FollowUp.Domain.UseCases;
+using Halaqa.Desktop.Features.Halaqas.Domain.Entities;
 using Halaqa.Desktop.Features.Halaqas.Domain.UseCases;
+using Halaqa.Desktop.Features.Memberships.Domain.Entities;
 using Halaqa.Desktop.Features.Memberships.Domain.UseCases;
+using Halaqa.Desktop.Features.Progress.Domain.UseCases;
+using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.FollowUp.Presentation.ViewModels;
 
@@ -11,6 +15,9 @@ public sealed partial class StudentsViewModel : ObservableObject
 {
     private readonly ListHalaqasUseCase _listHalaqasUseCase;
     private readonly ListHalaqaMembershipsUseCase _listMembershipsUseCase;
+    private readonly GetFollowUpPlanUseCase _getPlanUseCase;
+    private readonly ListStudentTrackingsUseCase _listTrackingsUseCase;
+    private readonly GetStudentProgressUseCase _getProgressUseCase;
     private readonly List<StudentFollowUpSummary> _allStudents = new();
 
     [ObservableProperty] private string _searchText = string.Empty;
@@ -30,10 +37,16 @@ public sealed partial class StudentsViewModel : ObservableObject
 
     public StudentsViewModel(
         ListHalaqasUseCase listHalaqasUseCase,
-        ListHalaqaMembershipsUseCase listMembershipsUseCase)
+        ListHalaqaMembershipsUseCase listMembershipsUseCase,
+        GetFollowUpPlanUseCase getPlanUseCase,
+        ListStudentTrackingsUseCase listTrackingsUseCase,
+        GetStudentProgressUseCase getProgressUseCase)
     {
         _listHalaqasUseCase = listHalaqasUseCase;
         _listMembershipsUseCase = listMembershipsUseCase;
+        _getPlanUseCase = getPlanUseCase;
+        _listTrackingsUseCase = listTrackingsUseCase;
+        _getProgressUseCase = getProgressUseCase;
     }
 
     public async Task InitializeAsync() => await LoadStudentsAsync();
@@ -48,48 +61,43 @@ public sealed partial class StudentsViewModel : ObservableObject
         try
         {
             _allStudents.Clear();
+            var today = DateOnly.FromDateTime(DateTime.Today);
             var todayDayOfWeek = (int)DateTime.Today.DayOfWeek;
+            var halaqasResult = await LoadAllHalaqasAsync();
 
-            var halaqasResult = await _listHalaqasUseCase.ExecuteAsync(1);
-            if (halaqasResult.IsSuccess && halaqasResult.Value?.Halaqas != null)
+            if (!halaqasResult.IsSuccess || halaqasResult.Value is null)
             {
-                foreach (var halaqa in halaqasResult.Value.Halaqas)
+                IsError = true;
+                Message = halaqasResult.Error?.Message ?? "تعذر تحميل الحلقات من الخادم.";
+                ApplyFilters();
+                return;
+            }
+
+            foreach (var halaqa in halaqasResult.Value)
+            {
+                var membershipsResult = await LoadAllMembershipsAsync(halaqa.Id);
+                if (!membershipsResult.IsSuccess || membershipsResult.Value is null)
                 {
-                    var membershipsResult = await _listMembershipsUseCase.ExecuteAsync(halaqa.Id, status: "active", page: 1);
-                    if (membershipsResult.IsSuccess && membershipsResult.Value?.Memberships != null)
-                    {
-                        var idx = 0;
-                        foreach (var m in membershipsResult.Value.Memberships)
-                        {
-                            idx++;
-                            var memPage = ((idx * 3 + 1) % 600) + 1;
-                            var revPage = Math.Max(1, memPage - 10);
-                            var recPage = Math.Max(1, memPage - 30);
-                            _allStudents.Add(new StudentFollowUpSummary(
-                                StudentId: m.Student.Id,
-                                StudentName: m.Student.Name,
-                                StudentCode: $"STU-{m.Student.Id.ToString()[..6].ToUpperInvariant()}",
-                                HalaqaId: halaqa.Id,
-                                HalaqaName: halaqa.Name,
-                                Frequency: FollowUpFrequency.Daily,
-                                AttendanceDay: todayDayOfWeek,
-                                AttendanceFrom: "18:00",
-                                AttendanceTo: "19:00",
-                                CurrentMemorizationPage: memPage,
-                                CurrentReviewPage: revPage,
-                                CurrentRecitationPage: recPage,
-                                IsScheduledToday: true,
-                                HasRecitedToday: idx % 3 == 0,
-                                LastRecitedAt: DateTimeOffset.Now.AddDays(-1),
-                                LastEvaluation: "\u062c\u064a\u062f \u062c\u062f\u0627\u064b (4/5)",
-                                TotalMistakesRecorded: idx % 5));
-                        }
-                    }
+                    IsError = true;
+                    Message = membershipsResult.Error?.Message ?? "تعذر تحميل أعضاء الحلقة من الخادم.";
+                    continue;
+                }
+
+                foreach (var membership in membershipsResult.Value)
+                {
+                    var summary = await BuildSummaryAsync(
+                        membership.Student.Id,
+                        membership.Student.Name,
+                        halaqa.Id,
+                        halaqa.Name,
+                        today,
+                        todayDayOfWeek);
+                    _allStudents.Add(summary);
                 }
             }
 
-            if (_allStudents.Count == 0)
-                PopulateSampleStudents(todayDayOfWeek);
+            if (_allStudents.Count == 0 && !IsError)
+                Message = "لا توجد عضويات فعالة مسجلة في الحلقات.";
 
             UpdateStats();
             ApplyFilters();
@@ -97,7 +105,7 @@ public sealed partial class StudentsViewModel : ObservableObject
         catch (Exception ex)
         {
             IsError = true;
-            Message = ex.Message;
+            Message = $"حدث خطأ أثناء تحميل بيانات الطلاب: {ex.Message}";
         }
         finally
         {
@@ -105,43 +113,88 @@ public sealed partial class StudentsViewModel : ObservableObject
         }
     }
 
-    private void PopulateSampleStudents(int todayDayOfWeek)
+    private async Task<Result<IReadOnlyList<HalaqaItem>>> LoadAllHalaqasAsync()
     {
-        var data = new[]
-        {
-            ("\u0639\u0628\u062f\u0627\u0644\u0644\u0647 \u0645\u062d\u0645\u062f \u0627\u0644\u0634\u0627\u0645\u064a",  "\u062d\u0644\u0642\u0629 \u0627\u0644\u0641\u062c\u0631",   1,   1,   1,  false, "\u062c\u064a\u062f (3/5)",       2),
-            ("\u0639\u0645\u0631 \u0623\u062d\u0645\u062f \u0628\u0627\u0639\u0628\u0627\u062f",      "\u062d\u0644\u0642\u0629 \u0627\u0644\u0641\u062c\u0631",  15,   2,   1,  false, "\u062c\u064a\u062f \u062c\u062f\u0627\u064b (4/5)",  1),
-            ("\u064a\u0648\u0633\u0641 \u062e\u0627\u0644\u062f \u0628\u0627\u0648\u0632\u064a\u0631",     "\u062d\u0644\u0642\u0629 \u0627\u0644\u0635\u0628\u062d",  45,  20,  10,  true,  "\u0645\u0645\u062a\u0627\u0632 (5/5)",  0),
-            ("\u0623\u062d\u0645\u062f \u0639\u0644\u064a \u0627\u0644\u0633\u0639\u062f\u064a",      "\u062d\u0644\u0642\u0629 \u0627\u0644\u0635\u0628\u062d",  80,  50,  25,  false, "\u062c\u064a\u062f \u062c\u062f\u0627\u064b (4/5)",  3),
-            ("\u0625\u0628\u0631\u0627\u0647\u064a\u0645 \u0635\u0627\u0644\u062d \u0627\u0644\u0642\u062d\u0637\u0627\u0646\u064a","\u062d\u0644\u0642\u0629 \u0627\u0644\u0645\u063a\u0631\u0628", 120,  90,  60,  false, "\u062c\u064a\u062f (3/5)",       4),
-            ("\u062d\u0645\u0632\u0629 \u0637\u0627\u0631\u0642 \u0627\u0644\u0639\u0645\u0648\u062f\u064a",    "\u062d\u0644\u0642\u0629 \u0627\u0644\u0645\u063a\u0631\u0628", 200, 160, 100,  true,  "\u0645\u0645\u062a\u0627\u0632 (5/5)",  1),
-            ("\u0633\u0639\u062f \u0641\u0647\u062f \u0627\u0644\u063a\u0627\u0645\u062f\u064a",      "\u062d\u0644\u0642\u0629 \u0627\u0644\u0639\u0634\u0627\u0621", 280, 200, 150,  false, "\u0645\u0642\u0628\u0648\u0644 (2/5)",     6),
-            ("\u0645\u062d\u0645\u062f \u0639\u0628\u062f\u0627\u0644\u0631\u062d\u0645\u0646 \u0627\u0644\u0632\u0647\u0631\u0627\u0646\u064a","\u062d\u0644\u0642\u0629 \u0627\u0644\u0639\u0634\u0627\u0621",350, 300, 250,  true,  "\u062c\u064a\u062f \u062c\u062f\u0627\u064b (4/5)",  2),
-        };
+        var result = await _listHalaqasUseCase.ExecuteAsync(1);
+        if (!result.IsSuccess || result.Value is null)
+            return Result<IReadOnlyList<HalaqaItem>>.Failure(result.Error!);
 
-        foreach (var (name, halaqa, mem, rev, rec, done, lastEval, mistakes) in data)
+        var halaqas = result.Value.Halaqas.ToList();
+        for (var page = 2; page <= result.Value.LastPage; page++)
         {
-            var id = Guid.NewGuid();
-            _allStudents.Add(new StudentFollowUpSummary(
-                StudentId: id,
-                StudentName: name,
-                StudentCode: $"STU-{id.ToString()[..6].ToUpperInvariant()}",
-                HalaqaId: Guid.NewGuid(),
-                HalaqaName: halaqa,
-                Frequency: FollowUpFrequency.Daily,
-                AttendanceDay: todayDayOfWeek,
-                AttendanceFrom: "17:30",
-                AttendanceTo: "18:30",
-                CurrentMemorizationPage: mem,
-                CurrentReviewPage: rev,
-                CurrentRecitationPage: rec,
-                IsScheduledToday: true,
-                HasRecitedToday: done,
-                LastRecitedAt: done ? DateTimeOffset.Now : DateTimeOffset.Now.AddDays(-1),
-                LastEvaluation: lastEval,
-                TotalMistakesRecorded: mistakes));
+            var next = await _listHalaqasUseCase.ExecuteAsync(page);
+            if (!next.IsSuccess || next.Value is null)
+                return Result<IReadOnlyList<HalaqaItem>>.Failure(next.Error!);
+            halaqas.AddRange(next.Value.Halaqas);
         }
+
+        return Result<IReadOnlyList<HalaqaItem>>.Success(halaqas);
     }
+
+    private async Task<Result<IReadOnlyList<HalaqaMembership>>> LoadAllMembershipsAsync(Guid halaqaId)
+    {
+        var result = await _listMembershipsUseCase.ExecuteAsync(halaqaId, status: "active", page: 1);
+        if (!result.IsSuccess || result.Value is null)
+            return Result<IReadOnlyList<HalaqaMembership>>.Failure(result.Error!);
+
+        var memberships = result.Value.Memberships.ToList();
+        for (var page = 2; page <= result.Value.LastPage; page++)
+        {
+            var next = await _listMembershipsUseCase.ExecuteAsync(halaqaId, status: "active", page);
+            if (!next.IsSuccess || next.Value is null)
+                return Result<IReadOnlyList<HalaqaMembership>>.Failure(next.Error!);
+            memberships.AddRange(next.Value.Memberships);
+        }
+
+        return Result<IReadOnlyList<HalaqaMembership>>.Success(memberships);
+    }
+
+    private async Task<StudentFollowUpSummary> BuildSummaryAsync(
+        Guid studentId,
+        string studentName,
+        Guid halaqaId,
+        string halaqaName,
+        DateOnly today,
+        int todayDayOfWeek)
+    {
+        FollowUpPlan? plan = null;
+        var planResult = await _getPlanUseCase.ExecuteAsync(studentId);
+        if (planResult.IsSuccess)
+            plan = planResult.Value;
+
+        var trackingResult = await _listTrackingsUseCase.ExecuteAsync(studentId, null, null, page: 1, perPage: 1);
+        var latestTracking = trackingResult.IsSuccess ? trackingResult.Value?.Items.FirstOrDefault() : null;
+
+        var progressResult = await _getProgressUseCase.ExecuteAsync(studentId, taskType: null);
+        var progress = progressResult.IsSuccess ? progressResult.Value : null;
+
+        var todaySlot = plan?.AttendancePreferences.WeeklySlots
+            .FirstOrDefault(slot => slot.DayOfWeek == todayDayOfWeek);
+        var isScheduledToday = plan?.Status.Equals("active", StringComparison.OrdinalIgnoreCase) == true && todaySlot is not null;
+        var hasRecitedToday = latestTracking?.Date == today && latestTracking.AttendanceType == AttendanceType.Present;
+
+        return new StudentFollowUpSummary(
+            StudentId: studentId,
+            StudentName: studentName,
+            StudentCode: $"STU-{studentId.ToString()[..6].ToUpperInvariant()}",
+            HalaqaId: halaqaId,
+            HalaqaName: halaqaName,
+            Frequency: plan?.Frequency ?? FollowUpFrequency.Unknown,
+            AttendanceDay: todaySlot?.DayOfWeek ?? -1,
+            AttendanceFrom: todaySlot?.From.ToString("HH:mm") ?? string.Empty,
+            AttendanceTo: todaySlot?.To.ToString("HH:mm") ?? string.Empty,
+            CurrentMemorizationPage: GetStartPage(progress?.LastCompleted.Memorization),
+            CurrentReviewPage: GetStartPage(progress?.LastCompleted.Review),
+            CurrentRecitationPage: GetStartPage(progress?.LastCompleted.Recitation),
+            IsScheduledToday: isScheduledToday,
+            HasRecitedToday: hasRecitedToday,
+            LastRecitedAt: latestTracking?.CreatedAt,
+            LastEvaluation: latestTracking?.Note,
+            TotalMistakesRecorded: progress?.Totals.TotalMistakes ?? 0);
+    }
+
+    private static int? GetStartPage(Halaqa.Desktop.Features.Progress.Domain.Entities.CompletedRecitationRange? range) =>
+        range?.StartPage ?? range?.EndPage;
 
     private void UpdateStats()
     {
@@ -168,14 +221,14 @@ public sealed partial class StudentsViewModel : ObservableObject
 
         query = SelectedFilterTab switch
         {
-            "Today"     => query.Where(s => s.IsScheduledToday && !s.HasRecitedToday),
+            "Today" => query.Where(s => s.IsScheduledToday && !s.HasRecitedToday),
             "Completed" => query.Where(s => s.HasRecitedToday),
-            _           => query
+            _ => query
         };
 
         DisplayedStudents.Clear();
-        foreach (var s in query)
-            DisplayedStudents.Add(s);
+        foreach (var student in query)
+            DisplayedStudents.Add(student);
     }
 
     [RelayCommand]
@@ -196,14 +249,14 @@ public sealed partial class StudentsViewModel : ObservableObject
     private void StartMemorizationRecitation(StudentFollowUpSummary? student)
     {
         if (student != null)
-            RecitationRequested?.Invoke(this, (student, "\u062d\u0641\u0638", student.CurrentMemorizationPage));
+            RecitationRequested?.Invoke(this, (student, "حفظ", student.CurrentMemorizationPage ?? 1));
     }
 
     [RelayCommand]
     private void StartReviewRecitation(StudentFollowUpSummary? student)
     {
         if (student != null)
-            RecitationRequested?.Invoke(this, (student, "\u0645\u0631\u0627\u062c\u0639\u0629", student.CurrentReviewPage));
+            RecitationRequested?.Invoke(this, (student, "مراجعة", student.CurrentReviewPage ?? 1));
     }
 
     [RelayCommand]

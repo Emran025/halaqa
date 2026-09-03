@@ -2,6 +2,7 @@ namespace Halaqa.Desktop.Features.FollowUp.Domain.Entities;
 
 public enum FollowUpFrequency
 {
+    Unknown,
     Daily,
     OnceAWeek,
     TwiceAWeek,
@@ -167,9 +168,9 @@ public sealed record StudentFollowUpSummary(
     int AttendanceDay,
     string AttendanceFrom,
     string AttendanceTo,
-    int CurrentMemorizationPage,
-    int CurrentReviewPage,
-    int CurrentRecitationPage,
+    int? CurrentMemorizationPage,
+    int? CurrentReviewPage,
+    int? CurrentRecitationPage,
     bool IsScheduledToday,
     bool HasRecitedToday,
     DateTimeOffset? LastRecitedAt,

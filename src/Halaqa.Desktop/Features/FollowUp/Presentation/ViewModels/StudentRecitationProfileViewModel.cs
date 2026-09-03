@@ -11,9 +11,9 @@ public sealed partial class StudentRecitationProfileViewModel : ObservableObject
     [ObservableProperty] private string _studentName = string.Empty;
     [ObservableProperty] private string _studentCode = string.Empty;
     [ObservableProperty] private string _halaqaName = string.Empty;
-    [ObservableProperty] private int _currentMemorizationPage;
-    [ObservableProperty] private int _currentReviewPage;
-    [ObservableProperty] private int _currentRecitationPage;
+    [ObservableProperty] private int? _currentMemorizationPage;
+    [ObservableProperty] private int? _currentReviewPage;
+    [ObservableProperty] private int? _currentRecitationPage;
     [ObservableProperty] private string _lastEvaluation = string.Empty;
     [ObservableProperty] private int _totalMistakesRecorded;
     [ObservableProperty] private double _averageScore;
@@ -81,7 +81,7 @@ public sealed partial class StudentRecitationProfileViewModel : ObservableObject
     private void StartMemorizationRecitation()
     {
         if (_student != null)
-            RecitationRequested?.Invoke(this, (_student, "\u062d\u0641\u0638", _student.CurrentMemorizationPage));
+            RecitationRequested?.Invoke(this, (_student, "حفظ", _student.CurrentMemorizationPage ?? 1));
     }
 
     [RelayCommand]
@@ -95,7 +95,7 @@ public sealed partial class StudentRecitationProfileViewModel : ObservableObject
     private void StartSardRecitation()
     {
         if (_student != null)
-            RecitationRequested?.Invoke(this, (_student, "\u0633\u0631\u062f", _student.CurrentRecitationPage));
+            RecitationRequested?.Invoke(this, (_student, "سرد", _student.CurrentRecitationPage ?? 1));
     }
 
     [RelayCommand]
