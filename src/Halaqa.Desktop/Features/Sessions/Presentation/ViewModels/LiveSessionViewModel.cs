@@ -78,6 +78,9 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private readonly IPeerMediaConnection _peerMediaConnection;
     private readonly IMushafRealtimeChannel _mushafRealtimeChannel;
     private readonly ILocalVideoRecorder _localVideoRecorder;
+    private readonly CreateLiveSessionUseCase _createLiveSessionUseCase;
+    private readonly CreateSessionTaskUseCase _createSessionTaskUseCase;
+    private readonly PrepareLiveSessionUseCase _prepareLiveSessionUseCase;
     private readonly SaveOfficialMushafStateUseCase _saveOfficialMushafStateUseCase;
     private readonly GetQuranPageUseCase _getQuranPageUseCase;
     private readonly GetQuranIndexUseCase _getQuranIndexUseCase;
@@ -166,6 +169,9 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         IPeerMediaConnection peerMediaConnection,
         IMushafRealtimeChannel mushafRealtimeChannel,
         ILocalVideoRecorder localVideoRecorder,
+        CreateLiveSessionUseCase createLiveSessionUseCase,
+        CreateSessionTaskUseCase createSessionTaskUseCase,
+        PrepareLiveSessionUseCase prepareLiveSessionUseCase,
         SaveOfficialMushafStateUseCase saveOfficialMushafStateUseCase,
         GetQuranPageUseCase getQuranPageUseCase,
         GetQuranIndexUseCase getQuranIndexUseCase)
@@ -174,6 +180,9 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         _peerMediaConnection = peerMediaConnection;
         _mushafRealtimeChannel = mushafRealtimeChannel;
         _localVideoRecorder = localVideoRecorder;
+        _createLiveSessionUseCase = createLiveSessionUseCase;
+        _createSessionTaskUseCase = createSessionTaskUseCase;
+        _prepareLiveSessionUseCase = prepareLiveSessionUseCase;
         _saveOfficialMushafStateUseCase = saveOfficialMushafStateUseCase;
         _getQuranPageUseCase = getQuranPageUseCase;
         _getQuranIndexUseCase = getQuranIndexUseCase;
@@ -215,8 +224,65 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         CallStatusLabel = "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0627\u0644\u0631\u062f \u0639\u0644\u0649 \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629";
         CallStatusDescription = $"\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0627\u0646\u0636\u0645\u0627\u0645 \u0627\u0644\u0637\u0627\u0644\u0628 {student.StudentName} \u0644\u0644\u0645\u0643\u0627\u0644\u0645\u0629...";
         CallActionButtonText = "\u0637\u0644\u0628 \u0627\u062a\u0635\u0627\u0644 \u0645\u0628\u0627\u0634\u0631";
-        OperationMessage = $"\u0628\u062f\u0623\u062a \u062c\u0644\u0633\u0629 \u062a\u0633\u0645\u064a\u0639 {taskType} \u0644\u0644\u0637\u0627\u0644\u0628 {student.StudentName}.";
+        OperationMessage = $"جاري إنشاء جلسة تسميع {taskType} للطالب {student.StudentName} على الخادم...";
         SetScoreSelected(4);
+
+        var taskTypeValue = ParseTaskType(taskType);
+        var sessionResult = await _createLiveSessionUseCase.ExecuteAsync(new CreateLiveSessionCommand(
+            student.HalaqaId ?? Guid.Empty,
+            student.StudentId,
+            FollowUpItemId: null,
+            TaskType: taskTypeValue,
+            ScheduledAt: null,
+            ClientOperationId: Guid.NewGuid()));
+        if (!sessionResult.IsSuccess || sessionResult.Value is null)
+        {
+            Store.SetConnectionState(LiveSessionState.DirectConnectionUnavailable, sessionResult.Error?.Message);
+            CallStatusLabel = "تعذر إنشاء جلسة رسمية";
+            CallStatusDescription = sessionResult.Error?.Message ?? "لم يتم إنشاء جلسة التسميع في الخادم.";
+            OperationMessage = CallStatusDescription;
+            await EnsureIndexLoadedAsync();
+            await LoadMushafPageAsync(targetPage);
+            return;
+        }
+
+        SessionId = sessionResult.Value.Id;
+        var taskResult = await _createSessionTaskUseCase.ExecuteAsync(new CreateSessionTaskCommand(
+            SessionId,
+            taskTypeValue,
+            Guid.NewGuid(),
+            StartPage: targetPage));
+        if (!taskResult.IsSuccess || taskResult.Value is null)
+        {
+            Store.SetConnectionState(LiveSessionState.DirectConnectionUnavailable, taskResult.Error?.Message);
+            CallStatusLabel = "تعذر إنشاء مهمة الجلسة";
+            CallStatusDescription = taskResult.Error?.Message ?? "تم إنشاء الجلسة دون مهمة تسميع رسمية.";
+            OperationMessage = CallStatusDescription;
+            await EnsureIndexLoadedAsync();
+            await LoadMushafPageAsync(targetPage);
+            return;
+        }
+
+        TaskId = taskResult.Value.Id;
+        var prepareResult = await _prepareLiveSessionUseCase.ExecuteAsync(
+            SessionId,
+            clientConnectionId: Guid.NewGuid().ToString("N"));
+        if (!prepareResult.IsSuccess)
+        {
+            Store.SetConnectionState(LiveSessionState.DirectConnectionUnavailable, prepareResult.Error?.Message);
+            CallStatusLabel = "في انتظار قبول الطالب";
+            CallStatusDescription = prepareResult.Error?.Message ?? "تم إنشاء الجلسة، ويجب قبولها من الطالب قبل الاتصال المباشر.";
+            OperationMessage = CallStatusDescription;
+        }
+        else
+        {
+            var prepared = prepareResult.Value;
+            await _peerMediaConnection.InitializeAsync(prepared.Config);
+            Store.SetConnectionState(LiveSessionState.Negotiating, "تم تفويض قناة الجلسة، وجارِ انتظار تفاوض الاتصال المباشر.");
+            CallStatusLabel = "الجلسة الرسمية جاهزة";
+            CallStatusDescription = "تم إنشاء الجلسة والمهمة وتفويض قناة الاتصال. يبدأ الفيديو بعد قبول الطالب والتفاوض المباشر.";
+            OperationMessage = CallStatusDescription;
+        }
 
         await EnsureIndexLoadedAsync();
         await LoadMushafPageAsync(targetPage);
@@ -343,21 +409,41 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ToggleCall()
+    private async Task ToggleCallAsync()
     {
-        IsCallActive = !IsCallActive;
         if (IsCallActive)
         {
-            CallStatusLabel = "\u0645\u0643\u0627\u0644\u0645\u0629 \u0645\u062a\u0635\u0644\u0629 \u0645\u0628\u0627\u0634\u0631\u0629";
-            CallStatusDescription = "\u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629 \u0627\u0644\u0645\u0628\u0627\u0634\u0631\u0629 \u062c\u0627\u0631\u064a\u0629 \u0645\u0639 \u0627\u0644\u0637\u0627\u0644\u0628.";
-            CallActionButtonText = "\u0625\u0646\u0647\u0627\u0621 \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629";
+            IsCallActive = false;
+            CallStatusLabel = "غير نشط";
+            CallStatusDescription = "انتهت المكالمة المباشرة.";
+            CallActionButtonText = "طلب اتصال مباشر";
+            return;
         }
-        else
+
+        if (SessionId == Guid.Empty || TaskId == Guid.Empty)
         {
-            CallStatusLabel = "\u063a\u064a\u0631 \u0646\u0634\u0637";
-            CallStatusDescription = "\u0627\u0646\u062a\u0647\u062a \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629 \u0627\u0644\u0645\u0628\u0627\u0634\u0631\u0629.";
-            CallActionButtonText = "\u0637\u0644\u0628 \u0627\u062a\u0635\u0627\u0644 \u0645\u0628\u0627\u0634\u0631";
+            CallStatusLabel = "الجلسة غير جاهزة";
+            CallStatusDescription = "لا يمكن طلب اتصال قبل إنشاء الجلسة والمهمة في الخادم.";
+            OperationMessage = CallStatusDescription;
+            return;
         }
+
+        if (Store.ConnectionState != LiveSessionState.Negotiating && Store.ConnectionState != LiveSessionState.Connected)
+        {
+            CallStatusLabel = "في انتظار قبول الطالب";
+            CallStatusDescription = "يجب أن يقبل الطالب الجلسة الرسمية قبل بدء الاتصال المباشر.";
+            OperationMessage = CallStatusDescription;
+            return;
+        }
+
+        await _peerMediaConnection.CreateOfferAsync();
+        IsCallActive = Store.ConnectionState == LiveSessionState.Connected;
+        CallStatusLabel = IsCallActive ? "مكالمة متصلة مباشرة" : "تم إرسال طلب الاتصال";
+        CallStatusDescription = IsCallActive
+            ? "المكالمة المباشرة جارية مع الطالب."
+            : "تم إرسال طلب التفاوض المباشر، وتبقى الوسائط غير متصلة حتى يكتمل offer/answer.";
+        CallActionButtonText = IsCallActive ? "إنهاء المكالمة" : "إعادة طلب الاتصال";
+        OperationMessage = CallStatusDescription;
     }
 
     [RelayCommand]
@@ -426,6 +512,28 @@ public sealed partial class LiveSessionViewModel : ObservableObject
             QuranPage = result.Value;
             PageNumberInput = result.Value.PageNumber.ToString();
             TargetPage = result.Value.PageNumber;
+
+            var localPresence = new MushafPresenceState(
+                result.Value.EditionId,
+                result.Value.PageNumber,
+                selectedAyahId,
+                null,
+                IsFollowingPeer: true);
+            Store.SetLocalMushafPresence(localPresence);
+            await _mushafRealtimeChannel.SendPresenceAsync(localPresence, cancellationToken);
+
+            if (SessionId != Guid.Empty)
+            {
+                var saveStateResult = await _saveOfficialMushafStateUseCase.ExecuteAsync(
+                    SessionId,
+                    result.Value.EditionId,
+                    result.Value.PageNumber,
+                    selectedAyahId,
+                    Guid.NewGuid(),
+                    cancellationToken);
+                if (!saveStateResult.IsSuccess)
+                    OperationMessage = saveStateResult.Error?.Message ?? "تعذر حفظ حالة المصحف الرسمية.";
+            }
 
             if (result.Value.Surahs.Count > 0)
                 CurrentSurahName = result.Value.Surahs[0].Name;
@@ -567,6 +675,13 @@ public sealed partial class LiveSessionViewModel : ObservableObject
 
     [RelayCommand]
     private void GoBack() => BackRequested?.Invoke(this, EventArgs.Empty);
+
+    private static SessionTaskType ParseTaskType(string taskType) => taskType switch
+    {
+        "حفظ" => SessionTaskType.Memorization,
+        "مراجعة" => SessionTaskType.Review,
+        _ => SessionTaskType.Recitation
+    };
 
     private static int? ParsePageNumber(string? value) =>
         int.TryParse(value, System.Globalization.NumberStyles.Integer, System.Globalization.CultureInfo.InvariantCulture, out var pageNumber) &&

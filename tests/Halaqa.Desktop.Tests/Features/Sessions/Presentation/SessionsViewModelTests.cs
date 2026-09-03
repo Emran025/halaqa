@@ -13,7 +13,7 @@ public sealed class SessionsViewModelTests
     public async Task Load_ForwardsOfficialFiltersAndDisplaysPaginatedSessions()
     {
         var repository = new FakeSessionDirectoryRepository();
-        var viewModel = new SessionsViewModel(new ListSessionsUseCase(repository));
+        var viewModel = CreateViewModel(repository);
         viewModel.Initialize();
         viewModel.StateFilter = "connecting";
         viewModel.From = "2026-08-01 08:00 +03:00";
@@ -37,7 +37,7 @@ public sealed class SessionsViewModelTests
     [Fact]
     public async Task OpenTasks_RaisesTasksRequestedForSelectedOfficialSession()
     {
-        var viewModel = new SessionsViewModel(new ListSessionsUseCase(new FakeSessionDirectoryRepository()));
+        var viewModel = CreateViewModel(new FakeSessionDirectoryRepository());
         viewModel.Initialize();
         await viewModel.LoadCommand.ExecuteAsync(null);
         var selected = Assert.IsType<SessionListItem>(viewModel.SelectedSession);
@@ -49,23 +49,44 @@ public sealed class SessionsViewModelTests
         Assert.Equal(selected, requested);
     }
 
+    private static SessionsViewModel CreateViewModel(FakeSessionDirectoryRepository repository) =>
+        new(
+            new ListSessionsUseCase(repository),
+            new AcceptLiveSessionUseCase(repository),
+            new RejectLiveSessionUseCase(repository));
+
     private sealed class FakeSessionDirectoryRepository : ISessionDirectoryRepository
     {
         public SessionQuery? LastQuery { get; private set; }
 
+        public Task<Result<SessionListItem>> CreateAsync(CreateLiveSessionCommand command, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<SessionListItem>.Failure(new AppError(AppErrorKind.Unknown, "غير مستخدم في الاختبار.")));
+
+        public Task<Result<SessionListItem>> AcceptAsync(Guid sessionId, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<SessionListItem>.Success(BuildSession(OfficialSessionState.Accepted)));
+
+        public Task<Result<SessionListItem>> RejectAsync(Guid sessionId, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<SessionListItem>.Success(BuildSession(OfficialSessionState.Rejected)));
+
         public Task<Result<SessionPage>> ListAsync(SessionQuery query, CancellationToken cancellationToken = default)
         {
             LastQuery = query;
+            var session = BuildSession(OfficialSessionState.Connecting);
+            return Task.FromResult(Result<SessionPage>.Success(new SessionPage(new[] { session }, 2, 3, 20, 41)));
+        }
+
+        private static SessionListItem BuildSession(OfficialSessionState state)
+        {
             var participant = new SessionParticipant(Guid.NewGuid(), "teacher", "معلم اختبار", "teacher@example.test", null, "active");
             var student = new SessionParticipant(Guid.NewGuid(), "student", "طالب اختبار", "student@example.test", null, "active");
-            var session = new SessionListItem(
+            return new SessionListItem(
                 Guid.NewGuid(),
                 Guid.NewGuid(),
                 participant,
                 student,
                 null,
                 SessionTaskType.Memorization,
-                OfficialSessionState.Connecting,
+                state,
                 DateTimeOffset.UtcNow.AddHours(1),
                 DateTimeOffset.UtcNow,
                 null,
@@ -75,7 +96,6 @@ public sealed class SessionsViewModelTests
                 true,
                 DateTimeOffset.UtcNow,
                 DateTimeOffset.UtcNow);
-            return Task.FromResult(Result<SessionPage>.Success(new SessionPage(new[] { session }, 2, 3, 20, 41)));
         }
     }
 }

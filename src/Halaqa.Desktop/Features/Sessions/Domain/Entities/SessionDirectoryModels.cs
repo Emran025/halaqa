@@ -49,6 +49,14 @@ public sealed record SessionListItem(
     DateTimeOffset CreatedAt,
     DateTimeOffset UpdatedAt);
 
+public sealed record CreateLiveSessionCommand(
+    Guid HalaqaId,
+    Guid StudentId,
+    Guid? FollowUpItemId,
+    SessionTaskType TaskType,
+    DateTimeOffset? ScheduledAt,
+    Guid ClientOperationId);
+
 public sealed record SessionQuery(
     Guid? HalaqaId,
     Guid? StudentId,

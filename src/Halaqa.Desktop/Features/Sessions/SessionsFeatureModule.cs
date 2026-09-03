@@ -19,6 +19,9 @@ public static class SessionsFeatureModule
         services.AddSingleton<ISessionDirectoryRepository, SessionDirectoryRepository>();
         services.AddSingleton<ISessionTaskDirectoryRepository, SessionTaskDirectoryRepository>();
         services.AddSingleton<PrepareLiveSessionUseCase>();
+        services.AddSingleton<CreateLiveSessionUseCase>();
+        services.AddSingleton<AcceptLiveSessionUseCase>();
+        services.AddSingleton<RejectLiveSessionUseCase>();
         services.AddSingleton<SaveOfficialMushafStateUseCase>();
         services.AddSingleton<ListSessionsUseCase>();
         services.AddSingleton<ListSessionTasksUseCase>();

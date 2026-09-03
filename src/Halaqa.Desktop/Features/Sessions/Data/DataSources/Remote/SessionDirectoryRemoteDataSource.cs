@@ -7,6 +7,9 @@ namespace Halaqa.Desktop.Features.Sessions.Data.DataSources.Remote;
 
 internal interface ISessionDirectoryRemoteDataSource
 {
+    Task<Result<SessionResponseDto>> CreateAsync(CreateLiveSessionCommand command, CancellationToken cancellationToken = default);
+    Task<Result<SessionResponseDto>> AcceptAsync(Guid sessionId, CancellationToken cancellationToken = default);
+    Task<Result<SessionResponseDto>> RejectAsync(Guid sessionId, CancellationToken cancellationToken = default);
     Task<Result<SessionCollectionResponseDto>> ListAsync(SessionQuery query, CancellationToken cancellationToken = default);
 }
 
@@ -18,6 +21,24 @@ internal sealed class SessionDirectoryRemoteDataSource : ISessionDirectoryRemote
     {
         this.apiClient = apiClient;
     }
+
+    public Task<Result<SessionResponseDto>> CreateAsync(CreateLiveSessionCommand command, CancellationToken cancellationToken = default)
+    {
+        var request = new CreateSessionRequestDto(
+            command.HalaqaId,
+            command.StudentId,
+            command.FollowUpItemId,
+            ToContractValue(command.TaskType),
+            command.ScheduledAt,
+            command.ClientOperationId);
+        return apiClient.PostAsync<CreateSessionRequestDto, SessionResponseDto>("sessions", request, cancellationToken);
+    }
+
+    public Task<Result<SessionResponseDto>> AcceptAsync(Guid sessionId, CancellationToken cancellationToken = default) =>
+        apiClient.PostEmptyAsync<SessionResponseDto>($"sessions/{sessionId}/accept", cancellationToken);
+
+    public Task<Result<SessionResponseDto>> RejectAsync(Guid sessionId, CancellationToken cancellationToken = default) =>
+        apiClient.PostEmptyAsync<SessionResponseDto>($"sessions/{sessionId}/reject", cancellationToken);
 
     public Task<Result<SessionCollectionResponseDto>> ListAsync(SessionQuery query, CancellationToken cancellationToken = default)
     {

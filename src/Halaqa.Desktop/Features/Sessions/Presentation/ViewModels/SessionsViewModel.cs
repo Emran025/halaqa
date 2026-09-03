@@ -13,10 +13,17 @@ public sealed partial class SessionsViewModel : ObservableObject
 {
     private const int PageSize = 20;
     private readonly ListSessionsUseCase listSessionsUseCase;
+    private readonly AcceptLiveSessionUseCase acceptLiveSessionUseCase;
+    private readonly RejectLiveSessionUseCase rejectLiveSessionUseCase;
 
-    public SessionsViewModel(ListSessionsUseCase listSessionsUseCase)
+    public SessionsViewModel(
+        ListSessionsUseCase listSessionsUseCase,
+        AcceptLiveSessionUseCase acceptLiveSessionUseCase,
+        RejectLiveSessionUseCase rejectLiveSessionUseCase)
     {
         this.listSessionsUseCase = listSessionsUseCase;
+        this.acceptLiveSessionUseCase = acceptLiveSessionUseCase;
+        this.rejectLiveSessionUseCase = rejectLiveSessionUseCase;
     }
 
     public ObservableCollection<SessionListItem> Sessions { get; } = new();
@@ -76,6 +83,24 @@ public sealed partial class SessionsViewModel : ObservableObject
 
     [RelayCommand(CanExecute = nameof(CanLoadNext))]
     private async Task LoadNextPageAsync() => await LoadPageAsync(CurrentPage + 1);
+
+    [RelayCommand(CanExecute = nameof(CanAcceptSelectedSession))]
+    private async Task AcceptSelectedSessionAsync()
+    {
+        if (SelectedSession is null)
+            return;
+
+        await UpdateSelectedSessionAsync(() => acceptLiveSessionUseCase.ExecuteAsync(SelectedSession.Id), "تم قبول الجلسة الرسمية.");
+    }
+
+    [RelayCommand(CanExecute = nameof(CanRejectSelectedSession))]
+    private async Task RejectSelectedSessionAsync()
+    {
+        if (SelectedSession is null)
+            return;
+
+        await UpdateSelectedSessionAsync(() => rejectLiveSessionUseCase.ExecuteAsync(SelectedSession.Id), "تم رفض الجلسة الرسمية.");
+    }
 
     [RelayCommand(CanExecute = nameof(CanOpenTasks))]
     private void OpenTasks()
@@ -184,6 +209,8 @@ public sealed partial class SessionsViewModel : ObservableObject
 
     private bool CanLoad() => !IsBusy;
     private bool CanOpenTasks() => CanLoad() && SelectedSession is not null;
+    private bool CanAcceptSelectedSession() => CanLoad() && SelectedSession?.State == OfficialSessionState.Requested;
+    private bool CanRejectSelectedSession() => CanLoad() && SelectedSession?.State == OfficialSessionState.Requested;
     private bool CanLoadPrevious() => CanLoad() && CurrentPage > 1;
     private bool CanLoadNext() => CanLoad() && CurrentPage < LastPage;
 
@@ -205,14 +232,50 @@ public sealed partial class SessionsViewModel : ObservableObject
         Message = error?.Message ?? "تعذر تحميل قائمة الجلسات.";
     }
 
+    private async Task UpdateSelectedSessionAsync(
+        Func<Task<Result<SessionListItem>>> operation,
+        string successMessage)
+    {
+        IsBusy = true;
+        ClearFeedback();
+        try
+        {
+            var result = await operation();
+            if (!result.IsSuccess || result.Value is null)
+            {
+                SetFailure(result.Error);
+                return;
+            }
+
+            var selectedId = result.Value.Id;
+            var index = Sessions.ToList().FindIndex(session => session.Id == selectedId);
+            if (index >= 0)
+                Sessions[index] = result.Value;
+            SelectedSession = result.Value;
+            Message = successMessage;
+        }
+        finally
+        {
+            IsBusy = false;
+            NotifyCommands();
+        }
+    }
+
     private void NotifyCommands()
     {
         LoadCommand.NotifyCanExecuteChanged();
         ApplyFilterCommand.NotifyCanExecuteChanged();
         OpenTasksCommand.NotifyCanExecuteChanged();
+        AcceptSelectedSessionCommand.NotifyCanExecuteChanged();
+        RejectSelectedSessionCommand.NotifyCanExecuteChanged();
         LoadPreviousPageCommand.NotifyCanExecuteChanged();
         LoadNextPageCommand.NotifyCanExecuteChanged();
     }
 
-    partial void OnSelectedSessionChanged(SessionListItem? value) => OpenTasksCommand.NotifyCanExecuteChanged();
+    partial void OnSelectedSessionChanged(SessionListItem? value)
+    {
+        OpenTasksCommand.NotifyCanExecuteChanged();
+        AcceptSelectedSessionCommand.NotifyCanExecuteChanged();
+        RejectSelectedSessionCommand.NotifyCanExecuteChanged();
+    }
 }

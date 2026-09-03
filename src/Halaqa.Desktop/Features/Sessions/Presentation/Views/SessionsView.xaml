@@ -40,6 +40,8 @@
             <DockPanel Margin="0,0,0,10">
                 <TextBlock Text="اختر جلسة ثم اعرض مهامها الرسمية." Style="{StaticResource BodyMuted}" />
                 <Button Content="عرض المهام" Command="{Binding OpenTasksCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" />
+                <Button Content="قبول الجلسة" Command="{Binding AcceptSelectedSessionCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" Margin="8,0,0,0" />
+                <Button Content="رفض الجلسة" Command="{Binding RejectSelectedSessionCommand}" DockPanel.Dock="Left" Style="{StaticResource AppOutlinedButton}" Margin="8,0,0,0" />
             </DockPanel>
             <ListBox ItemsSource="{Binding Sessions}" SelectedItem="{Binding SelectedSession}" MinHeight="190" BorderThickness="0" Background="Transparent">
                 <ListBox.ItemTemplate>

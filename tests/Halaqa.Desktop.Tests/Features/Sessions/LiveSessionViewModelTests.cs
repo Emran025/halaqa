@@ -33,6 +33,9 @@ public sealed class LiveSessionViewModelTests
         new FakePeerMediaConnection(),
         mushafRealtimeChannel ?? new FakeMushafRealtimeChannel(),
         new FakeLocalVideoRecorder(),
+        new CreateLiveSessionUseCase(new FakeSessionDirectoryRepository()),
+        new CreateSessionTaskUseCase(new FakeSessionTaskDirectoryRepository()),
+        new PrepareLiveSessionUseCase(new FakeLiveSessionRepository()),
         new SaveOfficialMushafStateUseCase(new FakeLiveSessionRepository()),
         new GetQuranPageUseCase(quranRepository),
         new GetQuranIndexUseCase(quranRepository));
@@ -61,6 +64,59 @@ public sealed class LiveSessionViewModelTests
             {
                 new QuranJuzIndexItem(1, "الجزء 1", 1, 21)
             }));
+    }
+
+    private sealed class FakeSessionDirectoryRepository : ISessionDirectoryRepository
+    {
+        public Task<Result<SessionListItem>> CreateAsync(CreateLiveSessionCommand command, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<SessionListItem>.Success(new SessionListItem(
+                Guid.Parse("aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"),
+                command.HalaqaId,
+                new SessionParticipant(Guid.NewGuid(), "teacher", "المعلم", "teacher@example.test", null, "active"),
+                new SessionParticipant(command.StudentId, "student", "الطالب", "student@example.test", null, "active"),
+                command.FollowUpItemId,
+                command.TaskType,
+                OfficialSessionState.Requested,
+                command.ScheduledAt,
+                DateTimeOffset.UtcNow,
+                null,
+                null,
+                null,
+                null,
+                true,
+                DateTimeOffset.UtcNow,
+                DateTimeOffset.UtcNow)));
+
+        public Task<Result<SessionListItem>> AcceptAsync(Guid sessionId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<Result<SessionListItem>> RejectAsync(Guid sessionId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<Result<SessionPage>> ListAsync(SessionQuery query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+    }
+
+    private sealed class FakeSessionTaskDirectoryRepository : ISessionTaskDirectoryRepository
+    {
+        public Task<Result<SessionTaskListItem>> CreateAsync(CreateSessionTaskCommand command, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<SessionTaskListItem>.Success(new SessionTaskListItem(
+                Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"),
+                command.SessionId,
+                command.TaskType,
+                command.SequenceNo ?? 1,
+                OfficialSessionTaskState.Draft,
+                command.PlannedFromUnitId,
+                command.PlannedToUnitId,
+                command.PlannedAmount,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                null,
+                0)));
+
+        public Task<Result<SessionTaskPage>> ListAsync(Guid sessionId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<Result<SessionTaskListItem>> UpdateAsync(UpdateSessionTaskCommand command, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<Result<SessionTaskListItem>> SaveDraftAsync(SaveSessionTaskDraftCommand command, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 
     private sealed class FakeLiveSessionRepository : ILiveSessionRepository

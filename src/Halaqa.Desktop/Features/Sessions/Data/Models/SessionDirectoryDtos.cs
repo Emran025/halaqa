@@ -28,6 +28,17 @@ internal sealed record SessionListItemDto(
     [property: JsonPropertyName("created_at")] DateTimeOffset CreatedAt,
     [property: JsonPropertyName("updated_at")] DateTimeOffset UpdatedAt);
 
+internal sealed record CreateSessionRequestDto(
+    [property: JsonPropertyName("halaqa_id")] Guid HalaqaId,
+    [property: JsonPropertyName("student_id")] Guid StudentId,
+    [property: JsonPropertyName("follow_up_item_id"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] Guid? FollowUpItemId,
+    [property: JsonPropertyName("task_type")] string TaskType,
+    [property: JsonPropertyName("scheduled_at"), JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] DateTimeOffset? ScheduledAt,
+    [property: JsonPropertyName("client_operation_id")] Guid ClientOperationId);
+
+internal sealed record SessionResponseDto(
+    [property: JsonPropertyName("session")] SessionListItemDto Session);
+
 internal sealed record SessionPaginationMetaDto(
     [property: JsonPropertyName("current_page")] int CurrentPage,
     [property: JsonPropertyName("last_page")] int LastPage,
