@@ -177,7 +177,7 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
         return new StudentFollowUpSummary(
             StudentId: studentId,
             StudentName: studentName,
-            StudentCode: $"STU-{studentId.ToString()[..6].ToUpperInvariant()}",
+            StudentCode: null,
             HalaqaId: halaqaId,
             HalaqaName: halaqaName,
             Frequency: plan?.Frequency ?? FollowUpFrequency.Unknown,

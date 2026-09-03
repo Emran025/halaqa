@@ -32,7 +32,7 @@ public sealed partial class StudentRecitationProfileViewModel : ObservableObject
     {
         _student = student;
         StudentName = student.StudentName;
-        StudentCode = student.StudentCode ?? $"STU-{student.StudentId.ToString()[..6].ToUpperInvariant()}";
+        StudentCode = student.StudentCode ?? string.Empty;
         HalaqaName = student.HalaqaName ?? string.Empty;
         CurrentMemorizationPage = student.CurrentMemorizationPage;
         CurrentReviewPage = student.CurrentReviewPage;

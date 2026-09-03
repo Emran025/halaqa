@@ -176,7 +176,7 @@ public sealed partial class StudentsViewModel : ObservableObject
         return new StudentFollowUpSummary(
             StudentId: studentId,
             StudentName: studentName,
-            StudentCode: $"STU-{studentId.ToString()[..6].ToUpperInvariant()}",
+            StudentCode: null,
             HalaqaId: halaqaId,
             HalaqaName: halaqaName,
             Frequency: plan?.Frequency ?? FollowUpFrequency.Unknown,
