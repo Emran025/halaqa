@@ -261,5 +261,5 @@ public sealed partial class StudentsViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void GoBack() => BackRequested?.Invoke(this, EventArgs.Empty);
+    private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
 }
