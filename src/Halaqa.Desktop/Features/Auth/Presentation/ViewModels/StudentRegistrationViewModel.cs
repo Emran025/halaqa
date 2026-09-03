@@ -164,5 +164,20 @@ public sealed partial class StudentRegistrationViewModel : ObservableObject
     private bool CanGoNext() => Step < 3 && !IsBusy;
     private bool CanSubmit() => Step == 3 && !IsBusy;
 
-    private static string RenderError(AppError? error) => error?.Message ?? "تعذر إنشاء الحساب حالياً.";
+    private static string RenderError(AppError? error)
+    {
+        if (error is null)
+            return "تعذر إنشاء الحساب حالياً.";
+
+        if (error.FieldErrors is { Count: > 0 })
+        {
+            var details = error.FieldErrors
+                .SelectMany(field => field.Messages.Select(message => $"{field.Field}: {message}"))
+                .ToArray();
+            if (details.Length > 0)
+                return string.Join(Environment.NewLine, details);
+        }
+
+        return error.Message;
+    }
 }
