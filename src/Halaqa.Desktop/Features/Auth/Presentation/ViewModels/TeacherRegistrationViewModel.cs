@@ -34,10 +34,13 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
     [ObservableProperty] private DateTime _birthDate = DateTime.Today.AddYears(-21);
     [ObservableProperty] private CountryItem? _selectedCountry;
     [ObservableProperty] private CountryItem? _selectedPhoneZoneCountry;
+    [ObservableProperty] private CountryItem? _selectedWhatsappZoneCountry;
     [ObservableProperty] private string _country = string.Empty;
     [ObservableProperty] private string _city = string.Empty;
     [ObservableProperty] private string _phone = string.Empty;
     [ObservableProperty] private string _phoneZone = string.Empty;
+    [ObservableProperty] private string _whatsappPhone = string.Empty;
+    [ObservableProperty] private string _whatsappZone = string.Empty;
     [ObservableProperty] private string _qualification = string.Empty;
     [ObservableProperty] private int _experienceYears;
     [ObservableProperty] private string? _bio;
@@ -63,20 +66,31 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
         if (value != null)
         {
             Country = value.NameAr;
-            if (string.IsNullOrWhiteSpace(PhoneZone) && SelectedPhoneZoneCountry == null)
-            {
-                SelectedPhoneZoneCountry = value;
-            }
         }
     }
 
     partial void OnSelectedPhoneZoneCountryChanged(CountryItem? value)
     {
         if (value != null && !string.IsNullOrWhiteSpace(value.PhoneCode))
-        {
             PhoneZone = value.PhoneCode;
-        }
     }
+
+    partial void OnSelectedWhatsappZoneCountryChanged(CountryItem? value)
+    {
+        if (value != null && !string.IsNullOrWhiteSpace(value.PhoneCode))
+            WhatsappZone = value.PhoneCode;
+    }
+
+    public IReadOnlyList<LocalizedOption<string>> QualificationOptions { get; } = new[]
+    {
+        new LocalizedOption<string>("إجازة قرآنية", "إجازة قرآنية"),
+        new LocalizedOption<string>("تعليم شرعي", "تعليم شرعي"),
+        new LocalizedOption<string>("دبلوم", "دبلوم"),
+        new LocalizedOption<string>("بكالوريوس", "بكالوريوس"),
+        new LocalizedOption<string>("ماجستير", "ماجستير"),
+        new LocalizedOption<string>("دكتوراه", "دكتوراه"),
+        new LocalizedOption<string>("أخرى", "أخرى")
+    };
     public bool IsFirstStep => Step == 1;
     public bool IsSecondStep => Step == 2;
 
@@ -106,7 +120,7 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
         {
             var command = new TeacherRegistrationCommand(
                 _clientOperationId, Name, null, Email, Password, PasswordConfirmation, Gender,
-                DateOnly.FromDateTime(BirthDate), Country, City, null, Phone, PhoneZone, null, null,
+                DateOnly.FromDateTime(BirthDate), Country, City, null, Phone, PhoneZone, WhatsappPhone, WhatsappZone,
                 Qualification, ExperienceYears, Bio, AvailableTime, MaxHalaqas);
             var result = await registerTeacherUseCase.ExecuteAsync(command);
             IsError = !result.IsSuccess;

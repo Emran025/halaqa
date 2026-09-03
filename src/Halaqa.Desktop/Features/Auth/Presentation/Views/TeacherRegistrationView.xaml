@@ -93,7 +93,6 @@
                                     <TextBlock Text="مفتاح الدولة" Style="{StaticResource CaptionText}" />
                                     <ComboBox ItemsSource="{Binding Countries}"
                                               SelectedItem="{Binding SelectedPhoneZoneCountry}"
-                                              Text="{Binding PhoneZone, UpdateSourceTrigger=PropertyChanged}"
                                               IsEditable="True"
                                               IsTextSearchEnabled="True"
                                               TextSearch.TextPath="PhoneCode"
@@ -116,6 +115,24 @@
                                     </ComboBox>
                                     <TextBlock Text="رقم الهاتف" Style="{StaticResource CaptionText}" />
                                     <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="رقم الهاتف" />
+                                    <TextBlock Text="مفتاح واتساب" Style="{StaticResource CaptionText}" />
+                                    <ComboBox ItemsSource="{Binding Countries}"
+                                              SelectedItem="{Binding SelectedWhatsappZoneCountry}"
+                                              IsEditable="True"
+                                              IsTextSearchEnabled="True"
+                                              TextSearch.TextPath="PhoneCode"
+                                              ToolTip="اختر مفتاح واتساب بشكل مستقل">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate>
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding PhoneCode}" FlowDirection="LeftToRight" Margin="0,0,8,0" />
+                                                    <TextBlock Text="{Binding NameAr}" />
+                                                </StackPanel>
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                    <TextBlock Text="رقم واتساب (اختياري)" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding WhatsappPhone, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="رقم واتساب" />
                                 </StackPanel>
                             </Grid>
                         </StackPanel>
@@ -129,8 +146,12 @@
                                     <ColumnDefinition Width="*" />
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
-                                    <TextBlock Text="المؤهل أو الإجازة" Style="{StaticResource CaptionText}" />
-                                    <TextBox Text="{Binding Qualification, UpdateSourceTrigger=PropertyChanged}" ToolTip="المؤهل أو الإجازة" />
+                                    <TextBlock Text="درجة أو نوع التعليم" Style="{StaticResource CaptionText}" />
+                                    <ComboBox ItemsSource="{Binding QualificationOptions}"
+                                              SelectedValue="{Binding Qualification}"
+                                              SelectedValuePath="Value"
+                                              DisplayMemberPath="Label"
+                                              ToolTip="اختر درجة أو نوع التعليم" />
                                     <TextBlock Text="سنوات الخبرة" Style="{StaticResource CaptionText}" />
                                     <TextBox Text="{Binding ExperienceYears, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="سنوات الخبرة" />
                                 </StackPanel>

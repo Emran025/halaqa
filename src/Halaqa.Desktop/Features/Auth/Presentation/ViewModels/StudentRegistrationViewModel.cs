@@ -34,10 +34,13 @@ public sealed partial class StudentRegistrationViewModel : ObservableObject
     [ObservableProperty] private DateTime _birthDate = DateTime.Today.AddYears(-12);
     [ObservableProperty] private CountryItem? _selectedCountry;
     [ObservableProperty] private CountryItem? _selectedPhoneZoneCountry;
+    [ObservableProperty] private CountryItem? _selectedWhatsappZoneCountry;
     [ObservableProperty] private string _country = string.Empty;
     [ObservableProperty] private string _city = string.Empty;
     [ObservableProperty] private string _phone = string.Empty;
     [ObservableProperty] private string _phoneZone = string.Empty;
+    [ObservableProperty] private string _whatsappPhone = string.Empty;
+    [ObservableProperty] private string _whatsappZone = string.Empty;
     [ObservableProperty] private string _timezone = "Asia/Riyadh";
     [ObservableProperty] private int _attendanceDay = 0;
     [ObservableProperty] private string _attendanceFrom = "18:00";
@@ -67,19 +70,19 @@ public sealed partial class StudentRegistrationViewModel : ObservableObject
         if (value != null)
         {
             Country = value.NameAr;
-            if (string.IsNullOrWhiteSpace(PhoneZone) && SelectedPhoneZoneCountry == null)
-            {
-                SelectedPhoneZoneCountry = value;
-            }
         }
     }
 
     partial void OnSelectedPhoneZoneCountryChanged(CountryItem? value)
     {
         if (value != null && !string.IsNullOrWhiteSpace(value.PhoneCode))
-        {
             PhoneZone = value.PhoneCode;
-        }
+    }
+
+    partial void OnSelectedWhatsappZoneCountryChanged(CountryItem? value)
+    {
+        if (value != null && !string.IsNullOrWhiteSpace(value.PhoneCode))
+            WhatsappZone = value.PhoneCode;
     }
 
     public IReadOnlyList<LocalizedOption<FollowUpFrequency>> Frequencies { get; } = new[]
@@ -135,7 +138,7 @@ public sealed partial class StudentRegistrationViewModel : ObservableObject
         {
             var command = new StudentRegistrationCommand(
                 _clientOperationId, Name, null, Email, Password, PasswordConfirmation, Gender, DateOnly.FromDateTime(BirthDate),
-                Country, City, null, Phone, PhoneZone, null, null, null, null,
+                Country, City, null, Phone, PhoneZone, WhatsappPhone, WhatsappZone, null, null,
                 new AttendancePreferences(Timezone, new[] { new WeeklyAvailabilitySlot(AttendanceDay, AttendanceFrom, AttendanceTo, true) }, 30),
                 new FollowUpPlan(Frequency, new[] { new FollowUpPlanDetail(TaskType, PlanUnit, PlanAmount, null) }, DateOnly.FromDateTime(DateTime.Today), null),
                 TeacherCode, null);
