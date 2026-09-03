@@ -246,7 +246,7 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void StartSardRecitation(StudentFollowUpSummary? student)
+    public void StartSardRecitation(StudentFollowUpSummary? student)
     {
         if (student != null)
             RecitationRequested?.Invoke(this, (student, "سرد", student.CurrentRecitationPage ?? 1));
@@ -267,7 +267,7 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
+    public void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
 
     public void MarkStudentCompleted(Guid studentId)
     {
