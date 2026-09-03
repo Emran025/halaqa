@@ -86,6 +86,8 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private readonly GetQuranIndexUseCase _getQuranIndexUseCase;
     private readonly List<QuranSurahIndexItem> _allSurahsMaster = new();
     private readonly Dictionary<Guid, List<(int Page, int WordIndex, string Type)>> _studentMistakesIsolated = new();
+    private readonly SemaphoreSlim _sessionInitializationGate = new(1, 1);
+    private bool _callOperationInProgress;
 
     [ObservableProperty] private Guid _sessionId;
     [ObservableProperty] private Guid _taskId;
@@ -205,7 +207,12 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         string taskType,
         int targetPage)
     {
-        StudentId = student.StudentId;
+        if (!await _sessionInitializationGate.WaitAsync(0))
+            return;
+
+        try
+        {
+            StudentId = student.StudentId;
         StudentName = student.StudentName;
         HalaqaName = student.HalaqaName ?? "\u062d\u0644\u0642\u0629 \u0627\u0644\u062a\u062d\u0641\u064a\u0638";
         TaskType = taskType;
@@ -266,8 +273,13 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         TaskId = taskResult.Value.Id;
         await PrepareRealtimeSessionAsync();
 
-        await EnsureIndexLoadedAsync();
-        await LoadMushafPageAsync(targetPage);
+            await EnsureIndexLoadedAsync();
+            await LoadMushafPageAsync(targetPage);
+        }
+        finally
+        {
+            _sessionInitializationGate.Release();
+        }
     }
 
     private async Task<bool> PrepareRealtimeSessionAsync()
@@ -427,6 +439,12 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     [RelayCommand]
     private async Task ToggleCallAsync()
     {
+        if (_callOperationInProgress)
+            return;
+
+        _callOperationInProgress = true;
+        try
+        {
         if (IsCallActive)
         {
             IsCallActive = false;
@@ -457,11 +475,16 @@ public sealed partial class LiveSessionViewModel : ObservableObject
             ? "المكالمة المباشرة جارية مع الطالب."
             : "تم إرسال طلب التفاوض المباشر، وتبقى الوسائط غير متصلة حتى يكتمل offer/answer.";
         CallActionButtonText = IsCallActive ? "إنهاء المكالمة" : "إعادة طلب الاتصال";
-        OperationMessage = CallStatusDescription;
+                OperationMessage = CallStatusDescription;
+        }
+        finally
+        {
+            _callOperationInProgress = false;
+        }
     }
-
     [RelayCommand]
     private async Task ToggleMicrophoneAsync()
+
     {
         var isMuted = !Store.Media.IsMicrophoneMuted;
         await _peerMediaConnection.SetMicrophoneMutedAsync(isMuted);
