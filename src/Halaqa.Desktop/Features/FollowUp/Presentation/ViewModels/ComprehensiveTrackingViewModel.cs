@@ -47,6 +47,7 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
         _getPlanUseCase = getPlanUseCase;
         _listTrackingsUseCase = listTrackingsUseCase;
         _getProgressUseCase = getProgressUseCase;
+        StartSardRecitationCommand = new RelayCommand<StudentFollowUpSummary?>(StartSardRecitation);
     }
 
     public event EventHandler? BackRequested;
@@ -264,8 +265,7 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
             RecitationRequested?.Invoke(this, (student, "مراجعة", student.CurrentReviewPage ?? 1));
     }
 
-    public IRelayCommand<StudentFollowUpSummary?> StartSardRecitationCommand { get; } =
-        new RelayCommand<StudentFollowUpSummary?>(StartSardRecitation);
+    public IRelayCommand<StudentFollowUpSummary?> StartSardRecitationCommand { get; }
 
     public void StartSardRecitation(StudentFollowUpSummary? student)
     {
