@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Registrations.Domain.Entities;
@@ -51,6 +51,11 @@ public sealed partial class TeacherApplicationInboxViewModel : ObservableObject
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private bool _isError;
     [ObservableProperty] private string? _message;
+
+    public bool HasSelectedRequest => SelectedRequest is not null;
+    public bool HasNoSelectedRequest => SelectedRequest is null;
+    public bool HasRequests => Requests.Count > 0;
+    public bool HasNoRequests => Requests.Count == 0;
 
     public string EditorTitle => SelectedRequest is null ? "اختر متقدماً لمراجعته" : $"مراجعة طلب {SelectedRequest.Applicant.DisplayName}";
     public event EventHandler? BackRequested;
@@ -153,6 +158,8 @@ public sealed partial class TeacherApplicationInboxViewModel : ObservableObject
             LastPage = result.Value.LastPage;
             Total = result.Value.Total;
             SelectedRequest = Requests.FirstOrDefault();
+            OnPropertyChanged(nameof(HasRequests));
+            OnPropertyChanged(nameof(HasNoRequests));
         }
         finally { IsBusy = false; NotifyCommands(); }
     }
@@ -166,7 +173,10 @@ public sealed partial class TeacherApplicationInboxViewModel : ObservableObject
     partial void OnSelectedRequestChanged(RegistrationRequest? value)
     {
         RejectionNote = null; RequiredFields = string.Empty; CompletionNote = null;
-        OnPropertyChanged(nameof(EditorTitle)); NotifyCommands();
+        OnPropertyChanged(nameof(EditorTitle));
+        OnPropertyChanged(nameof(HasSelectedRequest));
+        OnPropertyChanged(nameof(HasNoSelectedRequest));
+        NotifyCommands();
     }
     partial void OnRequiredFieldsChanged(string value) => RequestCompletionCommand.NotifyCanExecuteChanged();
 
@@ -183,7 +193,19 @@ public sealed partial class TeacherApplicationInboxViewModel : ObservableObject
     }
     private void ClearFeedback() { IsError = false; Message = null; }
     private void SetLocalFailure(string message) { ClearFeedback(); IsError = true; Message = message; }
-    private void SetFailure(AppError? error) { IsError = true; Message = error?.Message ?? "تعذر إتمام العملية. أعد المحاولة."; }
+    private void SetFailure(AppError? error)
+    {
+        IsError = true;
+        var raw = error?.Message ?? "تعذر إتمام العملية. أعد المحاولة.";
+        if (raw.Contains("refused") || raw.Contains("127.0.0.1:8000") || raw.Contains("ConnectionRefused"))
+        {
+            Message = "تعذر الاتصال بخادم النظام (127.0.0.1:8000). يرجى التأكد من تشغيل خادم الواجهة الخلفية (Backend) ثم إعادة المحاولة.";
+        }
+        else
+        {
+            Message = raw;
+        }
+    }
     private void NotifyCommands()
     {
         LoadCommand.NotifyCanExecuteChanged(); ApplyFilterCommand.NotifyCanExecuteChanged(); LoadPreviousPageCommand.NotifyCanExecuteChanged(); LoadNextPageCommand.NotifyCanExecuteChanged(); AcceptCommand.NotifyCanExecuteChanged(); RejectCommand.NotifyCanExecuteChanged(); RequestCompletionCommand.NotifyCanExecuteChanged();

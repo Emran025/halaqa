@@ -24,6 +24,8 @@ public static class FollowUpFeatureModule
         services.AddSingleton<ListStudentTrackingsUseCase>();
         services.AddSingleton<FollowUpViewModel>();
         services.AddSingleton<ComprehensiveTrackingViewModel>();
+        services.AddSingleton<StudentsViewModel>();
+        services.AddSingleton<StudentRecitationProfileViewModel>();
         return services;
     }
 }

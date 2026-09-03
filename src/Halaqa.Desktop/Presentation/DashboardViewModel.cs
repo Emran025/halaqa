@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.Input;
+using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 
 namespace Halaqa.Desktop.Presentation;
@@ -24,6 +24,7 @@ public sealed partial class DashboardViewModel
     public event EventHandler? TeacherProfileRequested;
     public event EventHandler? TeacherDocumentsRequested;
     public event EventHandler? HalaqasRequested;
+    public event EventHandler? StudentsRequested;
     public event EventHandler? TeacherApplicationsRequested;
     public event EventHandler? StudentRegistrationsRequested;
     public event EventHandler? StudentRequestsRequested;
@@ -58,6 +59,9 @@ public sealed partial class DashboardViewModel
 
     [RelayCommand]
     private void OpenHalaqas() => HalaqasRequested?.Invoke(this, EventArgs.Empty);
+
+    [RelayCommand]
+    private void OpenStudents() => StudentsRequested?.Invoke(this, EventArgs.Empty);
 
     [RelayCommand]
     private void OpenTeacherApplications() => TeacherApplicationsRequested?.Invoke(this, EventArgs.Empty);

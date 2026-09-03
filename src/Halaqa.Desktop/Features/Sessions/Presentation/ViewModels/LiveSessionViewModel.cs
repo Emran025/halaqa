@@ -1,4 +1,4 @@
-﻿﻿﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Windows.Media;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -28,7 +28,7 @@ public sealed partial class InteractiveQuranWord : ObservableObject
 
     public void SetMistake(string? mistakeType)
     {
-        MistakeType = mistakeType == "إلغاء" ? null : mistakeType;
+        MistakeType = mistakeType == "\u0625\u0644\u063a\u0627\u0621" ? null : mistakeType;
         UpdateVisuals();
     }
 
@@ -42,27 +42,27 @@ public sealed partial class InteractiveQuranWord : ObservableObject
     {
         if (IsStopPoint)
         {
-            BackgroundBrush = new SolidColorBrush(Color.FromArgb(220, 200, 230, 201)); // Distinct Emerald Stop Marker
+            BackgroundBrush = new SolidColorBrush(Color.FromArgb(220, 200, 230, 201));
             BorderBrush = new SolidColorBrush(Color.FromRgb(46, 125, 50));
             return;
         }
 
         switch (MistakeType)
         {
-            case "حفظ":
-                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 255, 205, 210)); // Solid Vibrant Red Highlight
+            case "\u062d\u0641\u0638":
+                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 255, 205, 210));
                 BorderBrush = new SolidColorBrush(Color.FromRgb(211, 47, 47));
                 break;
-            case "تجويد":
-                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 255, 224, 178)); // Solid Vibrant Orange Highlight
+            case "\u062a\u062c\u0648\u064a\u062f":
+                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 255, 224, 178));
                 BorderBrush = new SolidColorBrush(Color.FromRgb(245, 124, 0));
                 break;
-            case "تشكيل":
-                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 255, 245, 157)); // Solid Vibrant Yellow Highlight
+            case "\u062a\u0634\u0643\u064a\u0644":
+                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 255, 245, 157));
                 BorderBrush = new SolidColorBrush(Color.FromRgb(251, 192, 45));
                 break;
-            case "تنبيه":
-                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 187, 222, 251)); // Solid Vibrant Blue Highlight
+            case "\u062a\u0646\u0628\u064a\u0647":
+                BackgroundBrush = new SolidColorBrush(Color.FromArgb(200, 187, 222, 251));
                 BorderBrush = new SolidColorBrush(Color.FromRgb(25, 118, 210));
                 break;
             default:
@@ -89,23 +89,21 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     [ObservableProperty] private string? _operationMessage;
     [ObservableProperty] private QuranPage? _quranPage;
     [ObservableProperty] private QuranAyah? _selectedAyah;
-    [ObservableProperty] private string _studentName = "الطالب";
-    [ObservableProperty] private string _halaqaName = "حلقة التحفيظ";
-    [ObservableProperty] private string _taskType = "حفظ";
+    [ObservableProperty] private string _studentName = "\u0627\u0644\u0637\u0627\u0644\u0628";
+    [ObservableProperty] private string _halaqaName = "\u062d\u0644\u0642\u0629 \u0627\u0644\u062a\u062d\u0641\u064a\u0638";
+    [ObservableProperty] private string _taskType = "\u062d\u0641\u0638";
     [ObservableProperty] private int _targetPage = 1;
     [ObservableProperty] private int _mistakesCount;
-    [ObservableProperty] private string _sessionRating = "ممتاز";
-    [ObservableProperty] private string _sessionNotes = string.Empty;
     [ObservableProperty] private bool _isStudentSession;
     [ObservableProperty] private Guid _studentId;
     [ObservableProperty] private string _pageNumberInput = "1";
     [ObservableProperty] private bool _isQuranLoading;
     [ObservableProperty] private string? _quranMessage;
-    [ObservableProperty] private string _currentSurahName = "سورة الفاتحة";
-    [ObservableProperty] private string _currentJuzText = "الجزء الأول";
-    [ObservableProperty] private string _callStatusLabel = "في انتظار الرد على المكالمة";
-    [ObservableProperty] private string _callStatusDescription = "في انتظار قبول المكالمة من الطالب...";
-    [ObservableProperty] private string _callActionButtonText = "طلب اتصال مباشر";
+    [ObservableProperty] private string _currentSurahName = "\u0633\u0648\u0631\u0629 \u0627\u0644\u0641\u0627\u062a\u062d\u0629";
+    [ObservableProperty] private string _currentJuzText = "\u0627\u0644\u062c\u0632\u0621 \u0627\u0644\u0623\u0648\u0644";
+    [ObservableProperty] private string _callStatusLabel = "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0627\u0644\u0631\u062f \u0639\u0644\u0649 \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629";
+    [ObservableProperty] private string _callStatusDescription = "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0642\u0628\u0648\u0644 \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629 \u0645\u0646 \u0627\u0644\u0637\u0627\u0644\u0628...";
+    [ObservableProperty] private string _callActionButtonText = "\u0637\u0644\u0628 \u0627\u062a\u0635\u0627\u0644 \u0645\u0628\u0627\u0634\u0631";
     [ObservableProperty] private bool _isCallActive;
 
     // Teacher Direct Controls over Student & Quran
@@ -119,6 +117,32 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     [ObservableProperty] private string _selectedIndexTab = "Surahs";
     [ObservableProperty] private string _indexSearchText = string.Empty;
 
+    // Evaluation Overlay State
+    [ObservableProperty] private bool _isEvaluationPanelOpen;
+    [ObservableProperty] private int _evaluationScore = 4;
+    [ObservableProperty] private string _evaluationNotes = string.Empty;
+    [ObservableProperty] private bool _isScore1;
+    [ObservableProperty] private bool _isScore2;
+    [ObservableProperty] private bool _isScore3;
+    [ObservableProperty] private bool _isScore4 = true;
+    [ObservableProperty] private bool _isScore5;
+
+    // Evaluation mistake breakdown (computed before showing overlay)
+    [ObservableProperty] private int _evalMemorizationMistakes;
+    [ObservableProperty] private int _evalTajweedMistakes;
+    [ObservableProperty] private int _evalTashkeelMistakes;
+    [ObservableProperty] private int _evalAlertMistakes;
+
+    public string EvaluationRatingLabel => EvaluationScore switch
+    {
+        5 => "\u0645\u0645\u062a\u0627\u0632 (5/5)",
+        4 => "\u062c\u064a\u062f \u062c\u062f\u0627\u064b (4/5)",
+        3 => "\u062c\u064a\u062f (3/5)",
+        2 => "\u0645\u0642\u0628\u0648\u0644 (2/5)",
+        1 => "\u0636\u0639\u064a\u0641 (1/5)",
+        _ => "\u062c\u064a\u062f \u062c\u062f\u0627\u064b (4/5)"
+    };
+
     public ObservableCollection<InteractiveQuranWord> InteractiveWords { get; } = new();
     public ObservableCollection<QuranSurahIndexItem> FilteredSurahs { get; } = new();
     public ObservableCollection<QuranJuzIndexItem> AllJuzs { get; } = new();
@@ -127,14 +151,14 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     public LiveSessionStore Store { get; }
 
     public event EventHandler? BackRequested;
-    public event EventHandler<Guid>? SessionCompleted;
+    public event EventHandler<SessionReport>? SessionCompleted;
 
     public string ConnectionLabel => Store.ConnectionState switch
     {
-        LiveSessionState.Connected => "اتصال مباشر P2P",
-        LiveSessionState.DirectConnectionUnavailable => "الاتصال المباشر غير متاح",
-        LiveSessionState.Negotiating or LiveSessionState.Reconnecting => "جارِ التفاوض المباشر",
-        _ => "في انتظار تهيئة الجلسة"
+        LiveSessionState.Connected => "\u0627\u062a\u0635\u0627\u0644 \u0645\u0628\u0627\u0634\u0631 P2P",
+        LiveSessionState.DirectConnectionUnavailable => "\u0627\u0644\u0627\u062a\u0635\u0627\u0644 \u0627\u0644\u0645\u0628\u0627\u0634\u0631 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d",
+        LiveSessionState.Negotiating or LiveSessionState.Reconnecting => "\u062c\u0627\u0631\u0650 \u0627\u0644\u062a\u0641\u0627\u0648\u0636 \u0627\u0644\u0645\u0628\u0627\u0634\u0631",
+        _ => "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u062a\u0647\u064a\u0626\u0629 \u0627\u0644\u062c\u0644\u0633\u0629"
     };
 
     public LiveSessionViewModel(
@@ -164,9 +188,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         _localVideoRecorder.StateChanged += (_, state) => Store.SetRecording(state);
 
         for (int p = 1; p <= 604; p++)
-        {
             AllPages.Add(p);
-        }
     }
 
     public async Task InitializeForStudentAsync(
@@ -176,23 +198,25 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     {
         StudentId = student.StudentId;
         StudentName = student.StudentName;
-        HalaqaName = student.HalaqaName ?? "حلقة التحفيظ";
+        HalaqaName = student.HalaqaName ?? "\u062d\u0644\u0642\u0629 \u0627\u0644\u062a\u062d\u0641\u064a\u0638";
         TaskType = taskType;
         TargetPage = targetPage;
         MistakesCount = 0;
         StopAyahNumber = null;
-        SessionRating = "ممتاز";
-        SessionNotes = string.Empty;
+        EvaluationNotes = string.Empty;
+        EvaluationScore = 4;
+        IsEvaluationPanelOpen = false;
         IsStudentSession = true;
         IsCallActive = false;
         IsIndexDialogOpen = false;
         IsMushafVisibleToStudent = true;
         IsStudentMicMutedByTeacher = false;
         IsStudentCameraMutedByTeacher = false;
-        CallStatusLabel = "في انتظار الرد على المكالمة";
-        CallStatusDescription = $"في انتظار انضمام الطالب {student.StudentName} للمكالمة...";
-        CallActionButtonText = "طلب اتصال مباشر";
-        OperationMessage = $"بدأت جلسة تسميع {taskType} للطالب {student.StudentName}.";
+        CallStatusLabel = "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0627\u0644\u0631\u062f \u0639\u0644\u0649 \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629";
+        CallStatusDescription = $"\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0627\u0646\u0636\u0645\u0627\u0645 \u0627\u0644\u0637\u0627\u0644\u0628 {student.StudentName} \u0644\u0644\u0645\u0643\u0627\u0644\u0645\u0629...";
+        CallActionButtonText = "\u0637\u0644\u0628 \u0627\u062a\u0635\u0627\u0644 \u0645\u0628\u0627\u0634\u0631";
+        OperationMessage = $"\u0628\u062f\u0623\u062a \u062c\u0644\u0633\u0629 \u062a\u0633\u0645\u064a\u0639 {taskType} \u0644\u0644\u0637\u0627\u0644\u0628 {student.StudentName}.";
+        SetScoreSelected(4);
 
         await EnsureIndexLoadedAsync();
         await LoadMushafPageAsync(targetPage);
@@ -202,8 +226,9 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private async Task ToggleMushafVisibilityForStudentAsync()
     {
         IsMushafVisibleToStudent = !IsMushafVisibleToStudent;
-        var msg = IsMushafVisibleToStudent ? "تم إظهار المصحف لشاشة الطالب." : "تم إخفاء المصحف عن شاشة الطالب (تسميع غيبي).";
-        OperationMessage = msg;
+        OperationMessage = IsMushafVisibleToStudent
+            ? "\u062a\u0645 \u0625\u0638\u0647\u0627\u0631 \u0627\u0644\u0645\u0635\u062d\u0641 \u0644\u0634\u0627\u0634\u0629 \u0627\u0644\u0637\u0627\u0644\u0628."
+            : "\u062a\u0645 \u0625\u062e\u0641\u0627\u0621 \u0627\u0644\u0645\u0635\u062d\u0641 \u0639\u0646 \u0634\u0627\u0634\u0629 \u0627\u0644\u0637\u0627\u0644\u0628 (\u062a\u0633\u0645\u064a\u0639 \u063a\u064a\u0628\u064a).";
         await _mushafRealtimeChannel.SendPresenceAsync(new MushafPresenceState(1, QuranPage?.PageNumber ?? 1, null, null, IsFollowingPeer: IsMushafVisibleToStudent));
     }
 
@@ -211,7 +236,9 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private async Task ToggleStudentMicAsync()
     {
         IsStudentMicMutedByTeacher = !IsStudentMicMutedByTeacher;
-        OperationMessage = IsStudentMicMutedByTeacher ? "تم كتم ميكروفون الطالب من قبل المعلم." : "تم تشغيل ميكروفون الطالب.";
+        OperationMessage = IsStudentMicMutedByTeacher
+            ? "\u062a\u0645 \u0643\u062a\u0645 \u0645\u064a\u0643\u0631\u0648\u0641\u0648\u0646 \u0627\u0644\u0637\u0627\u0644\u0628 \u0645\u0646 \u0642\u0628\u0644 \u0627\u0644\u0645\u0639\u0644\u0645."
+            : "\u062a\u0645 \u062a\u0634\u063a\u064a\u0644 \u0645\u064a\u0643\u0631\u0648\u0641\u0648\u0646 \u0627\u0644\u0637\u0627\u0644\u0628.";
         await _peerMediaConnection.SetMicrophoneMutedAsync(IsStudentMicMutedByTeacher);
     }
 
@@ -219,7 +246,9 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private async Task ToggleStudentCameraAsync()
     {
         IsStudentCameraMutedByTeacher = !IsStudentCameraMutedByTeacher;
-        OperationMessage = IsStudentCameraMutedByTeacher ? "تم إيقاف كاميرا الطالب من قبل المعلم." : "تم تفعيل كاميرا الطالب.";
+        OperationMessage = IsStudentCameraMutedByTeacher
+            ? "\u062a\u0645 \u0625\u064a\u0642\u0627\u0641 \u0643\u0627\u0645\u064a\u0631\u0627 \u0627\u0644\u0637\u0627\u0644\u0628 \u0645\u0646 \u0642\u0628\u0644 \u0627\u0644\u0645\u0639\u0644\u0645."
+            : "\u062a\u0645 \u062a\u0641\u0639\u064a\u0644 \u0643\u0627\u0645\u064a\u0631\u0627 \u0627\u0644\u0637\u0627\u0644\u0628.";
         await _peerMediaConnection.SetCameraEnabledAsync(!IsStudentCameraMutedByTeacher);
     }
 
@@ -231,25 +260,23 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         if (word.IsStopPoint)
         {
             StopAyahNumber = word.AyahNumber;
-            OperationMessage = $"🛑 تم تعيين نقطة توقف التسميع عند نهاية الآية ({word.AyahNumber}) بنجاح.";
+            OperationMessage = $"\u0646\u0642\u0637\u0629 \u062a\u0648\u0642\u0641 \u0639\u0646\u062f \u0646\u0647\u0627\u064a\u0629 \u0627\u0644\u0622\u064a\u0629 ({word.AyahNumber}).";
         }
         else
         {
             StopAyahNumber = null;
-            OperationMessage = "تم إلغاء نقطة توقف التسميع.";
+            OperationMessage = "\u062a\u0645 \u0625\u0644\u063a\u0627\u0621 \u0646\u0642\u0637\u0629 \u062a\u0648\u0642\u0641 \u0627\u0644\u062a\u0633\u0645\u064a\u0639.";
         }
     }
 
-        [RelayCommand]
+    [RelayCommand]
     private void SelectIndexTab(string? tab)
     {
         if (!string.IsNullOrEmpty(tab))
-        {
             SelectedIndexTab = tab;
-        }
     }
 
-private async Task EnsureIndexLoadedAsync()
+    private async Task EnsureIndexLoadedAsync()
     {
         if (_allSurahsMaster.Count == 0)
         {
@@ -265,9 +292,7 @@ private async Task EnsureIndexLoadedAsync()
             {
                 AllJuzs.Clear();
                 foreach (var j in juzResult.Value)
-                {
                     AllJuzs.Add(j);
-                }
             }
         }
     }
@@ -280,11 +305,8 @@ private async Task EnsureIndexLoadedAsync()
         var query = string.IsNullOrWhiteSpace(IndexSearchText)
             ? _allSurahsMaster
             : _allSurahsMaster.Where(s => s.Name.Contains(IndexSearchText.Trim(), StringComparison.OrdinalIgnoreCase));
-
         foreach (var s in query)
-        {
             FilteredSurahs.Add(s);
-        }
     }
 
     [RelayCommand]
@@ -326,17 +348,15 @@ private async Task EnsureIndexLoadedAsync()
         IsCallActive = !IsCallActive;
         if (IsCallActive)
         {
-            CallStatusLabel = "مكالمة متصلة مباشرة";
-            CallStatusDescription = "المكالمة المباشرة جارية مع الطالب.";
-            CallActionButtonText = "إنهاء المكالمة";
-            OperationMessage = "تم بدء الاتصال المباشر بنجاح.";
+            CallStatusLabel = "\u0645\u0643\u0627\u0644\u0645\u0629 \u0645\u062a\u0635\u0644\u0629 \u0645\u0628\u0627\u0634\u0631\u0629";
+            CallStatusDescription = "\u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629 \u0627\u0644\u0645\u0628\u0627\u0634\u0631\u0629 \u062c\u0627\u0631\u064a\u0629 \u0645\u0639 \u0627\u0644\u0637\u0627\u0644\u0628.";
+            CallActionButtonText = "\u0625\u0646\u0647\u0627\u0621 \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629";
         }
         else
         {
-            CallStatusLabel = "غير نشط";
-            CallStatusDescription = "انتهت المكالمة المباشرة.";
-            CallActionButtonText = "طلب اتصال مباشر";
-            OperationMessage = "أُغلقت المكالمة المباشرة.";
+            CallStatusLabel = "\u063a\u064a\u0631 \u0646\u0634\u0637";
+            CallStatusDescription = "\u0627\u0646\u062a\u0647\u062a \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629 \u0627\u0644\u0645\u0628\u0627\u0634\u0631\u0629.";
+            CallActionButtonText = "\u0637\u0644\u0628 \u0627\u062a\u0635\u0627\u0644 \u0645\u0628\u0627\u0634\u0631";
         }
     }
 
@@ -360,8 +380,7 @@ private async Task EnsureIndexLoadedAsync()
         await LoadMushafPageAsync(1, cancellationToken: cancellationToken);
 
     [RelayCommand]
-    private async Task LoadMushafPageAsync() =>
-        await LoadMushafPageFromInputAsync();
+    private async Task LoadMushafPageAsync() => await LoadMushafPageFromInputAsync();
 
     [RelayCommand]
     private async Task PreviousMushafPageAsync()
@@ -382,10 +401,9 @@ private async Task EnsureIndexLoadedAsync()
         var pageNumber = ParsePageNumber(PageNumberInput);
         if (pageNumber is null)
         {
-            QuranMessage = "أدخل رقم صفحة صالحاً بين 1 و 604.";
+            QuranMessage = "\u0623\u062f\u062e\u0644 \u0631\u0642\u0645 \u0635\u0641\u062d\u0629 \u0635\u0627\u0644\u062d\u0627\u064b \u0628\u064a\u0646 1 \u0648 604.";
             return;
         }
-
         await LoadMushafPageAsync(pageNumber.Value);
     }
 
@@ -401,7 +419,7 @@ private async Task EnsureIndexLoadedAsync()
             var result = await _getQuranPageUseCase.ExecuteAsync(1, pageNumber, cancellationToken);
             if (!result.IsSuccess || result.Value is null)
             {
-                QuranMessage = result.Error?.Message ?? "تعذر تحميل بيانات الصفحة.";
+                QuranMessage = result.Error?.Message ?? "\u062a\u0639\u0630\u0631 \u062a\u062d\u0645\u064a\u0644 \u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0635\u0641\u062d\u0629.";
                 return;
             }
 
@@ -410,13 +428,9 @@ private async Task EnsureIndexLoadedAsync()
             TargetPage = result.Value.PageNumber;
 
             if (result.Value.Surahs.Count > 0)
-            {
                 CurrentSurahName = result.Value.Surahs[0].Name;
-            }
             if (result.Value.Ayahs.Count > 0 && result.Value.Ayahs[0].Juz.HasValue)
-            {
-                CurrentJuzText = $"الجزء {result.Value.Ayahs[0].Juz}";
-            }
+                CurrentJuzText = $"\u0627\u0644\u062c\u0632\u0621 {result.Value.Ayahs[0].Juz}";
 
             InteractiveWords.Clear();
             var globalWordIdx = 0;
@@ -425,19 +439,17 @@ private async Task EnsureIndexLoadedAsync()
                 var ayahWords = ayah.PageGlyphText.Split(new[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
                 for (int i = 0; i < ayahWords.Length; i++)
                 {
-                    var isEnd = i == ayahWords.Length - 1;
                     InteractiveWords.Add(new InteractiveQuranWord
                     {
                         WordIndex = globalWordIdx++,
                         Text = ayahWords[i],
                         PageNumber = result.Value.PageNumber,
                         AyahNumber = ayah.Number,
-                        IsAyahEndSymbol = isEnd
+                        IsAyahEndSymbol = i == ayahWords.Length - 1
                     });
                 }
             }
 
-            // Restore any isolated student mistakes previously recorded on this page
             if (_studentMistakesIsolated.TryGetValue(StudentId, out var savedList))
             {
                 foreach (var (p, wIdx, type) in savedList.Where(m => m.Page == pageNumber))
@@ -456,19 +468,19 @@ private async Task EnsureIndexLoadedAsync()
     }
 
     [RelayCommand]
-    private void TagMemorizationMistake(InteractiveQuranWord? word) => TagWordDirect(word, "حفظ");
+    private void TagMemorizationMistake(InteractiveQuranWord? word) => TagWordDirect(word, "\u062d\u0641\u0638");
 
     [RelayCommand]
-    private void TagTajweedMistake(InteractiveQuranWord? word) => TagWordDirect(word, "تجويد");
+    private void TagTajweedMistake(InteractiveQuranWord? word) => TagWordDirect(word, "\u062a\u062c\u0648\u064a\u062f");
 
     [RelayCommand]
-    private void TagTashkeelMistake(InteractiveQuranWord? word) => TagWordDirect(word, "تشكيل");
+    private void TagTashkeelMistake(InteractiveQuranWord? word) => TagWordDirect(word, "\u062a\u0634\u0643\u064a\u0644");
 
     [RelayCommand]
-    private void TagAlertMistake(InteractiveQuranWord? word) => TagWordDirect(word, "تنبيه");
+    private void TagAlertMistake(InteractiveQuranWord? word) => TagWordDirect(word, "\u062a\u0646\u0628\u064a\u0647");
 
     [RelayCommand]
-    private void ClearWordMistake(InteractiveQuranWord? word) => TagWordDirect(word, "إلغاء");
+    private void ClearWordMistake(InteractiveQuranWord? word) => TagWordDirect(word, "\u0625\u0644\u063a\u0627\u0621");
 
     public void TagWordDirect(InteractiveQuranWord? word, string mistakeType)
     {
@@ -476,23 +488,18 @@ private async Task EnsureIndexLoadedAsync()
         word.SetMistake(mistakeType);
         RecalculateMistakes();
 
-        // Save isolated mistake per student
         if (!_studentMistakesIsolated.ContainsKey(StudentId))
-        {
             _studentMistakesIsolated[StudentId] = new List<(int, int, string)>();
-        }
+
         _studentMistakesIsolated[StudentId].RemoveAll(m => m.Page == word.PageNumber && m.WordIndex == word.WordIndex);
         if (word.HasMistake)
-        {
             _studentMistakesIsolated[StudentId].Add((word.PageNumber, word.WordIndex, word.MistakeType!));
-        }
 
-        // Live Realtime Mistake broadcast to student
         _ = _mushafRealtimeChannel.SendRepeatRequestAsync(new PeerRepeatRequest(SessionId, TaskId, word.AyahNumber, mistakeType));
 
-        OperationMessage = mistakeType == "إلغاء"
-            ? "تم إزالة الخطأ من الكلمة ومزامنة الحالة."
-            : $"تم رصد خطأ {mistakeType} في الكلمة ومزامنته فورياً مع الطالب.";
+        OperationMessage = mistakeType == "\u0625\u0644\u063a\u0627\u0621"
+            ? "\u062a\u0645 \u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u062e\u0637\u0623 \u0645\u0646 \u0627\u0644\u0643\u0644\u0645\u0629."
+            : $"\u062a\u0645 \u0631\u0635\u062f \u062e\u0637\u0623 {mistakeType} \u0641\u064a \u0627\u0644\u0643\u0644\u0645\u0629.";
     }
 
     private void RecalculateMistakes()
@@ -500,11 +507,62 @@ private async Task EnsureIndexLoadedAsync()
         MistakesCount = InteractiveWords.Count(w => w.HasMistake);
     }
 
+    // ── Evaluation Overlay ───────────────────────────────────────────────────
+
     [RelayCommand]
-    private void CompleteSession()
+    private void OpenEvaluationPanel()
     {
-        OperationMessage = "تم إنهاء وحفظ جلسة التسميع بنجاح.";
-        SessionCompleted?.Invoke(this, StudentId);
+        EvalMemorizationMistakes = InteractiveWords.Count(w => w.MistakeType == "\u062d\u0641\u0638");
+        EvalTajweedMistakes      = InteractiveWords.Count(w => w.MistakeType == "\u062a\u062c\u0648\u064a\u062f");
+        EvalTashkeelMistakes     = InteractiveWords.Count(w => w.MistakeType == "\u062a\u0634\u0643\u064a\u0644");
+        EvalAlertMistakes        = InteractiveWords.Count(w => w.MistakeType == "\u062a\u0646\u0628\u064a\u0647");
+        EvaluationNotes = string.Empty;
+        SetScoreSelected(4);
+        IsEvaluationPanelOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseEvaluationPanel() => IsEvaluationPanelOpen = false;
+
+    [RelayCommand]
+    private void SetEvaluationScore(string? scoreStr)
+    {
+        if (int.TryParse(scoreStr, out var s) && s >= 1 && s <= 5)
+            SetScoreSelected(s);
+    }
+
+    private void SetScoreSelected(int score)
+    {
+        EvaluationScore = score;
+        IsScore1 = score == 1;
+        IsScore2 = score == 2;
+        IsScore3 = score == 3;
+        IsScore4 = score == 4;
+        IsScore5 = score == 5;
+        OnPropertyChanged(nameof(EvaluationRatingLabel));
+    }
+
+    [RelayCommand]
+    private void ConfirmEvaluation()
+    {
+        var report = new SessionReport(
+            StudentId: StudentId,
+            StudentName: StudentName,
+            TaskType: TaskType,
+            TargetPage: TargetPage,
+            StopAyahNumber: StopAyahNumber,
+            Mistakes: new SessionMistakeSummary(
+                EvalMemorizationMistakes,
+                EvalTajweedMistakes,
+                EvalTashkeelMistakes,
+                EvalAlertMistakes),
+            Score: EvaluationScore,
+            Rating: EvaluationRatingLabel,
+            Notes: EvaluationNotes,
+            CompletedAt: DateTimeOffset.Now);
+
+        IsEvaluationPanelOpen = false;
+        SessionCompleted?.Invoke(this, report);
     }
 
     [RelayCommand]

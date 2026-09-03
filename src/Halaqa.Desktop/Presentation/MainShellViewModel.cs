@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
@@ -16,6 +16,7 @@ using Halaqa.Desktop.Features.Progress.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Quran.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Profile.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Registrations.Presentation.ViewModels;
+using Halaqa.Desktop.Features.Sessions.Domain.Entities;
 using Halaqa.Desktop.Features.TeacherDocuments.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Sessions.Presentation.ViewModels;
 
@@ -41,6 +42,9 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly StudentRegistrationRequestsViewModel _studentRegistrationRequestsViewModel;
     private readonly FollowUpViewModel _followUpViewModel;
     private readonly ComprehensiveTrackingViewModel _comprehensiveTrackingViewModel;
+    private readonly StudentsViewModel _studentsViewModel;
+    private readonly StudentRecitationProfileViewModel _studentRecitationProfileViewModel;
+    private readonly List<SessionReport> _sessionReports = new();
     private readonly QuranReaderViewModel _quranReaderViewModel;
     private readonly NotificationsViewModel _notificationsViewModel;
     private readonly SessionsViewModel _sessionsViewModel;
@@ -91,6 +95,8 @@ public sealed partial class MainShellViewModel : ObservableObject
         StudentRegistrationRequestsViewModel studentRegistrationRequestsViewModel,
         FollowUpViewModel followUpViewModel,
         ComprehensiveTrackingViewModel comprehensiveTrackingViewModel,
+        StudentsViewModel studentsViewModel,
+        StudentRecitationProfileViewModel studentRecitationProfileViewModel,
         QuranReaderViewModel quranReaderViewModel,
         NotificationsViewModel notificationsViewModel,
         SessionsViewModel sessionsViewModel,
@@ -121,6 +127,8 @@ public sealed partial class MainShellViewModel : ObservableObject
         _studentRegistrationRequestsViewModel = studentRegistrationRequestsViewModel;
         _followUpViewModel = followUpViewModel;
         _comprehensiveTrackingViewModel = comprehensiveTrackingViewModel;
+        _studentsViewModel = studentsViewModel;
+        _studentRecitationProfileViewModel = studentRecitationProfileViewModel;
         _quranReaderViewModel = quranReaderViewModel;
         _notificationsViewModel = notificationsViewModel;
         _sessionsViewModel = sessionsViewModel;
@@ -139,11 +147,31 @@ public sealed partial class MainShellViewModel : ObservableObject
             await _liveSessionViewModel.InitializeForStudentAsync(args.Student, args.TaskType, args.TargetPage);
             CurrentPage = _liveSessionViewModel;
         };
+        _comprehensiveTrackingViewModel.ProfileRequested += (_, student) => ShowStudentRecitationProfile(student);
+        _comprehensiveTrackingViewModel.ReportsRequested += (_, student) => ShowStudentRecitationProfile(student);
+
         _liveSessionViewModel.BackRequested += (_, _) => CurrentPage = _comprehensiveTrackingViewModel;
-        _liveSessionViewModel.SessionCompleted += (_, studentId) =>
+        _liveSessionViewModel.SessionCompleted += (_, report) =>
         {
-            _comprehensiveTrackingViewModel.MarkStudentCompleted(studentId);
+            _sessionReports.Add(report);
+            _comprehensiveTrackingViewModel.MarkStudentCompleted(report);
+            _studentRecitationProfileViewModel.AddReport(report);
             CurrentPage = _comprehensiveTrackingViewModel;
+        };
+
+        _studentsViewModel.BackRequested += (_, _) => ShowDashboard();
+        _studentsViewModel.StudentProfileRequested += (_, student) => ShowStudentRecitationProfile(student);
+        _studentsViewModel.RecitationRequested += async (_, args) =>
+        {
+            await _liveSessionViewModel.InitializeForStudentAsync(args.Student, args.TaskType, args.TargetPage);
+            CurrentPage = _liveSessionViewModel;
+        };
+
+        _studentRecitationProfileViewModel.BackRequested += (_, _) => CurrentPage = _studentsViewModel;
+        _studentRecitationProfileViewModel.RecitationRequested += async (_, args) =>
+        {
+            await _liveSessionViewModel.InitializeForStudentAsync(args.Student, args.TaskType, args.TargetPage);
+            CurrentPage = _liveSessionViewModel;
         };
 
         _loginViewModel.SignedIn += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
@@ -227,6 +255,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         dashboardViewModel.StudentProfileRequested += async (_, _) => await ShowStudentProfileAsync();
         dashboardViewModel.TeacherDocumentsRequested += async (_, _) => await ShowTeacherDocumentsAsync();
         dashboardViewModel.HalaqasRequested += async (_, _) => await ShowHalaqasAsync();
+        dashboardViewModel.StudentsRequested += async (_, _) => await ShowStudentsAsync();
         dashboardViewModel.TeacherApplicationsRequested += async (_, _) => await ShowTeacherApplicationInboxAsync();
         dashboardViewModel.StudentRegistrationsRequested += async (_, _) => await ShowStudentTeacherDirectoryAsync();
         dashboardViewModel.StudentRequestsRequested += async (_, _) => await ShowStudentRegistrationRequestsAsync();
@@ -243,6 +272,19 @@ public sealed partial class MainShellViewModel : ObservableObject
     {
         await _comprehensiveTrackingViewModel.InitializeAsync();
         CurrentPage = _comprehensiveTrackingViewModel;
+    }
+
+    private async Task ShowStudentsAsync()
+    {
+        await _studentsViewModel.InitializeAsync();
+        CurrentPage = _studentsViewModel;
+    }
+
+    private void ShowStudentRecitationProfile(Halaqa.Desktop.Features.FollowUp.Domain.Entities.StudentFollowUpSummary student)
+    {
+        var studentReports = _sessionReports.Where(r => r.StudentId == student.StudentId).ToList();
+        _studentRecitationProfileViewModel.Initialize(student, studentReports);
+        CurrentPage = _studentRecitationProfileViewModel;
     }
 
     [RelayCommand]
