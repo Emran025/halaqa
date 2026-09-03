@@ -57,7 +57,10 @@ public sealed class QuranReaderViewModelTests
 
         public Task<Result<QuranPage>> GetPageAsync(int editionId, int pageNumber, CancellationToken cancellationToken = default)
         {
-            LastPageNumber = pageNumber;
+            if (CallCount == 0)
+            {
+                LastPageNumber = pageNumber;
+            }
             CallCount++;
             var ayah = new QuranAyah(
                 pageNumber,

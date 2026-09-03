@@ -34,7 +34,7 @@ public sealed class TypographyResourceTests
         Assert.Null(failure);
         Assert.NotNull(fontFamily);
         Assert.Equal(
-            "pack://application:,,,/Assets/Fonts/UthmanicHafs_V20.ttf#KFGQPC HAFS Uthmanic Script",
+            "pack://application:,,,/Assets/Fonts/UthmanicHafs_V20.ttf#KFGQPC HAFS Uthmanic Script, pack://application:,,,/Assets/Fonts/#Cairo, Segoe UI",
             fontFamily.ToString());
     }
 

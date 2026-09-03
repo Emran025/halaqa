@@ -23,7 +23,7 @@ public sealed class CountryServiceTests
     [Fact]
     public void SearchCountries_FindsByArabicName()
     {
-        var results = _countryService.SearchCountries("ط§ظ„ط³ط¹ظˆط¯ظٹط©");
+        var results = _countryService.SearchCountries("السعودية");
         Assert.NotEmpty(results);
         Assert.Contains(results, c => c.PhoneCode == "+966");
     }
@@ -42,6 +42,6 @@ public sealed class CountryServiceTests
         var country = _countryService.FindByCode("EG");
         Assert.NotNull(country);
         Assert.Equal("+20", country.PhoneCode);
-        Assert.Equal("ظ…طµط±", country.NameAr);
+        Assert.Equal("مصر", country.NameAr);
     }
 }
