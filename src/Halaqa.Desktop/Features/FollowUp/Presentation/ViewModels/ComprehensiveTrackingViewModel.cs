@@ -264,7 +264,9 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
             RecitationRequested?.Invoke(this, (student, "مراجعة", student.CurrentReviewPage ?? 1));
     }
 
-    [RelayCommand]
+    public IRelayCommand<StudentFollowUpSummary?> StartSardRecitationCommand { get; } =
+        new RelayCommand<StudentFollowUpSummary?>(StartSardRecitation);
+
     public void StartSardRecitation(StudentFollowUpSummary? student)
     {
         if (student != null)
