@@ -358,7 +358,6 @@
                         <Button Grid.Column="2"
                                 Command="{Binding MarkReadDirectCommand}"
                                 CommandParameter="{Binding SelectedNotification}"
-                                Style="{StaticResource AppPrimaryButton}"
                                 Height="38" Padding="16,0">
                             <Button.Style>
                                 <Style TargetType="Button" BasedOn="{StaticResource AppPrimaryButton}">
