@@ -43,7 +43,7 @@ internal sealed record FollowUpPlanDto(
     [property: JsonPropertyName("updated_at")] DateTimeOffset UpdatedAt = default);
 
 internal sealed record FollowUpPlanResponseDto(
-    [property: JsonPropertyName("follow_up_plan")] FollowUpPlanDto FollowUpPlan);
+    [property: JsonPropertyName("follow_up_plan")] FollowUpPlanDto? FollowUpPlan);
 
 internal sealed record AttendancePreferencesResponseDto(
     [property: JsonPropertyName("attendance_preferences")] AttendancePreferencesDto AttendancePreferences);

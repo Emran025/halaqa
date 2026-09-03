@@ -7,7 +7,10 @@ namespace Halaqa.Desktop.Features.FollowUp.Data.Mappers;
 
 internal static class FollowUpMapper
 {
-    public static Result<FollowUpPlan> ToDomain(FollowUpPlanResponseDto dto) => ToDomain(dto.FollowUpPlan);
+    public static Result<FollowUpPlan> ToDomain(FollowUpPlanResponseDto dto) =>
+        dto.FollowUpPlan is null
+            ? Result<FollowUpPlan>.Failure(UnexpectedResponseError())
+            : ToDomain(dto.FollowUpPlan);
 
     public static Result<FollowUpPlan> ToDomain(FollowUpPlanDto dto)
     {

@@ -45,6 +45,15 @@ public sealed class FollowUpMapperTests
     }
 
     [Fact]
+    public void ToDomain_HandlesMissingPlanWithoutThrowing()
+    {
+        var result = FollowUpMapper.ToDomain(new FollowUpPlanResponseDto(null));
+
+        Assert.False(result.IsSuccess);
+        Assert.Equal(AppErrorKind.Unknown, result.Error?.Kind);
+    }
+
+    [Fact]
     public void ToDomain_RejectsUnexpectedItemState()
     {
         var result = FollowUpMapper.ToDomain(CreateValidItemResponse(state: "unknown"));
