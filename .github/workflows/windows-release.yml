@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to build (for example v0.0.1)'
+        description: 'Release tag to build (for example v0.0.2)'
         required: true
-        default: 'v0.0.1'
+        default: 'v0.0.2'
         type: string
 
 permissions:
@@ -22,13 +22,12 @@ concurrency:
 env:
   DOTNET_VERSION: '6.0.x'
   PROJECT: 'src/Halaqa.Desktop/Halaqa.Desktop.csproj'
-  RUNTIME: 'win-x64'
 
 jobs:
-  validate-and-release:
-    name: Test and publish Windows x64
+  validate:
+    name: Build and test solution
     runs-on: windows-latest
-    timeout-minutes: 35
+    timeout-minutes: 30
 
     steps:
       - name: Checkout
@@ -41,14 +40,45 @@ jobs:
         with:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
-      - name: Restore dependencies for win-x64
-        run: dotnet restore halaqa.sln --force-evaluate --runtime ${{ env.RUNTIME }}
+      - name: Restore dependencies
+        run: dotnet restore halaqa.sln --locked-mode
 
       - name: Build
         run: dotnet build halaqa.sln --configuration Release --no-restore --nologo
 
       - name: Run tests
         run: dotnet test halaqa.sln --configuration Release --no-build --nologo --logger "trx;LogFileName=test-results.trx" --results-directory TestResults
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results
+          path: TestResults/*.trx
+          if-no-files-found: ignore
+          retention-days: 14
+
+  publish:
+    name: Publish ${{ matrix.runtime }}
+    needs: validate
+    runs-on: windows-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        runtime: [win-x64, win-x86, win-arm64]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Restore dependencies for runtime
+        run: dotnet restore halaqa.sln --force-evaluate --runtime ${{ matrix.runtime }}
 
       - name: Validate API secret
         shell: pwsh
@@ -68,11 +98,12 @@ jobs:
         env:
           HALAQA_API_ADDRESS: ${{ secrets.HALAQA_API_BASE_URL }}
         run: |
+          $output = Join-Path $PWD "publish-${{ matrix.runtime }}"
           dotnet publish $env:PROJECT `
             --configuration Release `
-            --runtime $env:RUNTIME `
+            --runtime ${{ matrix.runtime }} `
             --self-contained true `
-            --output publish `
+            --output $output `
             -p:PublishSingleFile=true `
             -p:IncludeNativeLibrariesForSelfExtract=true `
             -p:EnableCompressionInSingleFile=true `
@@ -80,43 +111,74 @@ jobs:
             --no-restore `
             --nologo
 
-          $settingsPath = Join-Path $PWD 'publish/appsettings.json'
+          $settingsPath = Join-Path $output 'appsettings.json'
           $settings = Get-Content $settingsPath -Raw | ConvertFrom-Json
           $settings.Api.BaseUrl = $env:HALAQA_API_ADDRESS
           $settings | ConvertTo-Json -Depth 10 | Set-Content $settingsPath -Encoding utf8
 
-          if (-not (Test-Path 'publish/Halaqa.Desktop.exe')) {
-            throw 'The expected self-contained executable was not produced.'
+          $exe = Join-Path $output 'Halaqa.Desktop.exe'
+          if (-not (Test-Path $exe)) {
+            throw "The expected executable was not produced for ${{ matrix.runtime }}."
           }
 
       - name: Package and checksum
-        id: package
         shell: pwsh
         run: |
           $tag = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' } else { '${{ inputs.tag }}' }
-          if ([string]::IsNullOrWhiteSpace($tag)) { $tag = 'v0.0.1' }
-          Compress-Archive -Path 'publish/*' -DestinationPath "Halaqa.Desktop-$tag-win-x64.zip" -Force
-          (Get-FileHash "Halaqa.Desktop-$tag-win-x64.zip" -Algorithm SHA256).Hash + "  Halaqa.Desktop-$tag-win-x64.zip" | Set-Content "Halaqa.Desktop-$tag-win-x64.zip.sha256"
-          "TAG=$tag" | Out-File $env:GITHUB_ENV -Append
-          "tag=$tag" | Out-File $env:GITHUB_OUTPUT -Append
+          if ([string]::IsNullOrWhiteSpace($tag)) { $tag = 'v0.0.2' }
+          $zip = "Halaqa.Desktop-$tag-${{ matrix.runtime }}.zip"
+          Compress-Archive -Path "publish-${{ matrix.runtime }}/*" -DestinationPath $zip -Force
+          (Get-FileHash $zip -Algorithm SHA256).Hash + "  $zip" | Set-Content "$zip.sha256"
 
-      - name: Upload build artifact
+      - name: Upload architecture artifact
         uses: actions/upload-artifact@v4
         with:
-          name: Halaqa-${{ steps.package.outputs.tag }}-win-x64
+          name: Halaqa-${{ matrix.runtime }}
           path: |
-            Halaqa.Desktop-${{ steps.package.outputs.tag }}-win-x64.zip
-            Halaqa.Desktop-${{ steps.package.outputs.tag }}-win-x64.zip.sha256
+            Halaqa.Desktop-*.zip
+            Halaqa.Desktop-*.zip.sha256
           if-no-files-found: error
           retention-days: 30
+
+  release:
+    name: Create multi-architecture release
+    needs: publish
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    steps:
+      - name: Determine release tag
+        id: tag
+        shell: bash
+        run: |
+          if [[ "${{ github.ref_type }}" == "tag" ]]; then
+            echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${{ inputs.tag || 'v0.0.2' }}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Download all architecture packages
+        uses: actions/download-artifact@v4
+        with:
+          pattern: Halaqa-win-*
+          merge-multiple: true
+          path: release-assets
+
+      - name: Verify release assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          count=$(find release-assets -maxdepth 1 -name '*.zip' | wc -l)
+          [[ "$count" -eq 3 ]] || { echo "Expected 3 architecture packages, found $count"; exit 1; }
+          for checksum in release-assets/*.sha256; do
+            (cd release-assets && sha256sum -c "$(basename "$checksum")")
+          done
 
       - name: Create GitHub release
         uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ steps.package.outputs.tag }}
-          name: Halaqa ${{ steps.package.outputs.tag }}
+          tag_name: ${{ steps.tag.outputs.tag }}
+          name: Halaqa ${{ steps.tag.outputs.tag }}
           generate_release_notes: true
-          files: |
-            Halaqa.Desktop-${{ steps.package.outputs.tag }}-win-x64.zip
-            Halaqa.Desktop-${{ steps.package.outputs.tag }}-win-x64.zip.sha256
+          files: release-assets/*
           fail_on_unmatched_files: true
