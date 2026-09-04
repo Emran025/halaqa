@@ -7,9 +7,9 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to build (for example v0.0.2)'
+        description: 'Release tag to build (for example v0.0.1)'
         required: true
-        default: 'v0.0.2'
+        default: 'v0.0.1'
         type: string
 
 permissions:
@@ -125,10 +125,36 @@ jobs:
         shell: pwsh
         run: |
           $tag = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}' } else { '${{ inputs.tag }}' }
-          if ([string]::IsNullOrWhiteSpace($tag)) { $tag = 'v0.0.2' }
+          if ([string]::IsNullOrWhiteSpace($tag)) { $tag = 'v0.0.1' }
           $zip = "Halaqa.Desktop-$tag-${{ matrix.runtime }}.zip"
           Compress-Archive -Path "publish-${{ matrix.runtime }}/*" -DestinationPath $zip -Force
           (Get-FileHash $zip -Algorithm SHA256).Hash + "  $zip" | Set-Content "$zip.sha256"
+
+          choco install innosetup --no-progress --yes
+          $iss = @"
+          [Setup]
+          AppName=Halaqa
+          AppVersion=$tag
+          DefaultDirName={autopf}\Halaqa
+          ArchitecturesInstallIn64BitMode=x64compatible
+          OutputDir=.
+          OutputBaseFilename=Halaqa.Desktop-$tag-${{ matrix.runtime }}-Setup
+          Compression=lzma2
+          SolidCompression=yes
+          Uninstallable=yes
+
+          [Files]
+          Source: "publish-${{ matrix.runtime }}\*"; DestDir: "{app}"; Flags: recursesubdirs ignoreversion
+
+          [Icons]
+          Name: "{autodesktop}\Halaqa"; Filename: "{app}\Halaqa.Desktop.exe"
+          Name: "{group}\Halaqa"; Filename: "{app}\Halaqa.Desktop.exe"
+          "@
+          Set-Content 'Halaqa.iss' $iss -Encoding utf8
+          & 'C:\Program Files (x86)\Inno Setup 6\ISCC.exe' 'Halaqa.iss'
+          $setup = "Halaqa.Desktop-$tag-${{ matrix.runtime }}-Setup.exe"
+          if (-not (Test-Path $setup)) { throw "The setup executable was not produced for ${{ matrix.runtime }}." }
+          (Get-FileHash $setup -Algorithm SHA256).Hash + "  $setup" | Set-Content "$setup.sha256"
 
       - name: Upload architecture artifact
         uses: actions/upload-artifact@v4
@@ -137,6 +163,8 @@ jobs:
           path: |
             Halaqa.Desktop-*.zip
             Halaqa.Desktop-*.zip.sha256
+            Halaqa.Desktop-*-Setup.exe
+            Halaqa.Desktop-*-Setup.exe.sha256
           if-no-files-found: error
           retention-days: 30
 
@@ -154,7 +182,7 @@ jobs:
           if [[ "${{ github.ref_type }}" == "tag" ]]; then
             echo "tag=${{ github.ref_name }}" >> "$GITHUB_OUTPUT"
           else
-            echo "tag=${{ inputs.tag || 'v0.0.2' }}" >> "$GITHUB_OUTPUT"
+            echo "tag=${{ inputs.tag || 'v0.0.1' }}" >> "$GITHUB_OUTPUT"
           fi
 
       - name: Download all architecture packages
@@ -180,5 +208,6 @@ jobs:
           tag_name: ${{ steps.tag.outputs.tag }}
           name: Halaqa ${{ steps.tag.outputs.tag }}
           generate_release_notes: true
+          overwrite_files: true
           files: release-assets/*
           fail_on_unmatched_files: true
