@@ -157,9 +157,9 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="من" Style="{StaticResource CaptionText}" />
-                                    <ComboBox ItemsSource="{Binding AttendanceTimes}" SelectedItem="{Binding AttendanceFrom}" IsEditable="True" Text="{Binding AttendanceFrom, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختر وقت البداية" />
+                                    <controls:TimePicker Value="{Binding AttendanceFrom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBlock Text="إلى" Style="{StaticResource CaptionText}" />
-                                    <ComboBox ItemsSource="{Binding AttendanceTimes}" SelectedItem="{Binding AttendanceTo}" IsEditable="True" Text="{Binding AttendanceTo, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختر وقت النهاية" />
+                                    <controls:TimePicker Value="{Binding AttendanceTo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBlock Text="رمز المعلم (اختياري)" Style="{StaticResource CaptionText}" />
                                     <TextBox Text="{Binding TeacherCode}" ToolTip="رمز المعلم" />
                                 </StackPanel>

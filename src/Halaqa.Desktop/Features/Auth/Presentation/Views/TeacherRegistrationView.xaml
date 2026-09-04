@@ -159,7 +159,7 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="وقت التوفر (اختياري)" Style="{StaticResource CaptionText}" />
-                                    <ComboBox ItemsSource="{Binding AvailableTimes}" SelectedItem="{Binding AvailableTime}" IsEditable="True" IsTextSearchEnabled="True" Text="{Binding AvailableTime, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختياري — اختر الوقت أو اكتب مثل 18:30" />
+                                    <controls:TimePicker Value="{Binding AvailableTime, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBlock Text="الحد الأقصى للحلقات" Style="{StaticResource CaptionText}" />
                                     <TextBox Text="{Binding MaxHalaqas, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختياري — رقم صحيح" />
                                 </StackPanel>

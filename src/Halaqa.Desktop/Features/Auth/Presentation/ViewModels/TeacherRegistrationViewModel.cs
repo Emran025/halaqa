@@ -44,7 +44,7 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
     [ObservableProperty] private string _qualification = string.Empty;
     [ObservableProperty] private string _experienceYears = "0";
     [ObservableProperty] private string? _bio;
-    [ObservableProperty] private string? _availableTime;
+    [ObservableProperty] private string? _availableTime = "18:00";
     [ObservableProperty] private string _maxHalaqas = string.Empty;
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private string? _message;
