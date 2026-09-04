@@ -162,7 +162,7 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
             : InvalidAvailableTime.Instance;
     }
 
-    private sealed record OptionalAvailableTime(string? Value)
+    private record OptionalAvailableTime(string? Value)
     {
         public static OptionalAvailableTime Empty { get; } = new(null);
     }
