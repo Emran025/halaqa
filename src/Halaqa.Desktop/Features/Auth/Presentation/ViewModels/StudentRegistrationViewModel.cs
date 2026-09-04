@@ -119,6 +119,7 @@ public sealed partial class StudentRegistrationViewModel : ObservableObject
         OnPropertyChanged(nameof(IsThirdStep));
         PreviousCommand.NotifyCanExecuteChanged();
         NextCommand.NotifyCanExecuteChanged();
+        SubmitCommand.NotifyCanExecuteChanged();
     }
 
     [RelayCommand(CanExecute = nameof(CanGoPrevious))]
