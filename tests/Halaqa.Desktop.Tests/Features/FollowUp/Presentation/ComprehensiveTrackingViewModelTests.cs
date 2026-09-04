@@ -142,7 +142,7 @@ public sealed class ComprehensiveTrackingViewModelTests
 
     private sealed class FakeMembershipsRepository : IHalaqaMembershipRepository
     {
-        public Task<Result<MembershipPage>> ListAsync(Guid halaqaId, string? status = null, int page = 1, CancellationToken cancellationToken = default)
+        public Task<Result<MembershipPage>> ListAsync(Guid halaqaId, string? status = null, int page = 1, int perPage = 30, CancellationToken cancellationToken = default)
         {
             var student = new MembershipStudent(
                 StudentId,

@@ -118,10 +118,18 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
         SubmitCommand.NotifyCanExecuteChanged();
         try
         {
+            var availableTime = NormalizeAvailableTime(AvailableTime);
+            if (availableTime is InvalidAvailableTime)
+            {
+                IsError = true;
+                Message = "وقت التوفر اختياري، وإذا أُدخل فاكتبه بصيغة 24 ساعة مثل 18:30.";
+                return;
+            }
+
             var command = new TeacherRegistrationCommand(
                 _clientOperationId, Name, null, Email, Password, PasswordConfirmation, Gender,
                 DateOnly.FromDateTime(BirthDate), Country, City, null, Phone, PhoneZone, WhatsappPhone, WhatsappZone,
-                Qualification, ExperienceYears, Bio, AvailableTime, MaxHalaqas);
+                Qualification, ExperienceYears, Bio, availableTime.Value, MaxHalaqas);
             var result = await registerTeacherUseCase.ExecuteAsync(command);
             IsError = !result.IsSuccess;
             Message = result.IsSuccess ? "تم إنشاء حساب المعلم بنجاح." : RenderError(result.Error);
@@ -143,6 +151,26 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
     private bool CanGoPrevious() => Step > 1 && !IsBusy;
     private bool CanGoNext() => Step < 2 && !IsBusy;
     private bool CanSubmit() => Step == 2 && !IsBusy;
+
+    private static OptionalAvailableTime NormalizeAvailableTime(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return OptionalAvailableTime.Empty;
+
+        return TimeOnly.TryParseExact(value.Trim(), "HH:mm", out _)
+            ? new OptionalAvailableTime(value.Trim())
+            : InvalidAvailableTime.Instance;
+    }
+
+    private sealed record OptionalAvailableTime(string? Value)
+    {
+        public static OptionalAvailableTime Empty { get; } = new(null);
+    }
+
+    private sealed record InvalidAvailableTime : OptionalAvailableTime(null)
+    {
+        public static InvalidAvailableTime Instance { get; } = new();
+    }
 
     private static string RenderError(AppError? error)
     {

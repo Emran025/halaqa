@@ -26,16 +26,17 @@ public sealed class ListHalaqaMembershipsUseCase
         Guid halaqaId,
         string? status = null,
         int page = 1,
+        int perPage = 30,
         CancellationToken cancellationToken = default)
     {
-        if (halaqaId == Guid.Empty || page < 1)
+        if (halaqaId == Guid.Empty || page < 1 || perPage is < 1 or > 100)
         {
             return Task.FromResult(Result<MembershipPage>.Failure(new AppError(
                 AppErrorKind.Validation,
-                "معرّف الحلقة أو رقم الصفحة غير صالح.")));
+                "معرّف الحلقة أو إعدادات الصفحة غير صالحة.")));
         }
 
-        return repository.ListAsync(halaqaId, status, page, cancellationToken);
+        return repository.ListAsync(halaqaId, status, page, perPage, cancellationToken);
     }
 }
 

@@ -9,6 +9,7 @@ public interface IHalaqaMembershipRepository
         Guid halaqaId,
         string? status = null,
         int page = 1,
+        int perPage = 30,
         CancellationToken cancellationToken = default);
 
     Task<Result<HalaqaMembership>> AssignAsync(

@@ -156,8 +156,8 @@
                                     <TextBox Text="{Binding ExperienceYears, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="سنوات الخبرة" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
-                                    <TextBlock Text="أوقات التوفر" Style="{StaticResource CaptionText}" />
-                                    <TextBox Text="{Binding AvailableTime, UpdateSourceTrigger=PropertyChanged}" ToolTip="اختياري" />
+                                    <TextBlock Text="وقت التوفر (اختياري)" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding AvailableTime, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختياري — بصيغة 24 ساعة مثل 18:30" />
                                     <TextBlock Text="الحد الأقصى للحلقات" Style="{StaticResource CaptionText}" />
                                     <TextBox Text="{Binding MaxHalaqas, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختياري" />
                                 </StackPanel>

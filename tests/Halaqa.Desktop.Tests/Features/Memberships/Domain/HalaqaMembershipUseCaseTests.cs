@@ -58,7 +58,7 @@ public sealed class HalaqaMembershipUseCaseTests
         public UpdateHalaqaMembershipCommand? Update { get; private set; }
         public (Guid HalaqaId, Guid MembershipId)? Removal { get; private set; }
 
-        public Task<Result<MembershipPage>> ListAsync(Guid halaqaId, string? status = null, int page = 1, CancellationToken cancellationToken = default) =>
+        public Task<Result<MembershipPage>> ListAsync(Guid halaqaId, string? status = null, int page = 1, int perPage = 30, CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<MembershipPage>.Success(new MembershipPage(Array.Empty<HalaqaMembership>(), 1, 1, 20, 0)));
 
         public Task<Result<HalaqaMembership>> AssignAsync(AssignStudentToHalaqaCommand command, CancellationToken cancellationToken = default)

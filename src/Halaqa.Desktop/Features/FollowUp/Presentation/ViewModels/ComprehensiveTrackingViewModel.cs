@@ -148,14 +148,14 @@ public sealed partial class ComprehensiveTrackingViewModel : ObservableObject
 
     private async Task<Result<IReadOnlyList<HalaqaMembership>>> LoadAllMembershipsAsync(Guid halaqaId)
     {
-        var result = await _listMembershipsUseCase.ExecuteAsync(halaqaId, status: "active", page: 1);
+        var result = await _listMembershipsUseCase.ExecuteAsync(halaqaId, status: "active", page: 1, perPage: 30);
         if (!result.IsSuccess || result.Value is null)
             return Result<IReadOnlyList<HalaqaMembership>>.Failure(result.Error!);
 
         var memberships = result.Value.Memberships.ToList();
         for (var page = 2; page <= result.Value.LastPage; page++)
         {
-            var next = await _listMembershipsUseCase.ExecuteAsync(halaqaId, status: "active", page);
+            var next = await _listMembershipsUseCase.ExecuteAsync(halaqaId, status: "active", page, perPage: 30);
             if (!next.IsSuccess || next.Value is null)
                 return Result<IReadOnlyList<HalaqaMembership>>.Failure(next.Error!);
             memberships.AddRange(next.Value.Memberships);

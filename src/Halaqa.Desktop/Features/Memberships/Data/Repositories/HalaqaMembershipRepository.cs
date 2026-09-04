@@ -29,9 +29,10 @@ internal sealed class HalaqaMembershipRepository : IHalaqaMembershipRepository
         Guid halaqaId,
         string? status = null,
         int page = 1,
+        int perPage = 30,
         CancellationToken cancellationToken = default)
     {
-        var result = await remoteDataSource.ListAsync(halaqaId, status, page, cancellationToken);
+        var result = await remoteDataSource.ListAsync(halaqaId, status, page, perPage, cancellationToken);
         if (!result.IsSuccess)
         {
             return Result<MembershipPage>.Failure(result.Error ?? UnknownError());

@@ -10,6 +10,7 @@ internal interface IHalaqaMembershipRemoteDataSource
         Guid halaqaId,
         string? status,
         int page,
+        int perPage,
         CancellationToken cancellationToken = default);
 
     Task<Result<MembershipResponseDto>> AssignAsync(
@@ -51,9 +52,10 @@ internal sealed class HalaqaMembershipRemoteDataSource : IHalaqaMembershipRemote
         Guid halaqaId,
         string? status,
         int page,
+        int perPage,
         CancellationToken cancellationToken = default)
     {
-        var query = $"halaqas/{halaqaId}/memberships?page={page}";
+        var query = $"halaqas/{halaqaId}/memberships?page={page}&per_page={perPage}";
         if (!string.IsNullOrWhiteSpace(status))
         {
             query += $"&status={Uri.EscapeDataString(status)}";
