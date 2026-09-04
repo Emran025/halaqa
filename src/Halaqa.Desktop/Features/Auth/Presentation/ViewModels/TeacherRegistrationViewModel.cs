@@ -119,7 +119,7 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
         try
         {
             var availableTime = NormalizeAvailableTime(AvailableTime);
-            if (availableTime is InvalidAvailableTime)
+            if (!availableTime.IsValid)
             {
                 IsError = true;
                 Message = "وقت التوفر اختياري، وإذا أُدخل فاكتبه بصيغة 24 ساعة مثل 18:30.";
@@ -152,24 +152,14 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
     private bool CanGoNext() => Step < 2 && !IsBusy;
     private bool CanSubmit() => Step == 2 && !IsBusy;
 
-    private static OptionalAvailableTime NormalizeAvailableTime(string? value)
+    private static (string? Value, bool IsValid) NormalizeAvailableTime(string? value)
     {
         if (string.IsNullOrWhiteSpace(value))
-            return OptionalAvailableTime.Empty;
+            return (null, true);
 
         return TimeOnly.TryParseExact(value.Trim(), "HH:mm", out _)
-            ? new OptionalAvailableTime(value.Trim())
-            : InvalidAvailableTime.Instance;
-    }
-
-    private record OptionalAvailableTime(string? Value)
-    {
-        public static OptionalAvailableTime Empty { get; } = new(null);
-    }
-
-    private sealed record InvalidAvailableTime : OptionalAvailableTime(null)
-    {
-        public static InvalidAvailableTime Instance { get; } = new();
+            ? (value.Trim(), true)
+            : (null, false);
     }
 
     private static string RenderError(AppError? error)
