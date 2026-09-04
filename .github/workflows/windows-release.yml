@@ -53,20 +53,20 @@ jobs:
       - name: Validate API secret
         shell: pwsh
         env:
-          HALAQA_API_ADDRESS: ${{ secrets.HALAQA_API_ADDRESS }}
+          HALAQA_API_ADDRESS: ${{ secrets.HALAQA_API_BASE_URL }}
         run: |
           if ([string]::IsNullOrWhiteSpace($env:HALAQA_API_ADDRESS)) {
-            throw 'Repository secret HALAQA_API_ADDRESS is required before creating a release.'
+            throw 'Repository secret HALAQA_API_BASE_URL is required before creating a release.'
           }
           $uri = [Uri]$env:HALAQA_API_ADDRESS
           if ($uri.Scheme -ne 'https' -or [string]::IsNullOrWhiteSpace($uri.Host)) {
-            throw 'HALAQA_API_ADDRESS must be an absolute HTTPS URL.'
+            throw 'HALAQA_API_BASE_URL must be an absolute HTTPS URL.'
           }
 
       - name: Publish self-contained single-file application
         shell: pwsh
         env:
-          HALAQA_API_ADDRESS: ${{ secrets.HALAQA_API_ADDRESS }}
+          HALAQA_API_ADDRESS: ${{ secrets.HALAQA_API_BASE_URL }}
         run: |
           dotnet publish $env:PROJECT `
             --configuration Release `
