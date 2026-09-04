@@ -146,28 +146,41 @@
                         </Grid>
                     </Border>
 
-                    <!-- Teacher Direct Controls Bar (One-click Quran visibility, student mic/camera management) -->
+                    <!-- Two-sided control bar: teacher controls the student and the Mushaf; local controls remain independent. -->
                     <Border Grid.Row="2" Background="#FF1C2622" CornerRadius="6" Padding="8,6" Margin="0,0,0,8">
-                        <DockPanel LastChildFill="False">
-                            <!-- Toggle Mushaf Visibility for Student with 1 button -->
-                            <Button DockPanel.Dock="Right"
-                                    Command="{Binding ToggleMushafVisibilityForStudentCommand}"
-                                    Style="{StaticResource AppQuietButton}"
-                                    Padding="8,5"
-                                    ToolTip="إظهار / إخفاء المصحف من شاشة الطالب للتسميع الغيبي">
-                                <controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="16" />
-                            </Button>
-
-                            <!-- Control Student Mic / Cam -->
-                            <StackPanel DockPanel.Dock="Left" Orientation="Horizontal" VerticalAlignment="Center">
-                                <Button Command="{Binding ToggleStudentMicCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" Margin="0,0,4,0" ToolTip="كتم/تشغيل ميكروفون الطالب">
-                                    <controls:AppIcon Kind="Microphone" Foreground="{StaticResource AppInfoBrush}" FontSize="13" />
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="1" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                        Visibility="{Binding IsStudentSession, Converter={StaticResource InverseBooleanConverter}}">
+                                <TextBlock Text="تحكم المعلم" Foreground="#B3FFFFFF" FontSize="10" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <Button Command="{Binding ToggleStudentMicCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" Margin="0,0,4,0" ToolTip="منع أو السماح بميكروفون الطالب">
+                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="Microphone" Foreground="{StaticResource AppInfoBrush}" FontSize="13" /><TextBlock Text=" الطالب" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
                                 </Button>
-                                <Button Command="{Binding ToggleStudentCameraCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" ToolTip="إيقاف/تشغيل كاميرا الطالب">
-                                    <controls:AppIcon Kind="VideoOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="14" />
+                                <Button Command="{Binding ToggleStudentCameraCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" Margin="0,0,4,0" ToolTip="منع أو السماح بكاميرا الطالب">
+                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="VideoOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="14" /><TextBlock Text=" صورة الطالب" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
+                                </Button>
+                                <Button Command="{Binding ToggleMushafVisibilityForStudentCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" ToolTip="إخفاء أو إظهار المصحف للطالب">
+                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="14" /><TextBlock Text=" مصحف الطالب" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
                                 </Button>
                             </StackPanel>
-                        </DockPanel>
+                            <Border Grid.Column="1" Background="#40FFFFFF" Width="1" />
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="تحكمي أنا" Foreground="#B3FFFFFF" FontSize="10" VerticalAlignment="Center" Margin="0,0,8,0" />
+                                <Button Command="{Binding ToggleMicrophoneCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" Margin="0,0,4,0" ToolTip="كتم أو تشغيل صوتي">
+                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="Microphone" Foreground="White" FontSize="13" /><TextBlock Text=" صوتي" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
+                                </Button>
+                                <Button Command="{Binding ToggleCameraCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" Margin="0,0,4,0" ToolTip="إيقاف أو تشغيل صورتي">
+                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="VideoOutline" Foreground="White" FontSize="14" /><TextBlock Text=" صورتي" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
+                                </Button>
+                                <Border Background="#1AFFFFFF" CornerRadius="3" Padding="5,3" ToolTip="المصحف المحلي يبقى ظاهرًا للمعلم">
+                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="14" /><TextBlock Text=" مصحفي" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
+                                </Border>
+                            </StackPanel>
+                        </Grid>
                     </Border>
 
                     <!-- Main Call Controls Floating Toolbar -->

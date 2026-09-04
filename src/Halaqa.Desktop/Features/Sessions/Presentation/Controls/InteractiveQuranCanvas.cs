@@ -198,7 +198,9 @@ public sealed class InteractiveQuranCanvas : ContentControl
             else
             {
                 run.Background = Brushes.Transparent;
-                run.Foreground = Brushes.Black;
+                run.Foreground = new SolidColorBrush(Color.FromRgb(75, 75, 75));
+                run.FontWeight = FontWeights.Normal;
+                run.TextDecorations = null;
             }
 
             // Attach single-word click handler
@@ -259,7 +261,9 @@ public sealed class InteractiveQuranCanvas : ContentControl
         {
             _currentMistakes.Remove(wordIndex);
             run.Background = Brushes.Transparent;
-            run.Foreground = Brushes.Black;
+            run.Foreground = new SolidColorBrush(Color.FromRgb(75, 75, 75));
+            run.FontWeight = FontWeights.Normal;
+            run.TextDecorations = null;
         }
         else
         {
@@ -281,28 +285,12 @@ public sealed class InteractiveQuranCanvas : ContentControl
 
     private static void ApplyMistakeColorToRun(Run run, string mistakeType)
     {
-        switch (mistakeType)
-        {
-            case "حفظ":
-                run.Background = new SolidColorBrush(Color.FromRgb(255, 205, 210)); // Solid Vibrant Red
-                run.Foreground = new SolidColorBrush(Color.FromRgb(183, 28, 28));
-                break;
-            case "تجويد":
-                run.Background = new SolidColorBrush(Color.FromRgb(255, 224, 178)); // Solid Vibrant Orange
-                run.Foreground = new SolidColorBrush(Color.FromRgb(230, 81, 0));
-                break;
-            case "تشكيل":
-                run.Background = new SolidColorBrush(Color.FromRgb(255, 245, 157)); // Solid Vibrant Yellow
-                run.Foreground = new SolidColorBrush(Color.FromRgb(245, 127, 23));
-                break;
-            case "تنبيه":
-                run.Background = new SolidColorBrush(Color.FromRgb(187, 222, 251)); // Solid Vibrant Blue
-                run.Foreground = new SolidColorBrush(Color.FromRgb(13, 71, 161));
-                break;
-            default:
-                run.Background = Brushes.Transparent;
-                run.Foreground = Brushes.Black;
-                break;
-        }
+        // Keep every word on the same page background. An error is identified only
+        // by black, bold text and an underline; its type remains available in the
+        // context menu and in the recorded mistake payload.
+        run.Background = Brushes.Transparent;
+        run.Foreground = Brushes.Black;
+        run.FontWeight = FontWeights.Bold;
+        run.TextDecorations = TextDecorations.Underline;
     }
 }

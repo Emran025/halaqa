@@ -38,9 +38,9 @@ public sealed partial class StudentRegistrationViewModel : ObservableObject
     [ObservableProperty] private string _country = string.Empty;
     [ObservableProperty] private string _city = string.Empty;
     [ObservableProperty] private string _phone = string.Empty;
-    [ObservableProperty] private string _phoneZone = string.Empty;
+    [ObservableProperty] private string _phoneZone = "+";
     [ObservableProperty] private string _whatsappPhone = string.Empty;
-    [ObservableProperty] private string _whatsappZone = string.Empty;
+    [ObservableProperty] private string _whatsappZone = "+";
     [ObservableProperty] private string _timezone = "Asia/Riyadh";
     [ObservableProperty] private int _attendanceDay = 0;
     [ObservableProperty] private string _attendanceFrom = "18:00";
@@ -58,6 +58,14 @@ public sealed partial class StudentRegistrationViewModel : ObservableObject
     public event EventHandler? LoginRequested;
 
     public IReadOnlyList<CountryItem> Countries { get; }
+
+    public IReadOnlyList<string> TimezoneOptions { get; } = new[]
+    {
+        "Asia/Riyadh", "Asia/Dubai", "Asia/Amman", "Africa/Cairo", "Europe/London", "UTC"
+    };
+
+    public IReadOnlyList<string> AttendanceTimes { get; } =
+        Enumerable.Range(0, 48).Select(index => TimeOnly.MinValue.AddMinutes(index * 30).ToString("HH:mm")).ToArray();
 
     public IReadOnlyList<LocalizedOption<Gender>> Genders { get; } = new[]
     {

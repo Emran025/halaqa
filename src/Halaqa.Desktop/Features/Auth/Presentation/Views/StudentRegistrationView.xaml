@@ -64,7 +64,7 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="تاريخ الميلاد" Style="{StaticResource CaptionText}" />
-                                    <DatePicker SelectedDate="{Binding BirthDate}" />
+                                    <DatePicker SelectedDate="{Binding BirthDate}" SelectedDateFormat="Short" Language="ar-SA" ToolTip="اختر تاريخ الميلاد" Validation.Error="BirthDateValidationError" />
                                     <TextBlock Text="الدولة" Style="{StaticResource CaptionText}" />
                                     <ComboBox ItemsSource="{Binding Countries}"
                                               SelectedItem="{Binding SelectedCountry}"
@@ -93,6 +93,7 @@
                                     <TextBlock Text="مفتاح الدولة" Style="{StaticResource CaptionText}" />
                                     <ComboBox ItemsSource="{Binding Countries}"
                                               SelectedItem="{Binding SelectedPhoneZoneCountry}"
+                                              Text="{Binding PhoneZone, UpdateSourceTrigger=PropertyChanged}"
                                               IsEditable="True"
                                               IsTextSearchEnabled="True"
                                               TextSearch.TextPath="PhoneCode"
@@ -118,6 +119,7 @@
                                     <TextBlock Text="مفتاح واتساب" Style="{StaticResource CaptionText}" />
                                     <ComboBox ItemsSource="{Binding Countries}"
                                               SelectedItem="{Binding SelectedWhatsappZoneCountry}"
+                                              Text="{Binding WhatsappZone, UpdateSourceTrigger=PropertyChanged}"
                                               IsEditable="True"
                                               IsTextSearchEnabled="True"
                                               TextSearch.TextPath="PhoneCode"
@@ -147,7 +149,7 @@
                                 </Grid.ColumnDefinitions>
                                 <StackPanel Grid.Column="0">
                                     <TextBlock Text="المنطقة الزمنية" Style="{StaticResource CaptionText}" />
-                                    <TextBox Text="{Binding Timezone}" ToolTip="مثل Asia/Riyadh" />
+                                    <ComboBox ItemsSource="{Binding TimezoneOptions}" SelectedItem="{Binding Timezone}" IsEditable="True" IsTextSearchEnabled="True" Text="{Binding Timezone, UpdateSourceTrigger=PropertyChanged}" ToolTip="اختر المنطقة الزمنية أو اكتبها مثل Asia/Riyadh" />
                                     <TextBlock Text="يوم الحضور" Style="{StaticResource CaptionText}" />
                                     <ComboBox SelectedValue="{Binding AttendanceDay}" SelectedValuePath="Tag" ToolTip="يوم الأسبوع">
                                         <ComboBoxItem Content="الأحد" Tag="0" /><ComboBoxItem Content="الاثنين" Tag="1" /><ComboBoxItem Content="الثلاثاء" Tag="2" /><ComboBoxItem Content="الأربعاء" Tag="3" /><ComboBoxItem Content="الخميس" Tag="4" /><ComboBoxItem Content="الجمعة" Tag="5" /><ComboBoxItem Content="السبت" Tag="6" />
@@ -155,9 +157,9 @@
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="من" Style="{StaticResource CaptionText}" />
-                                    <TextBox Text="{Binding AttendanceFrom}" FlowDirection="LeftToRight" ToolTip="HH:mm" />
+                                    <ComboBox ItemsSource="{Binding AttendanceTimes}" SelectedItem="{Binding AttendanceFrom}" IsEditable="True" Text="{Binding AttendanceFrom, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختر وقت البداية" />
                                     <TextBlock Text="إلى" Style="{StaticResource CaptionText}" />
-                                    <TextBox Text="{Binding AttendanceTo}" FlowDirection="LeftToRight" ToolTip="HH:mm" />
+                                    <ComboBox ItemsSource="{Binding AttendanceTimes}" SelectedItem="{Binding AttendanceTo}" IsEditable="True" Text="{Binding AttendanceTo, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختر وقت النهاية" />
                                     <TextBlock Text="رمز المعلم (اختياري)" Style="{StaticResource CaptionText}" />
                                     <TextBox Text="{Binding TeacherCode}" ToolTip="رمز المعلم" />
                                 </StackPanel>

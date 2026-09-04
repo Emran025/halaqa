@@ -93,6 +93,7 @@
                                     <TextBlock Text="مفتاح الدولة" Style="{StaticResource CaptionText}" />
                                     <ComboBox ItemsSource="{Binding Countries}"
                                               SelectedItem="{Binding SelectedPhoneZoneCountry}"
+                                              Text="{Binding PhoneZone, UpdateSourceTrigger=PropertyChanged}"
                                               IsEditable="True"
                                               IsTextSearchEnabled="True"
                                               TextSearch.TextPath="PhoneCode"
@@ -118,6 +119,7 @@
                                     <TextBlock Text="مفتاح واتساب" Style="{StaticResource CaptionText}" />
                                     <ComboBox ItemsSource="{Binding Countries}"
                                               SelectedItem="{Binding SelectedWhatsappZoneCountry}"
+                                              Text="{Binding WhatsappZone, UpdateSourceTrigger=PropertyChanged}"
                                               IsEditable="True"
                                               IsTextSearchEnabled="True"
                                               TextSearch.TextPath="PhoneCode"
@@ -153,13 +155,13 @@
                                               DisplayMemberPath="Label"
                                               ToolTip="اختر درجة أو نوع التعليم" />
                                     <TextBlock Text="سنوات الخبرة" Style="{StaticResource CaptionText}" />
-                                    <TextBox Text="{Binding ExperienceYears, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="سنوات الخبرة" />
+                                    <TextBox Text="{Binding ExperienceYears, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="سنوات الخبرة — رقم من 0 إلى 80" />
                                 </StackPanel>
                                 <StackPanel Grid.Column="2">
                                     <TextBlock Text="وقت التوفر (اختياري)" Style="{StaticResource CaptionText}" />
-                                    <TextBox Text="{Binding AvailableTime, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختياري — بصيغة 24 ساعة مثل 18:30" />
+                                    <ComboBox ItemsSource="{Binding AvailableTimes}" SelectedItem="{Binding AvailableTime}" IsEditable="True" IsTextSearchEnabled="True" Text="{Binding AvailableTime, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختياري — اختر الوقت أو اكتب مثل 18:30" />
                                     <TextBlock Text="الحد الأقصى للحلقات" Style="{StaticResource CaptionText}" />
-                                    <TextBox Text="{Binding MaxHalaqas, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختياري" />
+                                    <TextBox Text="{Binding MaxHalaqas, UpdateSourceTrigger=PropertyChanged}" FlowDirection="LeftToRight" ToolTip="اختياري — رقم صحيح" />
                                 </StackPanel>
                             </Grid>
                             <TextBlock Text="نبذة تعريفية" Style="{StaticResource CaptionText}" />

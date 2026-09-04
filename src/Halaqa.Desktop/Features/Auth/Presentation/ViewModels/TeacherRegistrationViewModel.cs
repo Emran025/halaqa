@@ -38,14 +38,14 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
     [ObservableProperty] private string _country = string.Empty;
     [ObservableProperty] private string _city = string.Empty;
     [ObservableProperty] private string _phone = string.Empty;
-    [ObservableProperty] private string _phoneZone = string.Empty;
+    [ObservableProperty] private string _phoneZone = "+";
     [ObservableProperty] private string _whatsappPhone = string.Empty;
-    [ObservableProperty] private string _whatsappZone = string.Empty;
+    [ObservableProperty] private string _whatsappZone = "+";
     [ObservableProperty] private string _qualification = string.Empty;
-    [ObservableProperty] private int _experienceYears;
+    [ObservableProperty] private string _experienceYears = "0";
     [ObservableProperty] private string? _bio;
     [ObservableProperty] private string? _availableTime;
-    [ObservableProperty] private int? _maxHalaqas;
+    [ObservableProperty] private string _maxHalaqas = string.Empty;
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private string? _message;
     [ObservableProperty] private bool _isError;
@@ -54,6 +54,9 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
     public event EventHandler? LoginRequested;
 
     public IReadOnlyList<CountryItem> Countries { get; }
+
+    public IReadOnlyList<string> AvailableTimes { get; } =
+        Enumerable.Range(0, 48).Select(index => TimeOnly.MinValue.AddMinutes(index * 30).ToString("HH:mm")).ToArray();
 
     public IReadOnlyList<LocalizedOption<Gender>> Genders { get; } = new[]
     {
@@ -118,6 +121,26 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
         SubmitCommand.NotifyCanExecuteChanged();
         try
         {
+            if (!int.TryParse(ExperienceYears, out var experienceYears) || experienceYears is < 0 or > 80)
+            {
+                IsError = true;
+                Message = "سنوات الخبرة يجب أن تكون رقمًا بين 0 و80.";
+                return;
+            }
+
+            int? maxHalaqas = null;
+            if (!string.IsNullOrWhiteSpace(MaxHalaqas))
+            {
+                if (!int.TryParse(MaxHalaqas, out var parsedMax) || parsedMax < 0)
+                {
+                    IsError = true;
+                    Message = "الحد الأقصى للحلقات يجب أن يكون رقمًا صحيحًا موجبًا.";
+                    return;
+                }
+
+                maxHalaqas = parsedMax;
+            }
+
             var availableTime = NormalizeAvailableTime(AvailableTime);
             if (!availableTime.IsValid)
             {
@@ -129,7 +152,7 @@ public sealed partial class TeacherRegistrationViewModel : ObservableObject
             var command = new TeacherRegistrationCommand(
                 _clientOperationId, Name, null, Email, Password, PasswordConfirmation, Gender,
                 DateOnly.FromDateTime(BirthDate), Country, City, null, Phone, PhoneZone, WhatsappPhone, WhatsappZone,
-                Qualification, ExperienceYears, Bio, availableTime.Value, MaxHalaqas);
+                Qualification, experienceYears, Bio, availableTime.Value, maxHalaqas);
             var result = await registerTeacherUseCase.ExecuteAsync(command);
             IsError = !result.IsSuccess;
             Message = result.IsSuccess ? "تم إنشاء حساب المعلم بنجاح." : RenderError(result.Error);

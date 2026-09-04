@@ -27,4 +27,13 @@ public partial class StudentRegistrationView : UserControl
             viewModel.PasswordConfirmation = passwordBox.Password;
         }
     }
+
+    private void BirthDateValidationError(object sender, ValidationErrorEventArgs eventArgs)
+    {
+        if (DataContext is not StudentRegistrationViewModel viewModel || eventArgs.Action != ValidationErrorEventAction.Added)
+            return;
+
+        viewModel.IsError = true;
+        viewModel.Message = "تاريخ الميلاد غير صالح. اختر تاريخًا من التقويم أو اكتبه بصيغة صحيحة.";
+    }
 }
