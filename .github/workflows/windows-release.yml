@@ -42,7 +42,7 @@ jobs:
           dotnet-version: ${{ env.DOTNET_VERSION }}
 
       - name: Restore locked dependencies
-        run: dotnet restore halaqa.sln --locked-mode
+        run: dotnet restore halaqa.sln --locked-mode --runtime ${{ env.RUNTIME }}
 
       - name: Build
         run: dotnet build halaqa.sln --configuration Release --no-restore --nologo
