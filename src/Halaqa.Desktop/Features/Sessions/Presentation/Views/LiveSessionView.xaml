@@ -109,7 +109,7 @@
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="*" />
                         <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="0" />
                     </Grid.RowDefinitions>
 
                     <!-- Call Header with Status & Teacher Controls -->
@@ -146,59 +146,45 @@
                         </Grid>
                     </Border>
 
-                    <!-- Two-sided control bar: teacher controls the student and the Mushaf; local controls remain independent. -->
-                    <Border Grid.Row="2" Background="#FF1C2622" CornerRadius="6" Padding="8,6" Margin="0,0,0,8">
+                    <!-- One compact interaction row: teacher permissions | call | local controls. -->
+                    <Border Grid.Row="2" Background="#FF1C2622" CornerRadius="8" Padding="6" HorizontalAlignment="Stretch">
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
                                 <ColumnDefinition Width="1" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="1" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <StackPanel Grid.Column="0" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center"
-                                        Visibility="{Binding IsStudentSession, Converter={StaticResource InverseBooleanConverter}}">
-                                <TextBlock Text="تحكم المعلم" Foreground="#B3FFFFFF" FontSize="10" VerticalAlignment="Center" Margin="0,0,8,0" />
-                                <Button Command="{Binding ToggleStudentMicCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" Margin="0,0,4,0" ToolTip="منع أو السماح بميكروفون الطالب">
-                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="Microphone" Foreground="{StaticResource AppInfoBrush}" FontSize="13" /><TextBlock Text=" الطالب" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
+                            <UniformGrid Grid.Column="0" Columns="3" HorizontalAlignment="Stretch"
+                                         Visibility="{Binding IsStudentSession, Converter={StaticResource InverseBooleanConverter}}">
+                                <Button Command="{Binding ToggleStudentMicCommand}" Style="{StaticResource AppQuietButton}" Margin="2" ToolTip="منع أو السماح بميكروفون الطالب" AutomationProperties.Name="ميكروفون الطالب">
+                                    <controls:AppIcon Kind="Microphone" Foreground="{StaticResource AppInfoBrush}" FontSize="18" />
                                 </Button>
-                                <Button Command="{Binding ToggleStudentCameraCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" Margin="0,0,4,0" ToolTip="منع أو السماح بكاميرا الطالب">
-                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="VideoOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="14" /><TextBlock Text=" صورة الطالب" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
+                                <Button Command="{Binding ToggleStudentCameraCommand}" Style="{StaticResource AppQuietButton}" Margin="2" ToolTip="منع أو السماح بكاميرا الطالب" AutomationProperties.Name="كاميرا الطالب">
+                                    <controls:AppIcon Kind="VideoOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="19" />
                                 </Button>
-                                <Button Command="{Binding ToggleMushafVisibilityForStudentCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" ToolTip="إخفاء أو إظهار المصحف للطالب">
-                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="14" /><TextBlock Text=" مصحف الطالب" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
+                                <Button Command="{Binding ToggleMushafVisibilityForStudentCommand}" Style="{StaticResource AppQuietButton}" Margin="2" ToolTip="إخفاء أو إظهار المصحف للطالب" AutomationProperties.Name="مصحف الطالب">
+                                    <controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="19" />
                                 </Button>
-                            </StackPanel>
-                            <Border Grid.Column="1" Background="#40FFFFFF" Width="1" />
-                            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                                <TextBlock Text="تحكمي أنا" Foreground="#B3FFFFFF" FontSize="10" VerticalAlignment="Center" Margin="0,0,8,0" />
-                                <Button Command="{Binding ToggleMicrophoneCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" Margin="0,0,4,0" ToolTip="كتم أو تشغيل صوتي">
-                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="Microphone" Foreground="White" FontSize="13" /><TextBlock Text=" صوتي" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
+                            </UniformGrid>
+                            <Border Grid.Column="1" Background="#40FFFFFF" Width="1" Margin="4,5" />
+                            <Button Grid.Column="2" Command="{Binding ToggleCallCommand}" Width="44" Height="38" Margin="6,0" Background="#FF1F7A4D" Foreground="White" BorderThickness="0" Cursor="Hand" ToolTip="بدء أو إنهاء الاتصال المباشر" AutomationProperties.Name="الاتصال المباشر">
+                                <controls:AppIcon Kind="Phone" Foreground="White" FontSize="18" />
+                            </Button>
+                            <Border Grid.Column="3" Background="#40FFFFFF" Width="1" Margin="4,5" />
+                            <UniformGrid Grid.Column="4" Columns="3" HorizontalAlignment="Stretch">
+                                <Button Command="{Binding ToggleMicrophoneCommand}" Style="{StaticResource AppQuietButton}" Margin="2" ToolTip="كتم أو تشغيل الميكروفون المحلي" AutomationProperties.Name="الميكروفون المحلي">
+                                    <controls:AppIcon Kind="Microphone" Foreground="White" FontSize="18" />
                                 </Button>
-                                <Button Command="{Binding ToggleCameraCommand}" Style="{StaticResource AppQuietButton}" Padding="6,4" Margin="0,0,4,0" ToolTip="إيقاف أو تشغيل صورتي">
-                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="VideoOutline" Foreground="White" FontSize="14" /><TextBlock Text=" صورتي" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
+                                <Button Command="{Binding ToggleCameraCommand}" Style="{StaticResource AppQuietButton}" Margin="2" ToolTip="إيقاف أو تشغيل الكاميرا المحلية" AutomationProperties.Name="الكاميرا المحلية">
+                                    <controls:AppIcon Kind="VideoOutline" Foreground="White" FontSize="19" />
                                 </Button>
-                                <Border Background="#1AFFFFFF" CornerRadius="3" Padding="5,3" ToolTip="المصحف المحلي يبقى ظاهرًا للمعلم">
-                                    <StackPanel Orientation="Horizontal"><controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="14" /><TextBlock Text=" مصحفي" Foreground="White" FontSize="10" Margin="4,0,0,0" /></StackPanel>
+                                <Border Background="#1AFFFFFF" CornerRadius="4" Margin="2" ToolTip="المصحف المحلي ظاهر للمعلم" AutomationProperties.Name="المصحف المحلي">
+                                    <controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="19" HorizontalAlignment="Center" VerticalAlignment="Center" />
                                 </Border>
-                            </StackPanel>
+                            </UniformGrid>
                         </Grid>
-                    </Border>
-
-                    <!-- Main Call Controls Floating Toolbar -->
-                    <Border Grid.Row="3" Background="#FF1C2622" CornerRadius="20" Padding="12,5" HorizontalAlignment="Center">
-                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                            <!-- Teacher Toggle Mic -->
-                            <Button Command="{Binding ToggleMicrophoneCommand}" Style="{StaticResource AppQuietButton}" Margin="0,0,8,0" Padding="8,6" ToolTip="كتم / تشغيل الميكروفون">
-                                <controls:AppIcon Kind="Microphone" Foreground="White" FontSize="16" />
-                            </Button>
-                            <!-- Teacher Toggle Camera -->
-                            <Button Command="{Binding ToggleCameraCommand}" Style="{StaticResource AppQuietButton}" Margin="0,0,8,0" Padding="8,6" ToolTip="تشغيل / إيقاف الكاميرا">
-                                <controls:AppIcon Kind="VideoOutline" Foreground="White" FontSize="18" />
-                            </Button>
-                            <!-- Call Action Button -->
-                            <Button Command="{Binding ToggleCallCommand}" Background="#FF1F7A4D" Foreground="White" Padding="9,6" BorderThickness="0" Cursor="Hand" ToolTip="بدء أو إنهاء الاتصال المباشر">
-                                <controls:AppIcon Kind="Phone" Foreground="White" FontSize="17" />
-                            </Button>
-                        </StackPanel>
                     </Border>
                 </Grid>
             </Border>
