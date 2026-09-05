@@ -186,9 +186,17 @@ public sealed partial class MainShellViewModel : ObservableObject
         _forgotPasswordViewModel.LoginRequested += (_, _) => CurrentPage = _loginViewModel;
         _resetPasswordViewModel.LoginRequested += (_, _) => CurrentPage = _loginViewModel;
         _changePasswordViewModel.BackRequested += (_, _) => ShowDashboard();
-        _studentRegistrationViewModel.Registered += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
+        _studentRegistrationViewModel.Registered += (_, authenticatedUser) =>
+        {
+            _loginViewModel.ShowVerificationPending(authenticatedUser.User.Email);
+            CurrentPage = _loginViewModel;
+        };
         _studentRegistrationViewModel.LoginRequested += (_, _) => CurrentPage = _loginViewModel;
-        _teacherRegistrationViewModel.Registered += (_, authenticatedUser) => ShowDashboard(authenticatedUser);
+        _teacherRegistrationViewModel.Registered += (_, authenticatedUser) =>
+        {
+            _loginViewModel.ShowVerificationPending(authenticatedUser.User.Email);
+            CurrentPage = _loginViewModel;
+        };
         _teacherRegistrationViewModel.LoginRequested += (_, _) => CurrentPage = _loginViewModel;
         _generalProfileViewModel.BackRequested += (_, _) => ShowDashboard();
         _generalProfileViewModel.ProfileUpdated += (_, profile) => UpdateAuthenticatedUser(profile);

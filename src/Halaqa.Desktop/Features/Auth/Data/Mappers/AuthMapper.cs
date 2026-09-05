@@ -15,7 +15,7 @@ internal static class AuthMapper
         };
 
         return new AuthenticatedUser(
-            new AuthUser(response.User.Id, role, response.User.Name, response.User.Email, response.User.Status),
+            new AuthUser(response.User.Id, role, response.User.Name, response.User.Email, response.User.Status, response.User.EmailVerificationRequired),
             response.Token,
             response.ExpiresAt);
     }

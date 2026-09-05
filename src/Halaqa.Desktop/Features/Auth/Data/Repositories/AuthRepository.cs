@@ -47,6 +47,9 @@ internal sealed class AuthRepository : IAuthRepository
             await remoteDataSource.RegisterTeacherAsync(RegistrationMapper.ToDto(command), cancellationToken),
             cancellationToken);
 
+    public Task<Result> ResendVerificationAsync(string email, CancellationToken cancellationToken = default) =>
+        remoteDataSource.ResendVerificationAsync(new ResendVerificationRequestDto(email), cancellationToken);
+
     public Task<Result> RequestPasswordResetAsync(string email, CancellationToken cancellationToken = default) =>
         remoteDataSource.RequestPasswordResetAsync(new ForgotPasswordRequestDto(email), cancellationToken);
 

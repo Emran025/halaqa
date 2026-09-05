@@ -11,7 +11,8 @@ public sealed record AuthUser(
     UserRole Role,
     string Name,
     string Email,
-    string Status);
+    string Status,
+    bool EmailVerificationRequired = false);
 
 public sealed record AuthenticatedUser(
     AuthUser User,

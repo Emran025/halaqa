@@ -175,3 +175,18 @@ public sealed class ChangePasswordUseCase
             : Task.FromResult(Result.Failure(validationError));
     }
 }
+
+public sealed class ResendVerificationUseCase
+{
+    private readonly IAuthRepository repository;
+
+    public ResendVerificationUseCase(IAuthRepository repository)
+    {
+        this.repository = repository;
+    }
+
+    public Task<Result> ExecuteAsync(string email, CancellationToken cancellationToken = default) =>
+        string.IsNullOrWhiteSpace(email) || !email.Contains('@')
+            ? Task.FromResult(Result.Failure(new AppError(AppErrorKind.Validation, "أدخل بريداً إلكترونياً صالحاً.")))
+            : repository.ResendVerificationAsync(email, cancellationToken);
+}

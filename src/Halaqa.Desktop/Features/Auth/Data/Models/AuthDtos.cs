@@ -6,6 +6,9 @@ internal sealed record LoginRequestDto(
     [property: JsonPropertyName("email")] string Email,
     [property: JsonPropertyName("password")] string Password);
 
+internal sealed record ResendVerificationRequestDto(
+    [property: JsonPropertyName("email")] string Email);
+
 internal sealed record AuthResponseDto(
     [property: JsonPropertyName("user")] UserDto User,
     [property: JsonPropertyName("token")] string Token,
@@ -17,4 +20,5 @@ internal sealed record UserDto(
     [property: JsonPropertyName("role")] string Role,
     [property: JsonPropertyName("name")] string Name,
     [property: JsonPropertyName("email")] string Email,
-    [property: JsonPropertyName("status")] string Status);
+    [property: JsonPropertyName("status")] string Status,
+    [property: JsonPropertyName("email_verification_required")] bool EmailVerificationRequired = false);

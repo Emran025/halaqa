@@ -59,6 +59,7 @@
                             <Button Content="حساب طالب" Command="{Binding OpenStudentRegistrationCommand}" Style="{StaticResource AppSecondaryButton}" />
                             <Button Content="حساب معلم" Command="{Binding OpenTeacherRegistrationCommand}" Style="{StaticResource AppSecondaryButton}" />
                             <Button Content="استعادة كلمة المرور" Command="{Binding OpenPasswordRecoveryCommand}" Style="{StaticResource AppSecondaryButton}" />
+                            <Button Content="إعادة إرسال تفعيل البريد" Command="{Binding ResendVerificationCommand}" Style="{StaticResource AppSecondaryButton}" />
                         </WrapPanel>
                     </StackPanel>
                 </Border>

@@ -10,17 +10,20 @@ public sealed partial class LoginViewModel : ObservableObject
 {
 
     private readonly LoginUseCase loginUseCase;
+    private readonly ResendVerificationUseCase resendVerificationUseCase;
 
 
     public LoginViewModel(
 
-        LoginUseCase loginUseCase
+        LoginUseCase loginUseCase,
+        ResendVerificationUseCase resendVerificationUseCase
 
     )
 
     {
 
         this.loginUseCase = loginUseCase;
+        this.resendVerificationUseCase = resendVerificationUseCase;
 
     }
 
@@ -87,9 +90,43 @@ public sealed partial class LoginViewModel : ObservableObject
     [RelayCommand]
     private void OpenPasswordRecovery() => PasswordRecoveryRequested?.Invoke(this, EventArgs.Empty);
 
-    private bool CanLogin() => !IsBusy && !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password);
+    [RelayCommand(CanExecute = nameof(CanResendVerification))]
+    private async Task ResendVerificationAsync()
+    {
+        ErrorMessage = null;
+        StatusMessage = null;
+        IsBusy = true;
+        ResendVerificationCommand.NotifyCanExecuteChanged();
+        try
+        {
+            var result = await resendVerificationUseCase.ExecuteAsync(Email);
+            StatusMessage = result.IsSuccess
+                ? "إذا كان الحساب غير مفعّل، فستصلك رسالة تفعيل جديدة. افحص البريد والرسائل غير المرغوب فيها."
+                : result.Error?.Message ?? "تعذر إرسال رسالة التفعيل.";
+        }
+        finally
+        {
+            IsBusy = false;
+            ResendVerificationCommand.NotifyCanExecuteChanged();
+        }
+    }
 
-    partial void OnEmailChanged(string value) => LoginCommand.NotifyCanExecuteChanged();
+    public void ShowVerificationPending(string email)
+    {
+        Email = email;
+        Password = string.Empty;
+        ErrorMessage = null;
+        StatusMessage = "تم إنشاء الحساب. افتح رسالة التفعيل في بريدك ثم عد إلى التطبيق لتسجيل الدخول.";
+    }
+
+    private bool CanLogin() => !IsBusy && !string.IsNullOrWhiteSpace(Email) && !string.IsNullOrWhiteSpace(Password);
+    private bool CanResendVerification() => !IsBusy && !string.IsNullOrWhiteSpace(Email);
+
+    partial void OnEmailChanged(string value)
+    {
+        LoginCommand.NotifyCanExecuteChanged();
+        ResendVerificationCommand.NotifyCanExecuteChanged();
+    }
     partial void OnPasswordChanged(string value) => LoginCommand.NotifyCanExecuteChanged();
 
     private static string RenderError(AppError? error)

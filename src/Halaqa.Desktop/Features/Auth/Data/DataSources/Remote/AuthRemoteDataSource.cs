@@ -9,6 +9,7 @@ internal interface IAuthRemoteDataSource
     Task<Result<AuthResponseDto>> LoginAsync(LoginRequestDto request, CancellationToken cancellationToken = default);
     Task<Result<AuthResponseDto>> RegisterStudentAsync(StudentRegistrationRequestDto request, CancellationToken cancellationToken = default);
     Task<Result<AuthResponseDto>> RegisterTeacherAsync(TeacherRegistrationRequestDto request, CancellationToken cancellationToken = default);
+    Task<Result> ResendVerificationAsync(ResendVerificationRequestDto request, CancellationToken cancellationToken = default);
     Task<Result> RequestPasswordResetAsync(ForgotPasswordRequestDto request, CancellationToken cancellationToken = default);
     Task<Result> ResetPasswordAsync(ResetPasswordRequestDto request, CancellationToken cancellationToken = default);
     Task<Result> ChangePasswordAsync(ChangePasswordRequestDto request, CancellationToken cancellationToken = default);
@@ -41,6 +42,9 @@ internal sealed class AuthRemoteDataSource : IAuthRemoteDataSource
 
     public Task<Result<AuthResponseDto>> RegisterTeacherAsync(TeacherRegistrationRequestDto request, CancellationToken cancellationToken = default) =>
         apiClient.PostAsync<TeacherRegistrationRequestDto, AuthResponseDto>("auth/register/teacher", request, cancellationToken);
+
+    public Task<Result> ResendVerificationAsync(ResendVerificationRequestDto request, CancellationToken cancellationToken = default) =>
+        apiClient.PostAsync("auth/email/resend-verification", request, cancellationToken);
 
     public Task<Result> RequestPasswordResetAsync(ForgotPasswordRequestDto request, CancellationToken cancellationToken = default) =>
         apiClient.PostAsync("auth/password/forgot", request, cancellationToken);
