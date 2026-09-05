@@ -17,6 +17,7 @@ public sealed partial class StudentsViewModel : ObservableObject
     private readonly ListHalaqasUseCase _listHalaqasUseCase;
     private readonly ListHalaqaMembershipsUseCase _listMembershipsUseCase;
     private readonly GetFollowUpPlanUseCase _getPlanUseCase;
+    private readonly ListFollowUpItemsUseCase _listItemsUseCase;
     private readonly ListStudentTrackingsUseCase _listTrackingsUseCase;
     private readonly GetStudentProgressUseCase _getProgressUseCase;
     private readonly List<StudentFollowUpSummary> _allStudents = new();
@@ -41,15 +42,20 @@ public sealed partial class StudentsViewModel : ObservableObject
         ListHalaqasUseCase listHalaqasUseCase,
         ListHalaqaMembershipsUseCase listMembershipsUseCase,
         GetFollowUpPlanUseCase getPlanUseCase,
+        ListFollowUpItemsUseCase listItemsUseCase,
         ListStudentTrackingsUseCase listTrackingsUseCase,
         GetStudentProgressUseCase getProgressUseCase)
     {
         _listHalaqasUseCase = listHalaqasUseCase;
         _listMembershipsUseCase = listMembershipsUseCase;
         _getPlanUseCase = getPlanUseCase;
+        _listItemsUseCase = listItemsUseCase;
         _listTrackingsUseCase = listTrackingsUseCase;
         _getProgressUseCase = getProgressUseCase;
+        StartSardRecitationCommand = new RelayCommand<StudentFollowUpSummary?>(StartSardRecitation);
     }
+
+    public IRelayCommand<StudentFollowUpSummary?> StartSardRecitationCommand { get; }
 
     public async Task InitializeAsync()
     {
@@ -174,6 +180,10 @@ public sealed partial class StudentsViewModel : ObservableObject
         if (planResult.IsSuccess)
             plan = planResult.Value;
 
+        var todayItemsResult = await _listItemsUseCase.ExecuteAsync(
+            new FollowUpItemQuery(today, null, null, studentId, page: 1, perPage: 50));
+        var hasOfficialTodayItems = todayItemsResult.IsSuccess && todayItemsResult.Value?.Items.Count > 0;
+
         var trackingResult = await _listTrackingsUseCase.ExecuteAsync(studentId, null, null, page: 1, perPage: 1);
         var latestTracking = trackingResult.IsSuccess ? trackingResult.Value?.Items.FirstOrDefault() : null;
 
@@ -182,7 +192,7 @@ public sealed partial class StudentsViewModel : ObservableObject
 
         var todaySlot = plan?.AttendancePreferences.WeeklySlots
             .FirstOrDefault(slot => slot.DayOfWeek == todayDayOfWeek);
-        var isScheduledToday = plan?.Status.Equals("active", StringComparison.OrdinalIgnoreCase) == true && todaySlot is not null;
+        var isScheduledToday = hasOfficialTodayItems || FollowUpSchedulePolicy.IsScheduledOn(plan, today);
         var hasRecitedToday = latestTracking?.Date == today && latestTracking.AttendanceType == AttendanceType.Present;
 
         return new StudentFollowUpSummary(
@@ -202,7 +212,10 @@ public sealed partial class StudentsViewModel : ObservableObject
             HasRecitedToday: hasRecitedToday,
             LastRecitedAt: latestTracking?.CreatedAt,
             LastEvaluation: latestTracking?.Note,
-            TotalMistakesRecorded: progress?.Totals.TotalMistakes ?? 0);
+            TotalMistakesRecorded: progress?.Totals.TotalMistakes ?? 0,
+            HasMemorizationPlan: FollowUpSchedulePolicy.HasTaskType(plan, FollowUpTaskType.Memorization),
+            HasReviewPlan: FollowUpSchedulePolicy.HasTaskType(plan, FollowUpTaskType.Review),
+            HasRecitationPlan: FollowUpSchedulePolicy.HasTaskType(plan, FollowUpTaskType.Recitation));
     }
 
     private static int? GetStartPage(Halaqa.Desktop.Features.Progress.Domain.Entities.CompletedRecitationRange? range) =>
@@ -269,6 +282,12 @@ public sealed partial class StudentsViewModel : ObservableObject
     {
         if (student != null)
             RecitationRequested?.Invoke(this, (student, "مراجعة", student.CurrentReviewPage ?? 1));
+    }
+
+    public void StartSardRecitation(StudentFollowUpSummary? student)
+    {
+        if (student != null)
+            RecitationRequested?.Invoke(this, (student, "سرد", student.CurrentRecitationPage ?? 1));
     }
 
     [RelayCommand]

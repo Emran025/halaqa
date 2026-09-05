@@ -20,6 +20,9 @@ public sealed partial class StudentRecitationProfileViewModel : ObservableObject
     [ObservableProperty] private int _totalSessions;
     [ObservableProperty] private string _attendanceFrom = string.Empty;
     [ObservableProperty] private string _attendanceTo = string.Empty;
+    [ObservableProperty] private bool _hasMemorizationPlan;
+    [ObservableProperty] private bool _hasReviewPlan;
+    [ObservableProperty] private bool _hasRecitationPlan;
 
     private StudentFollowUpSummary? _student;
 
@@ -41,6 +44,9 @@ public sealed partial class StudentRecitationProfileViewModel : ObservableObject
         TotalMistakesRecorded = student.TotalMistakesRecorded;
         AttendanceFrom = student.AttendanceFrom;
         AttendanceTo = student.AttendanceTo;
+        HasMemorizationPlan = student.HasMemorizationPlan;
+        HasReviewPlan = student.HasReviewPlan;
+        HasRecitationPlan = student.HasRecitationPlan;
 
         SessionHistory.Clear();
         foreach (var r in reports.OrderByDescending(r => r.CompletedAt))

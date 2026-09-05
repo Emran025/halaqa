@@ -70,18 +70,20 @@
                         </StackPanel>
                     </StackPanel>
 
-                    <!-- Quick Action Buttons (3 types) -->
-                    <StackPanel Grid.Column="3" VerticalAlignment="Center" Orientation="Horizontal">
+                    <!-- Quick actions: only the task types in the student's plan -->
+                    <WrapPanel Grid.Column="3" VerticalAlignment="Center" HorizontalAlignment="Right">
                         <Button Command="{Binding StartMemorizationRecitationCommand}"
+                                Visibility="{Binding HasMemorizationPlan, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Style="{StaticResource AppPrimaryButton}"
                                 Padding="12,8" Margin="0,0,8,0"
                                 ToolTip="بدء جلسة حفظ">
                             <StackPanel Orientation="Horizontal">
                                 <controls:AppIcon Kind="BookOpenPageVariantOutline" Foreground="White" FontSize="14" Margin="0,0,6,0" />
-                                <TextBlock Text="تسميع حفظ" FontWeight="Bold" />
+                                <TextBlock Text="حفظ" Foreground="White" FontWeight="Bold" />
                             </StackPanel>
                         </Button>
                         <Button Command="{Binding StartReviewRecitationCommand}"
+                                Visibility="{Binding HasReviewPlan, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Style="{StaticResource AppQuietButton}"
                                 Padding="12,8" Margin="0,0,8,0"
                                 ToolTip="بدء جلسة مراجعة">
@@ -91,6 +93,7 @@
                             </StackPanel>
                         </Button>
                         <Button Command="{Binding StartSardRecitationCommand}"
+                                Visibility="{Binding HasRecitationPlan, Converter={StaticResource BooleanToVisibilityConverter}}"
                                 Style="{StaticResource AppOutlinedButton}"
                                 Padding="12,8"
                                 ToolTip="بدء جلسة سرد">
@@ -99,7 +102,7 @@
                                 <TextBlock Text="سرد" FontWeight="Bold" />
                             </StackPanel>
                         </Button>
-                    </StackPanel>
+                    </WrapPanel>
                 </Grid>
             </Border>
 
@@ -113,7 +116,7 @@
                 </Grid.ColumnDefinitions>
 
                 <!-- Memorization Page -->
-                <Border Grid.Column="0" Style="{StaticResource StatBadge}" Background="#0F1B524A" BorderBrush="#221B524A">
+                <Border Grid.Column="0" Style="{StaticResource StatBadge}" Background="#0F1B524A" BorderBrush="#221B524A" Visibility="{Binding HasMemorizationPlan, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="📖 صفحة الحفظ" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" HorizontalAlignment="Center" />
                         <TextBlock Text="{Binding CurrentMemorizationPage}" FontSize="26" FontWeight="Bold" Foreground="{StaticResource AppPrimaryBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" />
@@ -121,7 +124,7 @@
                 </Border>
 
                 <!-- Review Page -->
-                <Border Grid.Column="1" Style="{StaticResource StatBadge}" Background="#0FF57F17" BorderBrush="#22F57F17">
+                <Border Grid.Column="1" Style="{StaticResource StatBadge}" Background="#0FF57F17" BorderBrush="#22F57F17" Visibility="{Binding HasReviewPlan, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="🔄 صفحة المراجعة" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" HorizontalAlignment="Center" />
                         <TextBlock Text="{Binding CurrentReviewPage}" FontSize="26" FontWeight="Bold" Foreground="#FFF57F17" HorizontalAlignment="Center" Margin="0,4,0,0" />
@@ -129,7 +132,7 @@
                 </Border>
 
                 <!-- Total Sessions -->
-                <Border Grid.Column="2" Style="{StaticResource StatBadge}" Background="#0F1F7A4D" BorderBrush="#221F7A4D">
+                <Border Grid.Column="2" Style="{StaticResource StatBadge}" Background="#0F1F7A4D" BorderBrush="#221F7A4D" Visibility="{Binding HasRecitationPlan, Converter={StaticResource BooleanToVisibilityConverter}}">
                     <StackPanel HorizontalAlignment="Center">
                         <TextBlock Text="جلسات التسميع" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" HorizontalAlignment="Center" />
                         <TextBlock Text="{Binding TotalSessions}" FontSize="26" FontWeight="Bold" Foreground="{StaticResource AppSuccessBrush}" HorizontalAlignment="Center" Margin="0,4,0,0" />

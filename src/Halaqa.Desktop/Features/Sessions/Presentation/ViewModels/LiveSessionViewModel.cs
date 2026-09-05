@@ -80,6 +80,8 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private readonly ILocalVideoRecorder _localVideoRecorder;
     private readonly CreateLiveSessionUseCase _createLiveSessionUseCase;
     private readonly CreateSessionTaskUseCase _createSessionTaskUseCase;
+    private readonly ListSessionsUseCase _listSessionsUseCase;
+    private readonly ListSessionTasksUseCase _listSessionTasksUseCase;
     private readonly PrepareLiveSessionUseCase _prepareLiveSessionUseCase;
     private readonly SaveOfficialMushafStateUseCase _saveOfficialMushafStateUseCase;
     private readonly GetQuranPageUseCase _getQuranPageUseCase;
@@ -87,6 +89,8 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private readonly List<QuranSurahIndexItem> _allSurahsMaster = new();
     private readonly Dictionary<Guid, List<(int Page, int WordIndex, string Type)>> _studentMistakesIsolated = new();
     private readonly SemaphoreSlim _sessionInitializationGate = new(1, 1);
+    private Halaqa.Desktop.Features.FollowUp.Domain.Entities.StudentFollowUpSummary? _currentStudent;
+    private SessionTaskType _requestedTaskType;
     private bool _callOperationInProgress;
 
     [ObservableProperty] private Guid _sessionId;
@@ -173,6 +177,8 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         ILocalVideoRecorder localVideoRecorder,
         CreateLiveSessionUseCase createLiveSessionUseCase,
         CreateSessionTaskUseCase createSessionTaskUseCase,
+        ListSessionsUseCase listSessionsUseCase,
+        ListSessionTasksUseCase listSessionTasksUseCase,
         PrepareLiveSessionUseCase prepareLiveSessionUseCase,
         SaveOfficialMushafStateUseCase saveOfficialMushafStateUseCase,
         GetQuranPageUseCase getQuranPageUseCase,
@@ -184,6 +190,8 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         _localVideoRecorder = localVideoRecorder;
         _createLiveSessionUseCase = createLiveSessionUseCase;
         _createSessionTaskUseCase = createSessionTaskUseCase;
+        _listSessionsUseCase = listSessionsUseCase;
+        _listSessionTasksUseCase = listSessionTasksUseCase;
         _prepareLiveSessionUseCase = prepareLiveSessionUseCase;
         _saveOfficialMushafStateUseCase = saveOfficialMushafStateUseCase;
         _getQuranPageUseCase = getQuranPageUseCase;
@@ -213,7 +221,11 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         try
         {
             StudentId = student.StudentId;
-        StudentName = student.StudentName;
+            SessionId = Guid.Empty;
+            TaskId = Guid.Empty;
+            _currentStudent = student;
+            _requestedTaskType = ParseTaskType(taskType);
+            StudentName = student.StudentName;
         HalaqaName = student.HalaqaName ?? "\u062d\u0644\u0642\u0629 \u0627\u0644\u062a\u062d\u0641\u064a\u0638";
         TaskType = taskType;
         TargetPage = targetPage;
@@ -234,43 +246,13 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         OperationMessage = $"جاري إنشاء جلسة تسميع {taskType} للطالب {student.StudentName} على الخادم...";
         SetScoreSelected(4);
 
-        var taskTypeValue = ParseTaskType(taskType);
-        var sessionResult = await _createLiveSessionUseCase.ExecuteAsync(new CreateLiveSessionCommand(
-            student.HalaqaId ?? Guid.Empty,
-            student.StudentId,
-            FollowUpItemId: null,
-            TaskType: taskTypeValue,
-            ScheduledAt: null,
-            ClientOperationId: Guid.NewGuid()));
-        if (!sessionResult.IsSuccess || sessionResult.Value is null)
+        if (!await EnsureOfficialSessionAndTaskAsync(targetPage))
         {
-            Store.SetConnectionState(LiveSessionState.DirectConnectionUnavailable, sessionResult.Error?.Message);
-            CallStatusLabel = "تعذر إنشاء جلسة رسمية";
-            CallStatusDescription = sessionResult.Error?.Message ?? "لم يتم إنشاء جلسة التسميع في الخادم.";
-            OperationMessage = CallStatusDescription;
             await EnsureIndexLoadedAsync();
             await LoadMushafPageAsync(targetPage);
             return;
         }
 
-        SessionId = sessionResult.Value.Id;
-        var taskResult = await _createSessionTaskUseCase.ExecuteAsync(new CreateSessionTaskCommand(
-            SessionId,
-            taskTypeValue,
-            Guid.NewGuid(),
-            StartPage: targetPage));
-        if (!taskResult.IsSuccess || taskResult.Value is null)
-        {
-            Store.SetConnectionState(LiveSessionState.DirectConnectionUnavailable, taskResult.Error?.Message);
-            CallStatusLabel = "تعذر إنشاء مهمة الجلسة";
-            CallStatusDescription = taskResult.Error?.Message ?? "تم إنشاء الجلسة دون مهمة تسميع رسمية.";
-            OperationMessage = CallStatusDescription;
-            await EnsureIndexLoadedAsync();
-            await LoadMushafPageAsync(targetPage);
-            return;
-        }
-
-        TaskId = taskResult.Value.Id;
         await PrepareRealtimeSessionAsync();
 
             await EnsureIndexLoadedAsync();
@@ -280,6 +262,116 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         {
             _sessionInitializationGate.Release();
         }
+    }
+
+    private async Task<bool> EnsureOfficialSessionAndTaskAsync(int targetPage)
+    {
+        if (SessionId != Guid.Empty && TaskId != Guid.Empty)
+        {
+            return true;
+        }
+
+        if (_currentStudent is null || _currentStudent.HalaqaId is null || _currentStudent.HalaqaId == Guid.Empty)
+        {
+            OperationMessage = "لا يمكن تجهيز جلسة التسميع دون حلقة فعالة للطالب.";
+            return false;
+        }
+
+        var sessionsResult = await _listSessionsUseCase.ExecuteAsync(new SessionQuery(
+            _currentStudent.HalaqaId,
+            _currentStudent.StudentId,
+            State: null,
+            From: DateTimeOffset.UtcNow.AddDays(-2),
+            To: null,
+            Page: 1,
+            PerPage: 50));
+
+        if (sessionsResult.IsSuccess && sessionsResult.Value is not null)
+        {
+            var resumableStates = new[]
+            {
+                OfficialSessionState.Requested,
+                OfficialSessionState.Accepted,
+                OfficialSessionState.Connecting,
+                OfficialSessionState.DirectNegotiation,
+                OfficialSessionState.Connected,
+                OfficialSessionState.WeakConnection,
+                OfficialSessionState.Reconnecting,
+                OfficialSessionState.Disconnected
+            };
+            var existingSession = sessionsResult.Value.Sessions
+                .Where(session => resumableStates.Contains(session.State))
+                .OrderByDescending(session => session.UpdatedAt)
+                .FirstOrDefault();
+
+            if (existingSession is not null)
+            {
+                var tasksResult = await _listSessionTasksUseCase.ExecuteAsync(existingSession.Id);
+                if (tasksResult.IsSuccess && tasksResult.Value is not null)
+                {
+                    var existingTask = tasksResult.Value.Tasks
+                        .Where(task => task.TaskType == _requestedTaskType &&
+                                       task.State is OfficialSessionTaskState.Draft or OfficialSessionTaskState.InProgress)
+                        .OrderByDescending(task => task.SequenceNo)
+                        .FirstOrDefault();
+                    if (existingTask is not null)
+                    {
+                        SessionId = existingSession.Id;
+                        TaskId = existingTask.Id;
+                        OperationMessage = "تم استئناف آخر جلسة ومهمة تسميع قابلة للمتابعة.";
+                        return true;
+                    }
+
+                    var resumedTaskResult = await _createSessionTaskUseCase.ExecuteAsync(new CreateSessionTaskCommand(
+                        existingSession.Id,
+                        _requestedTaskType,
+                        Guid.NewGuid(),
+                        StartPage: targetPage));
+                    if (resumedTaskResult.IsSuccess && resumedTaskResult.Value is not null)
+                    {
+                        SessionId = existingSession.Id;
+                        TaskId = resumedTaskResult.Value.Id;
+                        OperationMessage = "تمت إضافة مهمة تسميع جديدة إلى الجلسة القائمة.";
+                        return true;
+                    }
+                }
+            }
+        }
+
+        var sessionResult = await _createLiveSessionUseCase.ExecuteAsync(new CreateLiveSessionCommand(
+            _currentStudent.HalaqaId.Value,
+            _currentStudent.StudentId,
+            FollowUpItemId: null,
+            TaskType: _requestedTaskType,
+            ScheduledAt: null,
+            ClientOperationId: Guid.NewGuid()));
+        if (!sessionResult.IsSuccess || sessionResult.Value is null)
+        {
+            Store.SetConnectionState(LiveSessionState.DirectConnectionUnavailable, sessionResult.Error?.Message);
+            CallStatusLabel = "تعذر إنشاء جلسة رسمية";
+            CallStatusDescription = sessionResult.Error?.Message ?? "لم يتم إنشاء جلسة التسميع في الخادم.";
+            OperationMessage = CallStatusDescription;
+            return false;
+        }
+
+        SessionId = sessionResult.Value.Id;
+        var taskResult = await _createSessionTaskUseCase.ExecuteAsync(new CreateSessionTaskCommand(
+            SessionId,
+            _requestedTaskType,
+            Guid.NewGuid(),
+            StartPage: targetPage));
+        if (!taskResult.IsSuccess || taskResult.Value is null)
+        {
+            Store.SetConnectionState(LiveSessionState.DirectConnectionUnavailable, taskResult.Error?.Message);
+            CallStatusLabel = "تعذر إنشاء مهمة الجلسة";
+            CallStatusDescription = taskResult.Error?.Message ?? "تم إنشاء الجلسة دون مهمة تسميع رسمية.";
+            OperationMessage = CallStatusDescription;
+            return false;
+        }
+
+        TaskId = taskResult.Value.Id;
+        OperationMessage = "تم إنشاء جلسة ومهمة تسميع جديدة خارج وقت الخطة.";
+        return true;
     }
 
     private async Task<bool> PrepareRealtimeSessionAsync()
@@ -456,10 +548,12 @@ public sealed partial class LiveSessionViewModel : ObservableObject
 
         if (SessionId == Guid.Empty || TaskId == Guid.Empty)
         {
-            CallStatusLabel = "الجلسة غير جاهزة";
-            CallStatusDescription = "لا يمكن طلب اتصال قبل إنشاء الجلسة والمهمة في الخادم.";
-            OperationMessage = CallStatusDescription;
-            return;
+            if (!await EnsureOfficialSessionAndTaskAsync(TargetPage))
+            {
+                CallStatusLabel = "تعذر تجهيز جلسة التسميع";
+                CallStatusDescription = OperationMessage ?? "تعذر إنشاء أو استئناف جلسة التسميع الرسمية.";
+                return;
+            }
         }
 
         if (Store.ConnectionState != LiveSessionState.Negotiating && Store.ConnectionState != LiveSessionState.Connected &&

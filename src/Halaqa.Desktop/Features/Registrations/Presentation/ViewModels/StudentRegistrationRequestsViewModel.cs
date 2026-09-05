@@ -85,9 +85,9 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
     }
 
     [RelayCommand(CanExecute = nameof(CanCancel))]
-    private async Task CancelAsync()
+    private async Task CancelAsync(RegistrationRequest? request)
     {
-        var selected = SelectedRequest;
+        var selected = request ?? SelectedRequest;
         if (selected is null)
         {
             return;
@@ -124,7 +124,8 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
     }
 
     private bool CanLoad() => !IsBusy;
-    private bool CanCancel() => !IsBusy && SelectedRequest?.State == RegistrationState.Pending;
+    private bool CanCancel(RegistrationRequest? request) =>
+        !IsBusy && (request ?? SelectedRequest)?.State == RegistrationState.Pending;
     private bool CanNavigateBack() => !IsBusy;
 
     private async Task LoadPageAsync(int page)

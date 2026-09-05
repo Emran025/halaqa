@@ -48,6 +48,9 @@ public sealed class ComprehensiveTrackingViewModelTests
         Assert.Equal(126, student.CurrentRecitationPage);
         Assert.Equal(3, student.TotalMistakesRecorded);
         Assert.Equal("ملاحظة حقيقية", student.LastEvaluation);
+        Assert.True(student.HasMemorizationPlan);
+        Assert.False(student.HasReviewPlan);
+        Assert.False(student.HasRecitationPlan);
     }
 
     [Fact]
@@ -98,6 +101,7 @@ public sealed class ComprehensiveTrackingViewModelTests
             new ListHalaqasUseCase(new FakeHalaqasRepository()),
             new ListHalaqaMembershipsUseCase(new FakeMembershipsRepository()),
             new GetFollowUpPlanUseCase(followUpRepository),
+            new ListFollowUpItemsUseCase(followUpRepository),
             new ListStudentTrackingsUseCase(followUpRepository),
             new GetStudentProgressUseCase(new FakeProgressRepository()));
     }
@@ -183,7 +187,18 @@ public sealed class ComprehensiveTrackingViewModelTests
                 FollowUpFrequency.Daily,
                 "active",
                 "Asia/Riyadh",
-                Array.Empty<FollowUpPlanDetail>(),
+                new[]
+                {
+                    new FollowUpPlanDetail(
+                        Guid.Parse("77777777-7777-7777-7777-777777777777"),
+                        FollowUpTaskType.Memorization,
+                        FollowUpUnit.Page,
+                        1,
+                        null,
+                        1,
+                        DateTimeOffset.UtcNow,
+                        DateTimeOffset.UtcNow)
+                },
                 new AttendancePreferences("Asia/Riyadh", new[] { slot }, 60),
                 null,
                 null,
@@ -213,7 +228,8 @@ public sealed class ComprehensiveTrackingViewModelTests
         public Task<Result<FollowUpPlan>> UpdatePlanAsync(UpdateFollowUpPlanCommand command, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result<AttendancePreferences>> GetAvailabilityAsync(Guid studentId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result<AttendancePreferences>> UpdateAvailabilityAsync(UpdateAvailabilityCommand command, CancellationToken cancellationToken = default) => throw new NotImplementedException();
-        public Task<Result<FollowUpItemPage>> ListItemsAsync(FollowUpItemQuery query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<Result<FollowUpItemPage>> ListItemsAsync(FollowUpItemQuery query, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<FollowUpItemPage>.Success(new FollowUpItemPage(Array.Empty<FollowUpItem>(), 1, 1, query.PerPage, 0)));
         public Task<Result<FollowUpItem>> CompleteItemAsync(Guid itemId, Guid clientOperationId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result<FollowUpItem>> SkipItemAsync(Guid itemId, string reason, Guid clientOperationId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result<FollowUpItem>> RescheduleItemAsync(RescheduleFollowUpItemCommand command, CancellationToken cancellationToken = default) => throw new NotImplementedException();

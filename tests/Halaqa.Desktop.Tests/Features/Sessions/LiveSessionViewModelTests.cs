@@ -62,9 +62,11 @@ public sealed class LiveSessionViewModelTests
         new FakePeerMediaConnection(),
         mushafRealtimeChannel ?? new FakeMushafRealtimeChannel(),
         new FakeLocalVideoRecorder(),
-        new CreateLiveSessionUseCase(new FakeSessionDirectoryRepository()),
-        new CreateSessionTaskUseCase(new FakeSessionTaskDirectoryRepository()),
-        new PrepareLiveSessionUseCase(new FakeLiveSessionRepository()),
+            new CreateLiveSessionUseCase(new FakeSessionDirectoryRepository()),
+            new CreateSessionTaskUseCase(new FakeSessionTaskDirectoryRepository()),
+            new ListSessionsUseCase(new FakeSessionDirectoryRepository()),
+            new ListSessionTasksUseCase(new FakeSessionTaskDirectoryRepository()),
+            new PrepareLiveSessionUseCase(new FakeLiveSessionRepository()),
         new SaveOfficialMushafStateUseCase(new FakeLiveSessionRepository()),
         new GetQuranPageUseCase(quranRepository),
         new GetQuranIndexUseCase(quranRepository));
@@ -118,7 +120,8 @@ public sealed class LiveSessionViewModelTests
 
         public Task<Result<SessionListItem>> AcceptAsync(Guid sessionId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result<SessionListItem>> RejectAsync(Guid sessionId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
-        public Task<Result<SessionPage>> ListAsync(SessionQuery query, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<Result<SessionPage>> ListAsync(SessionQuery query, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<SessionPage>.Success(new SessionPage(Array.Empty<SessionListItem>(), 1, 1, query.PerPage, 0)));
     }
 
     private sealed class FakeSessionTaskDirectoryRepository : ISessionTaskDirectoryRepository
@@ -143,7 +146,8 @@ public sealed class LiveSessionViewModelTests
                 null,
                 0)));
 
-        public Task<Result<SessionTaskPage>> ListAsync(Guid sessionId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<Result<SessionTaskPage>> ListAsync(Guid sessionId, CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<SessionTaskPage>.Success(new SessionTaskPage(Array.Empty<SessionTaskListItem>(), 1, 1, 50, 0)));
         public Task<Result<SessionTaskListItem>> UpdateAsync(UpdateSessionTaskCommand command, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result<SessionTaskListItem>> SaveDraftAsync(SaveSessionTaskDraftCommand command, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }

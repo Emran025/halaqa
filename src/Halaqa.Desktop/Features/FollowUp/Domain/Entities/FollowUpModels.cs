@@ -175,4 +175,7 @@ public sealed record StudentFollowUpSummary(
     bool HasRecitedToday,
     DateTimeOffset? LastRecitedAt,
     string? LastEvaluation,
-    int TotalMistakesRecorded = 0);
+    int TotalMistakesRecorded = 0,
+    bool HasMemorizationPlan = false,
+    bool HasReviewPlan = false,
+    bool HasRecitationPlan = false);
