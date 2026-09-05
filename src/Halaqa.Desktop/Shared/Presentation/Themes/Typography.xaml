@@ -1,7 +1,7 @@
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <FontFamily x:Key="AppFontFamily">pack://application:,,,/Halaqa.Desktop;component/Assets/Fonts/#Cairo, Segoe UI, Tahoma, Arial</FontFamily>
-    <FontFamily x:Key="QuranFontFamily">pack://application:,,,/Halaqa.Desktop;component/Assets/Fonts/UthmanicHafs_V20.ttf#KFGQPC HAFS Uthmanic Script, pack://application:,,,/Halaqa.Desktop;component/Assets/Fonts/#Cairo, Segoe UI</FontFamily>
+    <FontFamily x:Key="AppFontFamily">pack://application:,,,/Assets/Fonts/#Cairo, Segoe UI, Tahoma, Arial</FontFamily>
+    <FontFamily x:Key="QuranFontFamily">pack://application:,,,/Assets/Fonts/UthmanicHafs_V20.ttf#KFGQPC HAFS Uthmanic Script, pack://application:,,,/Assets/Fonts/#Cairo, Segoe UI</FontFamily>
 
     <Style TargetType="{x:Type TextBlock}">
         <Setter Property="FontFamily" Value="{StaticResource AppFontFamily}" />
