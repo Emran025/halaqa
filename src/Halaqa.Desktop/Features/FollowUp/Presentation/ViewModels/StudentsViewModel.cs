@@ -181,7 +181,7 @@ public sealed partial class StudentsViewModel : ObservableObject
             plan = planResult.Value;
 
         var todayItemsResult = await _listItemsUseCase.ExecuteAsync(
-            new FollowUpItemQuery(today, null, null, studentId, page: 1, perPage: 50));
+            new FollowUpItemQuery(today, null, null, studentId, Page: 1, PerPage: 50));
         var hasOfficialTodayItems = todayItemsResult.IsSuccess && todayItemsResult.Value?.Items.Count > 0;
 
         var trackingResult = await _listTrackingsUseCase.ExecuteAsync(studentId, null, null, page: 1, perPage: 1);
