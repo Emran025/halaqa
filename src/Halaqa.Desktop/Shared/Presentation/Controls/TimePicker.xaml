@@ -3,11 +3,36 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Name="Root"
              MinHeight="36">
-    <ComboBox ItemsSource="{Binding Times, ElementName=Root}"
-              SelectedItem="{Binding Value, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-              IsEditable="True"
-              IsTextSearchEnabled="True"
-              Text="{Binding Value, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
-              FlowDirection="LeftToRight"
-              ToolTip="اختر الوقت أو اكتبه بصيغة 24 ساعة مثل 18:00" />
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="38" />
+        </Grid.ColumnDefinitions>
+        <TextBox Grid.Column="0"
+                 Text="{Binding Value, ElementName=Root, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                 FlowDirection="LeftToRight"
+                 VerticalContentAlignment="Center"
+                 ToolTip="اكتب الوقت بصيغة 24 ساعة مثل 18:00" />
+        <Button Grid.Column="1"
+                Content="◷"
+                FontSize="18"
+                Click="OpenPicker"
+                ToolTip="فتح اختيار الوقت" />
+        <Popup x:Name="PickerPopup"
+               PlacementTarget="{Binding ElementName=Root}"
+               Placement="Bottom"
+               StaysOpen="False"
+               AllowsTransparency="True">
+            <Border Background="{StaticResource AppSurfaceMutedBrush}"
+                    BorderBrush="{StaticResource AppBorderBrush}"
+                    BorderThickness="1"
+                    Padding="6">
+                <ListBox ItemsSource="{Binding Times, ElementName=Root}"
+                         SelectionChanged="SelectTime"
+                         MinWidth="150"
+                         MaxHeight="220"
+                         FlowDirection="LeftToRight" />
+            </Border>
+        </Popup>
+    </Grid>
 </UserControl>

@@ -26,4 +26,20 @@ public partial class TimePicker : UserControl
     }
 
     public IReadOnlyList<string> Times { get; }
+
+    private void OpenPicker(object sender, RoutedEventArgs e)
+    {
+        PickerPopup.IsOpen = true;
+    }
+
+    private void SelectTime(object sender, SelectionChangedEventArgs e)
+    {
+        if (e.AddedItems.Count == 0)
+        {
+            return;
+        }
+
+        Value = (string)e.AddedItems[0];
+        PickerPopup.IsOpen = false;
+    }
 }
