@@ -1,4 +1,4 @@
-﻿﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.UseCases;
@@ -12,13 +12,16 @@ namespace Halaqa.Desktop.Features.Auth.Presentation.ViewModels;
 public sealed partial class StudentRegistrationViewModel : ObservableObject
 {
     private readonly RegisterStudentUseCase registerStudentUseCase;
+    private readonly VerifyTeacherCodeUseCase _verifyTeacherCodeUseCase;
     private readonly ICountryService _countryService;
 
     public StudentRegistrationViewModel(
         RegisterStudentUseCase registerStudentUseCase,
+        VerifyTeacherCodeUseCase verifyTeacherCodeUseCase,
         ICountryService countryService)
     {
         this.registerStudentUseCase = registerStudentUseCase;
+        _verifyTeacherCodeUseCase = verifyTeacherCodeUseCase;
         _countryService = countryService;
         Countries = _countryService.GetAllCountries();
     }
@@ -50,9 +53,24 @@ public sealed partial class StudentRegistrationViewModel : ObservableObject
     [ObservableProperty] private string _planUnit = "page";
     [ObservableProperty] private decimal _planAmount = 1;
     [ObservableProperty] private string? _teacherCode;
+    [ObservableProperty] private bool _isVerifyingTeacherCode;
+    [ObservableProperty] private bool? _isTeacherCodeValid;
+    [ObservableProperty] private string? _verifiedTeacherName;
+    [ObservableProperty] private string? _teacherCodeMessage;
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private string? _message;
     [ObservableProperty] private bool _isError;
+
+    partial void OnTeacherCodeChanged(string? value)
+    {
+        IsTeacherCodeValid = null;
+        VerifiedTeacherName = null;
+        TeacherCodeMessage = null;
+    }
+
+    public bool HasTeacherCodeMessage => !string.IsNullOrWhiteSpace(TeacherCodeMessage);
+
+    partial void OnTeacherCodeMessageChanged(string? value) => OnPropertyChanged(nameof(HasTeacherCodeMessage));
 
     public event EventHandler<AuthenticatedUser>? Registered;
     public event EventHandler? LoginRequested;
@@ -163,6 +181,47 @@ public sealed partial class StudentRegistrationViewModel : ObservableObject
         {
             IsBusy = false;
             SubmitCommand.NotifyCanExecuteChanged();
+        }
+    }
+
+    [RelayCommand]
+    private async Task VerifyTeacherCodeAsync()
+    {
+        if (string.IsNullOrWhiteSpace(TeacherCode))
+        {
+            IsTeacherCodeValid = null;
+            VerifiedTeacherName = null;
+            TeacherCodeMessage = "يرجى إدخال معرف المعلم للتحقق منه (أو تركه فارغاً فهو اختياري).";
+            return;
+        }
+
+        IsVerifyingTeacherCode = true;
+        TeacherCodeMessage = null;
+        try
+        {
+            var result = await _verifyTeacherCodeUseCase.ExecuteAsync(TeacherCode);
+            if (result.IsSuccess && result.Value is not null && result.Value.IsValid)
+            {
+                IsTeacherCodeValid = true;
+                VerifiedTeacherName = result.Value.TeacherName;
+                TeacherCodeMessage = $"✓ المعلم: {result.Value.TeacherName}";
+            }
+            else
+            {
+                IsTeacherCodeValid = false;
+                VerifiedTeacherName = null;
+                TeacherCodeMessage = result.Error?.Message ?? "معرف المعلم غير صحيح أو غير مسجل في المنصة.";
+            }
+        }
+        catch
+        {
+            IsTeacherCodeValid = false;
+            VerifiedTeacherName = null;
+            TeacherCodeMessage = "تعذر التحقق من معرف المعلم حالياً.";
+        }
+        finally
+        {
+            IsVerifyingTeacherCode = false;
         }
     }
 

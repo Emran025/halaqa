@@ -1,4 +1,4 @@
-﻿using Halaqa.Desktop.Features.Registrations.Domain.Entities;
+using Halaqa.Desktop.Features.Registrations.Domain.Entities;
 using Halaqa.Desktop.Features.Registrations.Domain.Repositories;
 using Halaqa.Desktop.Shared.Domain.Common;
 
@@ -118,10 +118,11 @@ public sealed class AcceptRegistrationRequestUseCase
 
     public Task<Result<RegistrationRequest>> ExecuteAsync(
         Guid registrationId,
+        Guid? targetHalaqaId = null,
         CancellationToken cancellationToken = default) =>
         registrationId == Guid.Empty
             ? Task.FromResult(Result<RegistrationRequest>.Failure(RegistrationRequestValidationErrors.InvalidRegistration()))
-            : repository.AcceptAsync(registrationId, cancellationToken);
+            : repository.AcceptAsync(registrationId, targetHalaqaId, cancellationToken);
 }
 
 public sealed class RejectRegistrationRequestUseCase

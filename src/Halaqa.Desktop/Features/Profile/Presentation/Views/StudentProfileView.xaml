@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Halaqa.Desktop.Features.Profile.Presentation.Views.StudentProfileView"
+<UserControl x:Class="Halaqa.Desktop.Features.Profile.Presentation.Views.StudentProfileView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
@@ -18,189 +18,635 @@
     </UserControl.Resources>
 
     <Grid Background="{StaticResource AppCanvasBrush}">
-        <Border Style="{StaticResource AppElevatedCard}"
-                MaxWidth="980"
-                HorizontalAlignment="Center"
-                VerticalAlignment="Center"
-                Margin="28">
-            <Grid>
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- READ-ONLY / DISPLAY MODE (وضع القراءة) -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+            <Grid Margin="32,24" MaxWidth="1150" HorizontalAlignment="Center">
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
                     <RowDefinition Height="Auto" />
+                    <RowDefinition Height="*" />
                 </Grid.RowDefinitions>
 
-                <DockPanel LastChildFill="True">
-                    <Button DockPanel.Dock="Left"
-                            Command="{Binding BackCommand}"
-                            ToolTip="العودة إلى لوحة التحكم"
-                            Style="{StaticResource AppBackButton}">
-                        <controls:AppIcon Kind="ArrowRight" />
-                    </Button>
-                    <StackPanel>
-                        <TextBlock Text="الملف التفصيلي للطالب" Style="{StaticResource PageTitle}" />
-                        <TextBlock Text="تُحفظ البيانات التعليمية الرسمية عبر الخادم فقط. الحقول التي تظهر فارغة يمكن تركها دون تغيير أو مسحها صراحةً." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                <!-- Top Action Header -->
+                <Grid Grid.Row="0" Margin="0,0,0,20">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <!-- Right Side (Column 0 in RTL = visual Right): Back Button + Title -->
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Command="{Binding BackCommand}"
+                                Style="{StaticResource AppBackButton}"
+                                ToolTip="العودة للوحة التحكم"
+                                Margin="0,0,14,0"
+                                VerticalAlignment="Center">
+                            <controls:AppIcon Kind="ArrowRight" />
+                        </Button>
+                        <StackPanel VerticalAlignment="Center">
+                            <TextBlock Text="الملف الشخصي للطالب" Style="{StaticResource DisplayTitle}" />
+                            <TextBlock Text="استعراض وتعديل بيانات الحساب والاتصال والمستوى القرآني وخطة المتابعة" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                        </StackPanel>
                     </StackPanel>
-                </DockPanel>
 
-                <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,16,0,0">
-                    <StackPanel>
-                        <ProgressBar Height="4"
-                                     Margin="0,0,0,12"
-                                     IsIndeterminate="True"
-                                     Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <!-- Left Side (Column 1 in RTL = visual Left): Actions (Refresh, Edit) -->
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" VerticalAlignment="Center">
+                        <Button Command="{Binding LoadCommand}"
+                                Style="{StaticResource AppOutlinedButton}"
+                                Padding="12,8" Margin="0,0,10,0"
+                                ToolTip="تحديث بيانات الملف">
+                            <StackPanel Orientation="Horizontal">
+                                <controls:AppIcon Kind="Refresh" FontSize="15" Margin="0,0,6,0" />
+                                <TextBlock Text="تحديث" />
+                            </StackPanel>
+                        </Button>
+                        <Button Command="{Binding OpenEditDialogCommand}"
+                                Style="{StaticResource AppPrimaryButton}"
+                                Padding="16,8"
+                                ToolTip="تعديل بيانات الملف الشخصي">
+                            <StackPanel Orientation="Horizontal">
+                                <controls:AppIcon Kind="AccountEditOutline" Foreground="White" FontSize="16" Margin="0,0,6,0" />
+                                <TextBlock Text="تعديل الملف الشخصي" Foreground="White" FontWeight="Bold" />
+                            </StackPanel>
+                        </Button>
+                    </StackPanel>
+                </Grid>
 
-                        <TextBlock Text="بيانات الطالب الأساسية" Style="{StaticResource SectionHeading}" />
+                <!-- Feedback Banner & Progress -->
+                <StackPanel Grid.Row="1" Margin="0,0,0,16">
+                    <ProgressBar Height="3" IsIndeterminate="True" Margin="0,0,0,10"
+                                 Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <Border Background="#121B524A" BorderBrush="#331B524A" BorderThickness="1" CornerRadius="6" Padding="14,10"
+                            Visibility="{Binding Message, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="{Binding Message}" Foreground="{StaticResource AppPrimaryBrush}" FontWeight="SemiBold" FontSize="13" />
+                    </Border>
+                </StackPanel>
+
+                <!-- Read-Only Profile Content -->
+                <StackPanel Grid.Row="2">
+                    <!-- Profile Overview Card -->
+                    <Border Style="{StaticResource AppCard}" Padding="22,18" Margin="0,0,0,16">
                         <Grid>
                             <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <StackPanel Margin="0,0,8,0">
-                                <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="الاسم" />
-                                <TextBlock Text="{Binding NameError}" Style="{StaticResource SectionError}" />
-                                <TextBox Text="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="تاريخ الميلاد (YYYY-MM-DD)" />
-                                <CheckBox Content="مسح تاريخ الميلاد" IsChecked="{Binding ClearBirthDate}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding BirthDateError}" Style="{StaticResource SectionError}" />
-                                <ComboBox ItemsSource="{Binding GenderOptions}" SelectedValue="{Binding Gender}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الجنس" />
-                                <CheckBox Content="مسح الجنس" IsChecked="{Binding ClearGender}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding GenderError}" Style="{StaticResource SectionError}" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <TextBox Text="{Binding Email}" IsReadOnly="True" FlowDirection="LeftToRight" ToolTip="البريد الإلكتروني" />
-                                <TextBox Text="{Binding Country, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="الدولة" />
-                                <CheckBox Content="مسح الدولة" IsChecked="{Binding ClearCountry}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding CountryError}" Style="{StaticResource SectionError}" />
-                                <TextBox Text="{Binding City, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="المدينة" />
-                                <CheckBox Content="مسح المدينة" IsChecked="{Binding ClearCity}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding CityError}" Style="{StaticResource SectionError}" />
-                                <TextBox Text="{Binding Residence, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="محل الإقامة" />
-                                <CheckBox Content="مسح محل الإقامة" IsChecked="{Binding ClearResidence}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding ResidenceError}" Style="{StaticResource SectionError}" />
-                            </StackPanel>
-                        </Grid>
-
-                        <TextBlock Text="بيانات التواصل" Style="{StaticResource SectionHeading}" />
-                        <Grid>
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="Auto" />
+                                <ColumnDefinition Width="18" />
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
-                            <StackPanel Margin="0,0,8,0">
-                                <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="رقم الهاتف" />
-                                <CheckBox Content="مسح رقم الهاتف" IsChecked="{Binding ClearPhone}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding PhoneError}" Style="{StaticResource SectionError}" />
-                                <TextBox Text="{Binding PhoneZone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="رمز الهاتف" />
-                                <CheckBox Content="مسح رمز الهاتف" IsChecked="{Binding ClearPhoneZone}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding PhoneZoneError}" Style="{StaticResource SectionError}" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <TextBox Text="{Binding WhatsappPhone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="رقم واتساب" />
-                                <CheckBox Content="مسح رقم واتساب" IsChecked="{Binding ClearWhatsappPhone}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding WhatsappPhoneError}" Style="{StaticResource SectionError}" />
-                                <TextBox Text="{Binding WhatsappZone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="رمز واتساب" />
-                                <CheckBox Content="مسح رمز واتساب" IsChecked="{Binding ClearWhatsappZone}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding WhatsappZoneError}" Style="{StaticResource SectionError}" />
-                            </StackPanel>
-                        </Grid>
 
-                        <TextBlock Text="مستوى الحفظ والمراجعة" Style="{StaticResource SectionHeading}" />
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <StackPanel Margin="0,0,8,0">
-                                <TextBox Text="{Binding MemorizationLevel, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="مستوى الحفظ" />
-                                <CheckBox Content="مسح مستوى الحفظ" IsChecked="{Binding ClearMemorizationLevel}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding MemorizationLevelError}" Style="{StaticResource SectionError}" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <TextBox Text="{Binding ReviewLevel, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="مستوى المراجعة" />
-                                <CheckBox Content="مسح مستوى المراجعة" IsChecked="{Binding ClearReviewLevel}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" />
-                                <TextBlock Text="{Binding ReviewLevelError}" Style="{StaticResource SectionError}" />
-                            </StackPanel>
-                        </Grid>
+                            <!-- Avatar -->
+                            <Border Grid.Column="0" Width="68" Height="68" CornerRadius="34"
+                                    Background="{StaticResource AppPrimarySoftBrush}" BorderBrush="{StaticResource AppPrimaryBrush}" BorderThickness="2">
+                                <controls:AppIcon Kind="AccountOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="34"
+                                                  HorizontalAlignment="Center" VerticalAlignment="Center" />
+                            </Border>
 
-                        <TextBlock Text="بيانات الحفظ السابقة" Style="{StaticResource SectionHeading}" />
-                        <TextBlock Text="تُبقي الشاشة آخر وحدة مكتملة الواردة من الخادم عند تعديل هذه البيانات." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,0,0,8" />
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <StackPanel Margin="0,0,8,0">
-                                <TextBox Text="{Binding PreviousMemorizationLevel, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="مستوى الحفظ السابق" />
-                                <TextBox Text="{Binding PreviousReviewLevel, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="مستوى المراجعة السابق" />
-                                <TextBox Text="{Binding MemorizedJuzCount, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="عدد الأجزاء المحفوظة" />
-                                <TextBox Text="{Binding MemorizedSurahIds, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="معرّفات السور مفصولة بفواصل" />
-                            </StackPanel>
-                            <StackPanel Grid.Column="1" Margin="8,0,0,0">
-                                <TextBox Text="{Binding PreviousTeacherNotes, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="70" TextWrapping="Wrap" ToolTip="ملاحظات المعلم السابق" />
-                                <TextBox Text="{Binding StopReasons, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="70" TextWrapping="Wrap" ToolTip="أسباب التوقف" />
+                            <!-- Info -->
+                            <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                <StackPanel Orientation="Horizontal">
+                                    <TextBlock Text="{Binding Name}" FontSize="20" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" />
+                                    <Border Background="{StaticResource AppPrimarySoftBrush}" CornerRadius="4" Padding="8,2" Margin="10,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="طالب" FontSize="11" Foreground="{StaticResource AppPrimaryBrush}" FontWeight="SemiBold" />
+                                    </Border>
+                                    <Border Background="#101F7A4D" CornerRadius="4" Padding="8,2" Margin="6,0,0,0" VerticalAlignment="Center">
+                                        <TextBlock Text="نشط" FontSize="11" Foreground="{StaticResource AppSuccessBrush}" FontWeight="SemiBold" />
+                                    </Border>
+                                </StackPanel>
+
+                                <WrapPanel Margin="0,8,0,0">
+                                    <Border Background="{StaticResource AppSurfaceMutedBrush}" CornerRadius="4" Padding="8,4" Margin="0,0,10,4">
+                                        <StackPanel Orientation="Horizontal">
+                                            <controls:AppIcon Kind="EmailOutline" FontSize="13" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding Email}" FontSize="12" Foreground="{StaticResource AppInkBrush}" FlowDirection="LeftToRight" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Background="{StaticResource AppSurfaceMutedBrush}" CornerRadius="4" Padding="8,4" Margin="0,0,10,4">
+                                        <StackPanel Orientation="Horizontal">
+                                            <controls:AppIcon Kind="PhoneOutline" FontSize="13" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding PhoneDisplay}" FontSize="12" Foreground="{StaticResource AppInkBrush}" FlowDirection="LeftToRight" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                    <Border Background="{StaticResource AppSurfaceMutedBrush}" CornerRadius="4" Padding="8,4" Margin="0,0,10,4">
+                                        <StackPanel Orientation="Horizontal">
+                                            <controls:AppIcon Kind="MapMarkerOutline" FontSize="13" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,0,6,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding LocationDisplay}" FontSize="12" Foreground="{StaticResource AppInkBrush}" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Border>
+                                </WrapPanel>
                             </StackPanel>
                         </Grid>
-                        <TextBlock Text="{Binding PreviousMemorizationError}" Style="{StaticResource SectionError}" />
+                    </Border>
 
-                        <TextBlock Text="تفضيلات الحضور" Style="{StaticResource SectionHeading}" />
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <TextBox Text="{Binding Timezone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="المنطقة الزمنية، مثل Asia/Riyadh" Margin="0,0,8,0" />
-                            <TextBox Grid.Column="1" Text="{Binding PreferredSessionDurationMinutes, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="مدة الجلسة المفضلة بالدقائق" Margin="8,0,0,0" />
-                        </Grid>
-                        <ItemsControl ItemsSource="{Binding WeeklySlots}" Margin="0,8,0,4">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="0,3">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="130" /><ColumnDefinition Width="110" /><ColumnDefinition Width="110" /><ColumnDefinition Width="100" /><ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <ComboBox ItemsSource="{Binding DataContext.WeekDays, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding DayOfWeek}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" ToolTip="اليوم" />
-                                        <TextBox Grid.Column="1" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" FlowDirection="LeftToRight" ToolTip="من" Margin="6,0" />
-                                        <TextBox Grid.Column="2" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" FlowDirection="LeftToRight" ToolTip="إلى" Margin="6,0" />
-                                        <CheckBox Grid.Column="3" Content="مفضل" IsChecked="{Binding Preferred}" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" />
-                                        <Button Grid.Column="4" Command="{Binding DataContext.RemoveWeeklySlotCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف الموعد"><controls:AppIcon Kind="Close"  /></Button>
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <Button Content="إضافة موعد حضور" Command="{Binding AddWeeklySlotCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" HorizontalAlignment="Right" />
-                        <TextBlock Text="{Binding AttendancePreferencesError}" Style="{StaticResource SectionError}" />
+                    <!-- Section 1: البيانات الشخصية والعامة للحساب -->
+                    <Border Style="{StaticResource AppCard}" Padding="20" Margin="0,0,0,16">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,16" LastChildFill="False">
+                                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                                    <controls:AppIcon Kind="CardAccountDetailsOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="البيانات الشخصية والعامة للحساب" FontWeight="Bold" FontSize="15" Foreground="{StaticResource AppInkBrush}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DockPanel>
 
-                        <TextBlock Text="خطة المتابعة" Style="{StaticResource SectionHeading}" />
-                        <Grid>
-                            <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
-                            <ComboBox ItemsSource="{Binding FrequencyOptions}" SelectedValue="{Binding PlanFrequency}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="وتيرة المتابعة" Margin="0,0,6,0" />
-                            <TextBox Grid.Column="1" Text="{Binding PlanStartsOn, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="تبدأ في YYYY-MM-DD" Margin="6,0" />
-                            <TextBox Grid.Column="2" Text="{Binding PlanEndsOn, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="تنتهي في YYYY-MM-DD" Margin="6,0,0,0" />
-                        </Grid>
-                        <ItemsControl ItemsSource="{Binding PlanDetails}" Margin="0,8,0,4">
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Grid Margin="0,3">
-                                        <Grid.ColumnDefinitions>
-                                            <ColumnDefinition Width="150" /><ColumnDefinition Width="150" /><ColumnDefinition Width="100" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
-                                        </Grid.ColumnDefinitions>
-                                        <ComboBox ItemsSource="{Binding DataContext.TaskTypeOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding TaskType}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" ToolTip="النوع" />
-                                        <ComboBox Grid.Column="1" ItemsSource="{Binding DataContext.PlanUnitOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding Unit}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الوحدة" Margin="6,0" />
-                                        <TextBox Grid.Column="2" Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" FlowDirection="LeftToRight" ToolTip="الكمية" Margin="6,0" />
-                                        <TextBox Grid.Column="3" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="ملاحظات" Margin="6,0" />
-                                        <Button Grid.Column="4" Command="{Binding DataContext.RemovePlanDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف التفصيل"><controls:AppIcon Kind="Close"  /></Button>
-                                    </Grid>
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
-                        <Button Content="إضافة تفصيل للخطة" Command="{Binding AddPlanDetailCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" HorizontalAlignment="Right" />
-                        <TextBlock Text="{Binding FollowUpPlanError}" Style="{StaticResource SectionError}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="14" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="14" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
 
-                        <TextBlock Text="تعريف مختصر" Style="{StaticResource SectionHeading}" />
-                        <TextBlock Text="لا يعيد عقد القراءة هذا الحقل؛ سيُرسل فقط إن كتبته الآن." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,0,0,8" />
-                        <TextBox Text="{Binding Bio, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="90" TextWrapping="Wrap" ToolTip="تعريف مختصر (حتى 2000 حرف)" />
-                        <TextBlock Text="{Binding BioError}" Style="{StaticResource SectionError}" />
+                                <!-- Row 0 -->
+                                <Border Grid.Row="0" Grid.Column="0" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="الاسم الكامل" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding Name, TargetNullValue='غير محدد'}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
 
-                        <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,12,0,0" />
-                    </StackPanel>
-                </ScrollViewer>
+                                <Border Grid.Row="0" Grid.Column="2" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="البريد الإلكتروني" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding Email, TargetNullValue='غير محدد'}" FontSize="13" FontWeight="SemiBold" FlowDirection="LeftToRight" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
 
-                <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Left" Margin="0,16,0,0">
-                    <Button Content="إعادة تحميل البيانات" Command="{Binding LoadCommand}" Margin="0,0,8,0" />
-                    <Button Content="حفظ التغييرات" Command="{Binding SaveCommand}" />
+                                <Border Grid.Row="0" Grid.Column="4" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="الجنس" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding GenderDisplay}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Row 1 -->
+                                <Border Grid.Row="1" Grid.Column="0" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="رقم الهاتف" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding PhoneDisplay}" FontSize="13" FontWeight="SemiBold" FlowDirection="LeftToRight" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" Grid.Column="2" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="رقم الواتساب" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding WhatsappDisplay}" FontSize="13" FontWeight="SemiBold" FlowDirection="LeftToRight" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Row="1" Grid.Column="4" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,12">
+                                    <StackPanel>
+                                        <TextBlock Text="تاريخ الميلاد والعمر" Style="{StaticResource CaptionText}" />
+                                        <StackPanel Orientation="Horizontal" Margin="0,4,0,0">
+                                            <TextBlock Text="{Binding BirthDate, TargetNullValue='غير محدد'}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource AppInkBrush}" />
+                                            <TextBlock Text="{Binding AgeDisplay, StringFormat=' ({0})'}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource AppPrimaryBrush}" />
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+
+                                <!-- Row 2 (Full Width across all columns) -->
+                                <Border Grid.Row="2" Grid.Column="0" Grid.ColumnSpan="5" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                                    <StackPanel>
+                                        <TextBlock Text="الدولة ومحل الإقامة" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding LocationDisplay}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Section 2: المستوى والخلفية القرآنية -->
+                    <Border Style="{StaticResource AppCard}" Padding="20" Margin="0,0,0,16">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,16" LastChildFill="False">
+                                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                                    <controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="المستوى والخلفية القرآنية" FontWeight="Bold" FontSize="15" Foreground="{StaticResource AppInkBrush}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DockPanel>
+
+                            <!-- Row 1: Key Metrics -->
+                            <Grid Margin="0,0,0,12">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="14" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="14" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0" Background="{StaticResource AppPrimarySoftBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="14,12">
+                                    <StackPanel>
+                                        <TextBlock Text="مستوى الحفظ الحالي" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding MemorizationLevel, TargetNullValue='غير محدد'}" FontSize="15" FontWeight="Bold" Foreground="{StaticResource AppPrimaryBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="2" Background="#121F7A4D" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="14,12">
+                                    <StackPanel>
+                                        <TextBlock Text="مستوى المراجعة الحالي" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding ReviewLevel, TargetNullValue='غير محدد'}" FontSize="15" FontWeight="Bold" Foreground="{StaticResource AppSuccessBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="4" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="14,12">
+                                    <StackPanel>
+                                        <TextBlock Text="الأجزاء المحفوظة سابقاً" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding MemorizedJuzCount, TargetNullValue='غير محدد', StringFormat={}{0} جزء}" FontSize="15" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- Row 2: Memorized Surahs -->
+                            <Border Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10" Margin="0,0,0,12">
+                                <StackPanel>
+                                    <TextBlock Text="السور المحفوظة سابقاً" Style="{StaticResource CaptionText}" />
+                                    <TextBlock Text="{Binding MemorizedSurahIds, TargetNullValue='لا يوجد'}" FontSize="13" FontWeight="SemiBold" Foreground="{StaticResource AppInkBrush}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                </StackPanel>
+                            </Border>
+
+                            <!-- Row 3: Teacher Notes & Stop Reasons (2 columns) -->
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="14" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                                    <StackPanel>
+                                        <TextBlock Text="ملاحظات المعلم السابق" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding PreviousTeacherNotes, TargetNullValue='لا توجد ملاحظات'}" FontSize="12" Foreground="{StaticResource AppMutedInkBrush}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="2" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                                    <StackPanel>
+                                        <TextBlock Text="أسباب التوقف والانقطاع" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding StopReasons, TargetNullValue='لا توجد أسباب مسجلة'}" FontSize="12" Foreground="{StaticResource AppMutedInkBrush}" TextWrapping="Wrap" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+                        </StackPanel>
+                    </Border>
+
+                    <!-- Section 3: خطة المتابعة والتوافر الأسبوعي -->
+                    <Border Style="{StaticResource AppCard}" Padding="20" Margin="0,0,0,24">
+                        <StackPanel>
+                            <DockPanel Margin="0,0,0,16" LastChildFill="False">
+                                <StackPanel Orientation="Horizontal" DockPanel.Dock="Right" VerticalAlignment="Center">
+                                    <controls:AppIcon Kind="CalendarClockOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                    <TextBlock Text="خطة المتابعة والتوافر الأسبوعي" FontWeight="Bold" FontSize="15" Foreground="{StaticResource AppInkBrush}" VerticalAlignment="Center" />
+                                </StackPanel>
+                            </DockPanel>
+
+                            <!-- 4 Key Plan metrics -->
+                            <Grid Margin="0,0,0,14">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="12" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Border Grid.Column="0" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                                    <StackPanel>
+                                        <TextBlock Text="وتيرة خطة المتابعة" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding PlanFrequencyDisplay}" FontSize="13" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="2" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                                    <StackPanel>
+                                        <TextBlock Text="مدة الجلسة المفضلة" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding PreferredSessionDurationMinutes, TargetNullValue='غير محدد', StringFormat={}{0} دقيقة}" FontSize="13" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="4" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                                    <StackPanel>
+                                        <TextBlock Text="المنطقة الزمنية" Style="{StaticResource CaptionText}" />
+                                        <TextBlock Text="{Binding Timezone, TargetNullValue='غير محدد'}" FontSize="12" FontWeight="SemiBold" FlowDirection="LeftToRight" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0" />
+                                    </StackPanel>
+                                </Border>
+
+                                <Border Grid.Column="6" Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="12,10">
+                                    <StackPanel>
+                                        <TextBlock Text="مواعيد الخطة" Style="{StaticResource CaptionText}" />
+                                        <TextBlock FontSize="12" FontWeight="SemiBold" Foreground="{StaticResource AppInkBrush}" Margin="0,4,0,0">
+                                            <TextBlock.Text>
+                                                <MultiBinding StringFormat="{}{0} إلى {1}">
+                                                    <Binding Path="PlanStartsOn" TargetNullValue="البداية" />
+                                                    <Binding Path="PlanEndsOn" TargetNullValue="مستمرة" />
+                                                </MultiBinding>
+                                            </TextBlock.Text>
+                                        </TextBlock>
+                                    </StackPanel>
+                                </Border>
+                            </Grid>
+
+                            <!-- Weekly Slots -->
+                            <Border Background="{StaticResource AppSurfaceBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="14,12">
+                                <StackPanel>
+                                    <TextBlock Text="أوقات التفرغ الأسبوعية المسجلة" Style="{StaticResource CaptionText}" Margin="0,0,0,8" />
+                                    <ItemsControl ItemsSource="{Binding WeeklySlots}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <WrapPanel Orientation="Horizontal" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate>
+                                                <Border Background="{StaticResource AppPrimarySoftBrush}" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="10,6" Margin="0,0,8,6">
+                                                    <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                                        <controls:AppIcon Kind="ClockTimeFourOutline" FontSize="12" Foreground="{StaticResource AppPrimaryBrush}" Margin="0,0,4,0" VerticalAlignment="Center" />
+                                                        <TextBlock Text="{Binding DayName}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" Margin="0,0,4,0" />
+                                                        <TextBlock Text=":" FontSize="12" Margin="0,0,4,0" />
+                                                        <TextBlock Text="{Binding From}" FontSize="12" FontWeight="SemiBold" FlowDirection="LeftToRight" />
+                                                        <TextBlock Text=" - " FontSize="12" />
+                                                        <TextBlock Text="{Binding To}" FontSize="12" FontWeight="SemiBold" FlowDirection="LeftToRight" />
+                                                        <Border Background="#151F7A4D" CornerRadius="3" Padding="4,1" Margin="6,0,0,0"
+                                                                Visibility="{Binding Preferred, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                            <TextBlock Text="مفضل" FontSize="10" Foreground="{StaticResource AppSuccessBrush}" FontWeight="Bold" />
+                                                        </Border>
+                                                    </StackPanel>
+                                                </Border>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </StackPanel>
+                            </Border>
+                        </StackPanel>
+                    </Border>
                 </StackPanel>
             </Grid>
-        </Border>
+        </ScrollViewer>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- EDIT MODAL DIALOG OVERLAY (نافذة التعديل المنبثقة بعرض الشاشة) -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <Grid Background="#7F000000"
+              Visibility="{Binding IsEditDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Style="{StaticResource AppElevatedCard}"
+                    Width="Auto"
+                    MaxWidth="1050"
+                    MaxHeight="720"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Margin="40,24"
+                    Padding="26">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Dialog Header -->
+                    <DockPanel Grid.Row="0" Margin="0,0,0,16" LastChildFill="False">
+                        <StackPanel DockPanel.Dock="Right" VerticalAlignment="Center">
+                            <StackPanel Orientation="Horizontal">
+                                <controls:AppIcon Kind="AccountEditOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="22" Margin="0,0,8,0" />
+                                <TextBlock Text="تعديل الملف الشخصي للطالب" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" />
+                            </StackPanel>
+                            <TextBlock Text="عدّل الحقول المطلوبة ثم اضغط حفظ التعديلات لتطبيقها." Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                        </StackPanel>
+                        <Button DockPanel.Dock="Left" Command="{Binding CloseEditDialogCommand}"
+                                Style="{StaticResource AppQuietButton}" Padding="8" ToolTip="إغلاق النافذة">
+                            <controls:AppIcon Kind="Close" FontSize="16" />
+                        </Button>
+                    </DockPanel>
+
+                    <!-- Dialog Body (Scrollable Edit Form) -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Margin="0,4,0,16" Padding="0,0,8,0">
+                        <StackPanel>
+                            <ProgressBar Height="4" Margin="0,0,0,12" IsIndeterminate="True"
+                                         Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                            <!-- Section 1: Basic Info -->
+                            <TextBlock Text="البيانات الأساسية" Style="{StaticResource SectionHeading}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="الاسم الكامل" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Name, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="الاسم" />
+                                    <TextBlock Text="{Binding NameError}" Style="{StaticResource SectionError}" />
+
+                                    <TextBlock Text="تاريخ الميلاد (YYYY-MM-DD)" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding BirthDate, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="تاريخ الميلاد (YYYY-MM-DD)" />
+                                    <CheckBox Content="مسح تاريخ الميلاد" IsChecked="{Binding ClearBirthDate}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding BirthDateError}" Style="{StaticResource SectionError}" />
+
+                                    <TextBlock Text="الجنس" Style="{StaticResource CaptionText}" />
+                                    <ComboBox ItemsSource="{Binding GenderOptions}" SelectedValue="{Binding Gender}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الجنس" />
+                                    <CheckBox Content="مسح الجنس" IsChecked="{Binding ClearGender}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding GenderError}" Style="{StaticResource SectionError}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="البريد الإلكتروني (للقراءة فقط)" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Email}" IsReadOnly="True" FlowDirection="LeftToRight" ToolTip="البريد الإلكتروني" />
+
+                                    <TextBlock Text="الدولة" Style="{StaticResource CaptionText}" Margin="0,8,0,0" />
+                                    <TextBox Text="{Binding Country, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="الدولة" />
+                                    <CheckBox Content="مسح الدولة" IsChecked="{Binding ClearCountry}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding CountryError}" Style="{StaticResource SectionError}" />
+
+                                    <TextBlock Text="المدينة" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding City, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="المدينة" />
+                                    <CheckBox Content="مسح المدينة" IsChecked="{Binding ClearCity}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding CityError}" Style="{StaticResource SectionError}" />
+
+                                    <TextBlock Text="محل الإقامة" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Residence, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="محل الإقامة" />
+                                    <CheckBox Content="مسح محل الإقامة" IsChecked="{Binding ClearResidence}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding ResidenceError}" Style="{StaticResource SectionError}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Section 2: Contact Info -->
+                            <TextBlock Text="بيانات التواصل" Style="{StaticResource SectionHeading}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="رقم الهاتف" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Phone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="رقم الهاتف" />
+                                    <CheckBox Content="مسح رقم الهاتف" IsChecked="{Binding ClearPhone}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding PhoneError}" Style="{StaticResource SectionError}" />
+
+                                    <TextBlock Text="رمز الهاتف (مثال: +966)" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding PhoneZone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="رمز الهاتف" />
+                                    <CheckBox Content="مسح رمز الهاتف" IsChecked="{Binding ClearPhoneZone}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding PhoneZoneError}" Style="{StaticResource SectionError}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="رقم واتساب" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding WhatsappPhone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="رقم واتساب" />
+                                    <CheckBox Content="مسح رقم واتساب" IsChecked="{Binding ClearWhatsappPhone}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding WhatsappPhoneError}" Style="{StaticResource SectionError}" />
+
+                                    <TextBlock Text="رمز واتساب (مثال: +966)" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding WhatsappZone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="رمز واتساب" />
+                                    <CheckBox Content="مسح رمز واتساب" IsChecked="{Binding ClearWhatsappZone}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding WhatsappZoneError}" Style="{StaticResource SectionError}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Section 3: Quranic Level -->
+                            <TextBlock Text="مستوى الحفظ والمراجعة" Style="{StaticResource SectionHeading}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="مستوى الحفظ" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding MemorizationLevel, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="مستوى الحفظ" />
+                                    <CheckBox Content="مسح مستوى الحفظ" IsChecked="{Binding ClearMemorizationLevel}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding MemorizationLevelError}" Style="{StaticResource SectionError}" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="مستوى المراجعة" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding ReviewLevel, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="مستوى المراجعة" />
+                                    <CheckBox Content="مسح مستوى المراجعة" IsChecked="{Binding ClearReviewLevel}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" Margin="0,2,0,0" />
+                                    <TextBlock Text="{Binding ReviewLevelError}" Style="{StaticResource SectionError}" />
+                                </StackPanel>
+                            </Grid>
+
+                            <!-- Section 4: Previous Memorization -->
+                            <TextBlock Text="بيانات الحفظ السابقة" Style="{StaticResource SectionHeading}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="مستوى الحفظ السابق" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding PreviousMemorizationLevel, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="مستوى الحفظ السابق" />
+
+                                    <TextBlock Text="مستوى المراجعة السابق" Style="{StaticResource CaptionText}" Margin="0,8,0,0" />
+                                    <TextBox Text="{Binding PreviousReviewLevel, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="مستوى المراجعة السابق" />
+
+                                    <TextBlock Text="عدد الأجزاء المحفوظة" Style="{StaticResource CaptionText}" Margin="0,8,0,0" />
+                                    <TextBox Text="{Binding MemorizedJuzCount, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="عدد الأجزاء المحفوظة" />
+
+                                    <TextBlock Text="معرّفات السور (مفصولة بفواصل)" Style="{StaticResource CaptionText}" Margin="0,8,0,0" />
+                                    <TextBox Text="{Binding MemorizedSurahIds, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="معرّفات السور مفصولة بفواصل" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="ملاحظات المعلم السابق" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding PreviousTeacherNotes, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="70" TextWrapping="Wrap" ToolTip="ملاحظات المعلم السابق" />
+
+                                    <TextBlock Text="أسباب التوقف والانقطاع" Style="{StaticResource CaptionText}" Margin="0,8,0,0" />
+                                    <TextBox Text="{Binding StopReasons, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="70" TextWrapping="Wrap" ToolTip="أسباب التوقف" />
+                                </StackPanel>
+                            </Grid>
+                            <TextBlock Text="{Binding PreviousMemorizationError}" Style="{StaticResource SectionError}" />
+
+                            <!-- Section 5: Attendance Preferences -->
+                            <TextBlock Text="تفضيلات الحضور" Style="{StaticResource SectionHeading}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="16" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="المنطقة الزمنية (مثال: Asia/Riyadh)" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding Timezone, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="المنطقة الزمنية" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="مدة الجلسة المفضلة بالدقائق" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding PreferredSessionDurationMinutes, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="مدة الجلسة بالدقائق" />
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="مواعيد التفرغ الأسبوعية" Style="{StaticResource CaptionText}" Margin="0,10,0,4" />
+                            <ItemsControl ItemsSource="{Binding WeeklySlots}" Margin="0,0,0,6">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="130" /><ColumnDefinition Width="110" /><ColumnDefinition Width="110" /><ColumnDefinition Width="100" /><ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <ComboBox ItemsSource="{Binding DataContext.WeekDays, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding DayOfWeek}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" ToolTip="اليوم" />
+                                            <TextBox Grid.Column="1" Text="{Binding From, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" FlowDirection="LeftToRight" ToolTip="من" Margin="6,0" />
+                                            <TextBox Grid.Column="2" Text="{Binding To, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" FlowDirection="LeftToRight" ToolTip="إلى" Margin="6,0" />
+                                            <CheckBox Grid.Column="3" Content="مفضل" IsChecked="{Binding Preferred}" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" />
+                                            <Button Grid.Column="4" Command="{Binding DataContext.RemoveWeeklySlotCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف الموعد"><controls:AppIcon Kind="Close" /></Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Content="إضافة موعد حضور" Command="{Binding AddWeeklySlotCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" HorizontalAlignment="Right" />
+                            <TextBlock Text="{Binding AttendancePreferencesError}" Style="{StaticResource SectionError}" />
+
+                            <!-- Section 6: Follow Up Plan -->
+                            <TextBlock Text="خطة المتابعة" Style="{StaticResource SectionHeading}" />
+                            <Grid>
+                                <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="8" /><ColumnDefinition Width="*" /><ColumnDefinition Width="8" /><ColumnDefinition Width="*" /></Grid.ColumnDefinitions>
+                                <StackPanel Grid.Column="0">
+                                    <TextBlock Text="وتيرة الخطة" Style="{StaticResource CaptionText}" />
+                                    <ComboBox ItemsSource="{Binding FrequencyOptions}" SelectedValue="{Binding PlanFrequency}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="وتيرة المتابعة" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="2">
+                                    <TextBlock Text="تبدأ في (YYYY-MM-DD)" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding PlanStartsOn, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="تبدأ في" />
+                                </StackPanel>
+                                <StackPanel Grid.Column="4">
+                                    <TextBlock Text="تنتهي في (YYYY-MM-DD)" Style="{StaticResource CaptionText}" />
+                                    <TextBox Text="{Binding PlanEndsOn, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" ToolTip="تنتهي في" />
+                                </StackPanel>
+                            </Grid>
+
+                            <TextBlock Text="تفاصيل المهام القرآنية بالخطة" Style="{StaticResource CaptionText}" Margin="0,10,0,4" />
+                            <ItemsControl ItemsSource="{Binding PlanDetails}" Margin="0,0,0,6">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Grid Margin="0,3">
+                                            <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="130" /><ColumnDefinition Width="120" /><ColumnDefinition Width="90" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+                                            <ComboBox ItemsSource="{Binding DataContext.TaskTypeOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding TaskType}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" ToolTip="النوع" />
+                                            <ComboBox Grid.Column="1" ItemsSource="{Binding DataContext.PlanUnitOptions, RelativeSource={RelativeSource AncestorType=UserControl}}" SelectedValue="{Binding Unit}" SelectedValuePath="Value" DisplayMemberPath="Label" IsEnabled="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الوحدة" Margin="6,0" />
+                                            <TextBox Grid.Column="2" Text="{Binding Amount, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" FlowDirection="LeftToRight" ToolTip="الكمية" Margin="6,0" />
+                                            <TextBox Grid.Column="3" Text="{Binding Notes, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding DataContext.IsBusy, RelativeSource={RelativeSource AncestorType=UserControl}}" ToolTip="ملاحظات" Margin="6,0" />
+                                            <Button Grid.Column="4" Command="{Binding DataContext.RemovePlanDetailCommand, RelativeSource={RelativeSource AncestorType=UserControl}}" CommandParameter="{Binding}" ToolTip="حذف التفصيل"><controls:AppIcon Kind="Close" /></Button>
+                                        </Grid>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                            <Button Content="إضافة تفصيل للخطة" Command="{Binding AddPlanDetailCommand}" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" HorizontalAlignment="Right" />
+                            <TextBlock Text="{Binding FollowUpPlanError}" Style="{StaticResource SectionError}" />
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Dialog Footer -->
+                    <DockPanel Grid.Row="2" Margin="0,8,0,0" LastChildFill="False">
+                        <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
+                            <Button Content="حفظ التعديلات" Command="{Binding SaveCommand}" Style="{StaticResource AppPrimaryButton}" Padding="16,8" Margin="0,0,8,0" />
+                            <Button Content="إلغاء" Command="{Binding CloseEditDialogCommand}" Style="{StaticResource AppQuietButton}" Padding="14,8" />
+                        </StackPanel>
+                    </DockPanel>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

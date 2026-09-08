@@ -75,9 +75,10 @@ internal sealed class RegistrationRequestRepository : IRegistrationRequestReposi
 
     public async Task<Result<RegistrationRequest>> AcceptAsync(
         Guid registrationId,
+        Guid? targetHalaqaId = null,
         CancellationToken cancellationToken = default)
     {
-        var response = await remoteDataSource.AcceptAsync(registrationId, cancellationToken);
+        var response = await remoteDataSource.AcceptAsync(registrationId, targetHalaqaId, cancellationToken);
         return ToDomain(response);
     }
 

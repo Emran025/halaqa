@@ -13,5 +13,6 @@ public interface IAuthRepository
     Task<Result> RequestPasswordResetAsync(string email, CancellationToken cancellationToken = default);
     Task<Result> ResetPasswordAsync(string email, string token, string password, string passwordConfirmation, CancellationToken cancellationToken = default);
     Task<Result> ChangePasswordAsync(string currentPassword, string password, string passwordConfirmation, CancellationToken cancellationToken = default);
+    Task<Result<TeacherVerificationResult>> VerifyTeacherCodeAsync(string teacherCode, CancellationToken cancellationToken = default);
     Task<Result> LogoutAsync(CancellationToken cancellationToken = default);
 }

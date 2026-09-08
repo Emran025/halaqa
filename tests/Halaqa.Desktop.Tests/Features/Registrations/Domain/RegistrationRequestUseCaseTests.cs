@@ -68,11 +68,27 @@ public sealed class RegistrationRequestUseCaseTests
 
         Assert.True(result.IsSuccess);
         Assert.Equal(registrationId, repository.AcceptedRegistrationId);
+        Assert.Null(repository.AcceptedTargetHalaqaId);
+    }
+
+    [Fact]
+    public async Task Accept_ForwardsTargetHalaqaIdentifierToRepository()
+    {
+        var repository = new FakeRegistrationRepository();
+        var registrationId = Guid.NewGuid();
+        var halaqaId = Guid.NewGuid();
+
+        var result = await new AcceptRegistrationRequestUseCase(repository).ExecuteAsync(registrationId, halaqaId);
+
+        Assert.True(result.IsSuccess);
+        Assert.Equal(registrationId, repository.AcceptedRegistrationId);
+        Assert.Equal(halaqaId, repository.AcceptedTargetHalaqaId);
     }
 
     private sealed class FakeRegistrationRepository : IRegistrationRequestRepository
     {
         public Guid? AcceptedRegistrationId { get; private set; }
+        public Guid? AcceptedTargetHalaqaId { get; private set; }
         public int? MineListPage { get; private set; }
         public Guid? CancelledRegistrationId { get; private set; }
         public RejectRegistrationRequestCommand? Rejection { get; private set; }
@@ -101,9 +117,13 @@ public sealed class RegistrationRequestUseCaseTests
             CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(Array.Empty<RegistrationRequest>(), 1, 1, 20, 0)));
 
-        public Task<Result<RegistrationRequest>> AcceptAsync(Guid registrationId, CancellationToken cancellationToken = default)
+        public Task<Result<RegistrationRequest>> AcceptAsync(
+            Guid registrationId,
+            Guid? targetHalaqaId = null,
+            CancellationToken cancellationToken = default)
         {
             AcceptedRegistrationId = registrationId;
+            AcceptedTargetHalaqaId = targetHalaqaId;
             return Task.FromResult(Result<RegistrationRequest>.Success(CreateRequest()));
         }
 

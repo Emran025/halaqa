@@ -15,6 +15,7 @@ public static class AuthFeatureModule
         services.AddSingleton<IAuthRepository, AuthRepository>();
         services.AddSingleton<LoginUseCase>();
         services.AddSingleton<RegisterStudentUseCase>();
+        services.AddSingleton<VerifyTeacherCodeUseCase>();
         services.AddSingleton<RegisterTeacherUseCase>();
         services.AddSingleton<RequestPasswordResetUseCase>();
         services.AddSingleton<ResendVerificationUseCase>();

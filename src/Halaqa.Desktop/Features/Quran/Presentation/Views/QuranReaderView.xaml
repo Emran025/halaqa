@@ -1,89 +1,475 @@
-﻿<UserControl x:Class="Halaqa.Desktop.Features.Quran.Presentation.Views.QuranReaderView"
+<UserControl x:Class="Halaqa.Desktop.Features.Quran.Presentation.Views.QuranReaderView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
-             xmlns:converters="clr-namespace:Halaqa.Desktop.Shared.Presentation.Converters"
+             xmlns:sessionControls="clr-namespace:Halaqa.Desktop.Features.Sessions.Presentation.Controls"
+             xmlns:shared="clr-namespace:Halaqa.Desktop.Shared.Presentation.Converters"
+             Focusable="True"
              FlowDirection="RightToLeft">
+    <UserControl.InputBindings>
+        <!-- Keyboard Arrow navigation for Quran pages (RTL: Left is Next spread, Right is Previous spread) -->
+        <KeyBinding Key="Left" Command="{Binding LoadNextSpreadCommand}" />
+        <KeyBinding Key="Right" Command="{Binding LoadPreviousSpreadCommand}" />
+        <KeyBinding Key="PageDown" Command="{Binding LoadNextSpreadCommand}" />
+        <KeyBinding Key="PageUp" Command="{Binding LoadPreviousSpreadCommand}" />
+    </UserControl.InputBindings>
+
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
-        <converters:QuranPageFontFamilyConverter x:Key="QuranPageFontFamilyConverter" />
+        <shared:InverseBooleanConverter x:Key="InverseBooleanConverter" />
     </UserControl.Resources>
-    
+
     <Grid Background="#FFF8F4EC">
         <Grid.RowDefinitions>
+            <!-- Minimal top bar with plan switcher & quick actions -->
             <RowDefinition Height="Auto" />
+            <!-- Full-screen two-page Quran spread -->
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
 
-        <!-- Top Navigation Bar -->
-        <Border Grid.Row="0" Background="{StaticResource AppSurfaceBrush}" Padding="20,10" BorderBrush="#14000000" BorderThickness="0,0,0,1">
-            <DockPanel LastChildFill="False">
-                <Button Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppBackButton}" ToolTip="العودة للرئيسية">
-                    <controls:AppIcon Kind="ArrowRight" />
-                </Button>
-                
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
-                    <controls:AppIcon Kind="BookOpenPageVariantOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="20" Margin="0,0,8,0" />
-                    <TextBlock Text="المصحف الشريف" Style="{StaticResource SectionTitle}" VerticalAlignment="Center" />
+        <!-- Top Action & Plan Switcher Bar -->
+        <Border Grid.Row="0" Background="#F2FFFFFF" Padding="16,8" BorderBrush="#18000000" BorderThickness="0,0,0,1" Effect="{StaticResource AppSoftShadow}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <!-- Right: Back Button -->
+                    <ColumnDefinition Width="Auto" />
+                    <!-- Center: Plan Switcher (حفظ / مراجعة / سرد) -->
+                    <ColumnDefinition Width="*" />
+                    <!-- Left: Navigation Index & Keyboard Hint -->
+                    <ColumnDefinition Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!-- Back Button -->
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Command="{Binding BackCommand}" Style="{StaticResource AppBackButton}" ToolTip="العودة إلى لوحة التحكم">
+                        <controls:AppIcon Kind="ArrowRight" />
+                    </Button>
                 </StackPanel>
 
-                <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
-                    <Button Command="{Binding LoadPreviousPageCommand}" Style="{StaticResource AppQuietButton}" Padding="8,6" ToolTip="الصفحة السابقة">
-                        <controls:AppIcon Kind="ChevronRight" FontSize="16" />
+                <!-- Plan Switcher: Centered Segmented Buttons -->
+                <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <!-- Memorization Mode (حفظ) -->
+                    <Button Command="{Binding SwitchToMemorizationPlanCommand}"
+                            Cursor="Hand"
+                            Margin="4,0"
+                            Padding="14,6"
+                            BorderThickness="1"
+                            BorderBrush="#FF1B524A">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource AppQuietButton}">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="#FF1B524A" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsMemorizationSelected}" Value="True">
+                                        <Setter Property="Background" Value="#FF1B524A" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <controls:AppIcon Kind="BookOpenOutline" FontSize="14" Margin="0,0,6,0" />
+                            <TextBlock Text="{Binding MemorizationLastPage, StringFormat=مصحف الحفظ (ص {0})}" FontWeight="Bold" FontSize="12" />
+                        </StackPanel>
                     </Button>
-                    <TextBox Text="{Binding PageNumberInput, UpdateSourceTrigger=PropertyChanged}" Width="56" HorizontalContentAlignment="Center" FlowDirection="LeftToRight" Margin="8,0" ToolTip="رقم الصفحة (1 - 604)" />
-                    <Button Content="انتقال" Command="{Binding LoadPageCommand}" Style="{StaticResource AppPrimaryButton}" Padding="12,6" />
-                    <Button Command="{Binding LoadNextPageCommand}" Style="{StaticResource AppQuietButton}" Padding="8,6" ToolTip="الصفحة التالية" Margin="8,0,0,0">
-                        <controls:AppIcon Kind="ChevronLeft" FontSize="16" />
+
+                    <!-- Review Mode (مراجعة) -->
+                    <Button Command="{Binding SwitchToReviewPlanCommand}"
+                            Cursor="Hand"
+                            Margin="4,0"
+                            Padding="14,6"
+                            BorderThickness="1"
+                            BorderBrush="#FF185ABD">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource AppQuietButton}">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="#FF185ABD" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsReviewSelected}" Value="True">
+                                        <Setter Property="Background" Value="#FF185ABD" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <controls:AppIcon Kind="CalendarCheckOutline" FontSize="14" Margin="0,0,6,0" />
+                            <TextBlock Text="{Binding ReviewLastPage, StringFormat=مصحف المراجعة (ص {0})}" FontWeight="Bold" FontSize="12" />
+                        </StackPanel>
                     </Button>
-                    <ProgressBar Width="72" Height="4" Margin="12,0,0,0" IsIndeterminate="True" Visibility="{Binding IsLoading, Converter={StaticResource BooleanToVisibilityConverter}}" VerticalAlignment="Center" />
+
+                    <!-- Recitation Mode (سرد) -->
+                    <Button Command="{Binding SwitchToRecitationPlanCommand}"
+                            Cursor="Hand"
+                            Margin="4,0"
+                            Padding="14,6"
+                            BorderThickness="1"
+                            BorderBrush="#FF6A1B9A">
+                        <Button.Style>
+                            <Style TargetType="Button" BasedOn="{StaticResource AppQuietButton}">
+                                <Setter Property="Background" Value="Transparent" />
+                                <Setter Property="Foreground" Value="#FF6A1B9A" />
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding IsRecitationSelected}" Value="True">
+                                        <Setter Property="Background" Value="#FF6A1B9A" />
+                                        <Setter Property="Foreground" Value="White" />
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </Button.Style>
+                        <StackPanel Orientation="Horizontal">
+                            <controls:AppIcon Kind="ChartLine" FontSize="14" Margin="0,0,6,0" />
+                            <TextBlock Text="{Binding RecitationLastPage, StringFormat=مصحف السرد (ص {0})}" FontWeight="Bold" FontSize="12" />
+                        </StackPanel>
+                    </Button>
                 </StackPanel>
-            </DockPanel>
+
+                <!-- Left: Open Index Navigation Modal & Keyboard Hint -->
+                <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                    <TextBlock Text="◀ ▶ تنقل بالأسهم" Style="{StaticResource CaptionText}" VerticalAlignment="Center" Margin="0,0,12,0" Foreground="{StaticResource AppMutedInkBrush}" />
+                    <Button Command="{Binding OpenIndexDialogCommand}" Style="{StaticResource AppPrimaryButton}" Padding="14,6" ToolTip="فتح فهرس المصحف الشريف والتنقل السريع">
+                        <StackPanel Orientation="Horizontal">
+                            <controls:AppIcon Kind="BookOpenPageVariantOutline" Foreground="White" FontSize="14" Margin="0,0,6,0" />
+                            <TextBlock Text="الفهرس والتنقل" FontWeight="Bold" FontSize="12" Foreground="White" />
+                        </StackPanel>
+                    </Button>
+                </StackPanel>
+            </Grid>
         </Border>
 
-        <!-- Centered Full-Height Quran Page with Authentic Boundary Frame -->
-        <Grid Grid.Row="1" Margin="12,8">
-            <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center">
-                <Grid Width="600" Height="853">
-                    <!-- Quran Page Background -->
-                    <Border Background="#FFFDFBF5" CornerRadius="4" Effect="{StaticResource AppSoftShadow}" />
+        <!-- Main Full-Height Two-Page Mushaf Spread Area -->
+        <Grid Grid.Row="1">
+            <!-- Center Side-by-Side Pages in Uniform Viewbox -->
+            <Viewbox Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="14,8">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <!-- Right Page (Column 0 in RTL) -->
+                        <ColumnDefinition Width="600" />
+                        <!-- Spine / Center Separator -->
+                        <ColumnDefinition Width="18" />
+                        <!-- Left Page (Column 2 in RTL) -->
+                        <ColumnDefinition Width="600" />
+                    </Grid.ColumnDefinitions>
 
-                    <!-- Decorative Boundary Frame from boundery.svg / boundery.png -->
-                    <Image Source="/Assets/Images/boundery.png" Stretch="Fill" Opacity="0.9" />
-
-                    <!-- Quran Page Lines -->
-                    <Grid Margin="52,60,52,60">
+                    <!-- RIGHT PAGE (Odd, e.g. Page 1, Page 3, ...) -->
+                    <Grid Grid.Column="0">
                         <Grid.RowDefinitions>
-                            <RowDefinition Height="Auto" />
-                            <RowDefinition Height="*" />
-                            <RowDefinition Height="Auto" />
+                            <!-- Row 0: Top Header outside frame -->
+                            <RowDefinition Height="32" />
+                            <!-- Row 1: Framed 15-line Quran page -->
+                            <RowDefinition Height="853" />
+                            <!-- Row 2: Bottom Footer outside frame -->
+                            <RowDefinition Height="34" />
                         </Grid.RowDefinitions>
 
-                        <!-- Header info: Surah Name & Page -->
-                        <DockPanel Grid.Row="0" Margin="0,0,0,8" LastChildFill="False">
-                            <TextBlock DockPanel.Dock="Right" Text="{Binding QuranPage.Surahs[0].NameAr, FallbackValue=سورة الفاتحة}" FontSize="12" FontWeight="SemiBold" Foreground="#FF8C6B2D" />
-                            <TextBlock DockPanel.Dock="Left" Text="{Binding QuranPage.PageNumber, StringFormat=صفحة {0}}" FontSize="12" FontWeight="SemiBold" Foreground="#FF8C6B2D" />
+                        <!-- Top Header outside boundary frame -->
+                        <DockPanel Grid.Row="0" Margin="16,0" VerticalAlignment="Center" LastChildFill="False">
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding RightSurahName, StringFormat=سورة {0}}" FontSize="14" FontWeight="Bold" Foreground="#FF8C6B2D" />
+                            <TextBlock DockPanel.Dock="Left" Text="{Binding RightJuzName}" FontSize="13" FontWeight="SemiBold" Foreground="#FF8C6B2D" />
                         </DockPanel>
 
-                        <!-- Quran 15 Lines Text -->
-                        <TextBlock Grid.Row="1"
-                                   Text="{Binding QuranPage.PageGlyphText}"
-                                   FontFamily="{Binding QuranPage, Converter={StaticResource QuranPageFontFamilyConverter}}"
-                                   FontSize="20"
-                                   LineHeight="34"
-                                   TextAlignment="Center"
-                                   TextWrapping="NoWrap"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center"
-                                   Foreground="#FF1A1A1A"
-                                   TextOptions.TextFormattingMode="Display"
-                                   TextOptions.TextRenderingMode="ClearType" />
+                        <!-- Quran Decorative Frame with Authentic 15 Lines Canvas -->
+                        <Grid Grid.Row="1">
+                            <Border Background="#FFFDFBF5" CornerRadius="4" Effect="{StaticResource AppSoftShadow}" />
+                            <Image Source="/Assets/Images/boundery.png" Stretch="Fill" Opacity="0.95" />
+                            <Grid Margin="32,36,32,36">
+                                <sessionControls:InteractiveQuranCanvas
+                                    QuranPage="{Binding QuranPage}"
+                                    StudentId="{Binding StudentId}"
+                                    IsReadOnly="True" />
+                            </Grid>
+                        </Grid>
 
-                        <!-- Bottom Page Number -->
-                        <TextBlock Grid.Row="2" Text="{Binding QuranPage.PageNumber}" FontSize="12" FontWeight="Bold" Foreground="#FF8C6B2D" HorizontalAlignment="Center" Margin="0,6,0,0" />
+                        <!-- Bottom Footer outside boundary frame -->
+                        <Border Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding RightPageNumber}" FontSize="14" FontWeight="Bold" Foreground="#FF8C6B2D" />
+                        </Border>
+                    </Grid>
+
+                    <!-- Spine / Center Book Separator -->
+                    <Border Grid.Column="1" Width="2" Background="#20000000" HorizontalAlignment="Center" VerticalAlignment="Stretch" Margin="0,32,0,34" />
+
+                    <!-- LEFT PAGE (Even, e.g. Page 2, Page 4, ...) -->
+                    <Grid Grid.Column="2" Visibility="{Binding HasFacingPage, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <Grid.RowDefinitions>
+                            <!-- Row 0: Top Header outside frame -->
+                            <RowDefinition Height="32" />
+                            <!-- Row 1: Framed 15-line Quran page -->
+                            <RowDefinition Height="853" />
+                            <!-- Row 2: Bottom Footer outside frame -->
+                            <RowDefinition Height="34" />
+                        </Grid.RowDefinitions>
+
+                        <!-- Top Header outside boundary frame -->
+                        <DockPanel Grid.Row="0" Margin="16,0" VerticalAlignment="Center" LastChildFill="False">
+                            <TextBlock DockPanel.Dock="Right" Text="{Binding LeftSurahName, StringFormat=سورة {0}}" FontSize="14" FontWeight="Bold" Foreground="#FF8C6B2D" />
+                            <TextBlock DockPanel.Dock="Left" Text="{Binding LeftJuzName}" FontSize="13" FontWeight="SemiBold" Foreground="#FF8C6B2D" />
+                        </DockPanel>
+
+                        <!-- Quran Decorative Frame with Authentic 15 Lines Canvas -->
+                        <Grid Grid.Row="1">
+                            <Border Background="#FFFDFBF5" CornerRadius="4" Effect="{StaticResource AppSoftShadow}" />
+                            <Image Source="/Assets/Images/boundery.png" Stretch="Fill" Opacity="0.95" />
+                            <Grid Margin="32,36,32,36">
+                                <sessionControls:InteractiveQuranCanvas
+                                    QuranPage="{Binding FacingPage}"
+                                    StudentId="{Binding StudentId}"
+                                    IsReadOnly="True" />
+                            </Grid>
+                        </Grid>
+
+                        <!-- Bottom Footer outside boundary frame -->
+                        <Border Grid.Row="2" HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding LeftPageNumber}" FontSize="14" FontWeight="Bold" Foreground="#FF8C6B2D" />
+                        </Border>
                     </Grid>
                 </Grid>
             </Viewbox>
+
+            <!-- Subtle Floating Navigation Buttons on extreme sides for mouse users -->
+            <!-- Right / Previous Button (RTL Right = Backwards) -->
+            <Button Command="{Binding LoadPreviousSpreadCommand}"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="12,0"
+                    Width="44"
+                    Height="44"
+                    Style="{StaticResource AppQuietButton}"
+                    Background="#80FFFFFF"
+                    BorderBrush="#20000000"
+                    BorderThickness="1"
+                    ToolTip="الصفحات السابقة (أو سهم اليمين ▶)">
+                <controls:AppIcon Kind="ChevronRight" FontSize="20" Foreground="{StaticResource AppPrimaryBrush}" />
+            </Button>
+
+            <!-- Left / Next Button (RTL Left = Forwards) -->
+            <Button Command="{Binding LoadNextSpreadCommand}"
+                    HorizontalAlignment="Left"
+                    VerticalAlignment="Center"
+                    Margin="12,0"
+                    Width="44"
+                    Height="44"
+                    Style="{StaticResource AppQuietButton}"
+                    Background="#80FFFFFF"
+                    BorderBrush="#20000000"
+                    BorderThickness="1"
+                    ToolTip="الصفحات التالية (أو سهم اليسار ◀)">
+                <controls:AppIcon Kind="ChevronLeft" FontSize="20" Foreground="{StaticResource AppPrimaryBrush}" />
+            </Button>
         </Grid>
+
+        <!-- Quran Navigation Dialog / Index Picker Modal (3 Tabs: السور, الأجزاء, الصفحات) -->
+        <Border Grid.Row="0" Grid.RowSpan="2"
+                Background="#80000000"
+                Visibility="{Binding IsIndexDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}"
+                Panel.ZIndex="100">
+            <Border Background="{StaticResource AppSurfaceBrush}"
+                    CornerRadius="12"
+                    Width="680"
+                    Height="560"
+                    Padding="24"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center"
+                    Effect="{StaticResource AppSoftShadow}">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Dialog Header -->
+                    <DockPanel Grid.Row="0" Margin="0,0,0,16" LastChildFill="False">
+                        <Button DockPanel.Dock="Left"
+                                Command="{Binding CloseIndexDialogCommand}"
+                                Style="{StaticResource AppQuietButton}"
+                                Padding="8,6"
+                                ToolTip="إغلاق">
+                            <controls:AppIcon Kind="Close" FontSize="18" />
+                        </Button>
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                            <controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="22" Margin="0,0,8,0" />
+                            <TextBlock Text="فهرس المصحف الشريف والتنقل" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" />
+                        </StackPanel>
+                    </DockPanel>
+
+                    <!-- 3 Segmented Top Tabs: السور | الأجزاء | الصفحات -->
+                    <Border Grid.Row="1" Background="#0A000000" CornerRadius="8" Padding="4" Margin="0,0,0,16">
+                        <Grid>
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+
+                            <Button Grid.Column="0"
+                                    Content="📖 السور (114)"
+                                    Command="{Binding SelectIndexTabCommand}"
+                                    CommandParameter="Surahs"
+                                    Style="{StaticResource AppQuietButton}"
+                                    Padding="12,8"
+                                    Cursor="Hand"
+                                    HorizontalContentAlignment="Center" />
+
+                            <Button Grid.Column="1"
+                                    Content="📑 الأجزاء (30)"
+                                    Command="{Binding SelectIndexTabCommand}"
+                                    CommandParameter="Juzs"
+                                    Style="{StaticResource AppQuietButton}"
+                                    Padding="12,8"
+                                    Margin="4,0"
+                                    Cursor="Hand"
+                                    HorizontalContentAlignment="Center" />
+
+                            <Button Grid.Column="2"
+                                    Content="📄 الصفحات (604)"
+                                    Command="{Binding SelectIndexTabCommand}"
+                                    CommandParameter="Pages"
+                                    Style="{StaticResource AppQuietButton}"
+                                    Padding="12,8"
+                                    Cursor="Hand"
+                                    HorizontalContentAlignment="Center" />
+                        </Grid>
+                    </Border>
+
+                    <!-- TAB CONTENTS -->
+                    <Grid Grid.Row="2">
+                        <!-- TAB 1: SURAHS LIST -->
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedIndexTab}" Value="Surahs">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="*" />
+                            </Grid.RowDefinitions>
+
+                            <TextBox Grid.Row="0"
+                                     Text="{Binding IndexSearchText, UpdateSourceTrigger=PropertyChanged}"
+                                     ToolTip="ابحث باسم السورة (مثال: البقرة، الكهف، يس)"
+                                     Margin="0,0,0,12"
+                                     Height="36"
+                                     Padding="8,0" />
+
+                            <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding FilteredSurahs}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.SelectSurahCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource AppQuietButton}"
+                                                    Padding="12,10"
+                                                    Margin="0,0,0,4"
+                                                    HorizontalContentAlignment="Stretch">
+                                                <DockPanel LastChildFill="True">
+                                                    <Border Width="30" Height="30" CornerRadius="15" Background="#141B524A" DockPanel.Dock="Right" Margin="0,0,12,0">
+                                                        <TextBlock Text="{Binding Number}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AppPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <StackPanel DockPanel.Dock="Left" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding StartPage, StringFormat=صفحة {0}}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AppPrimaryBrush}" HorizontalAlignment="Left" />
+                                                        <TextBlock Text="{Binding RevelationPlace}" FontSize="10" Foreground="{StaticResource AppMutedInkBrush}" HorizontalAlignment="Left" />
+                                                    </StackPanel>
+                                                    <StackPanel VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding Name, StringFormat=سورة {0}}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" />
+                                                        <TextBlock Text="{Binding AyahCount, StringFormat={}{0} آية}" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" />
+                                                    </StackPanel>
+                                                </DockPanel>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+
+                        <!-- TAB 2: JUZS LIST -->
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedIndexTab}" Value="Juzs">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding AllJuzs}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <UniformGrid Columns="2" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.SelectJuzCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource AppQuietButton}"
+                                                    Padding="14,12"
+                                                    Margin="4"
+                                                    HorizontalContentAlignment="Stretch">
+                                                <DockPanel LastChildFill="True">
+                                                    <Border Width="34" Height="34" CornerRadius="17" Background="#141B524A" DockPanel.Dock="Right" Margin="0,0,10,0">
+                                                        <TextBlock Text="{Binding Number}" FontSize="13" FontWeight="Bold" Foreground="{StaticResource AppPrimaryBrush}" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                                    </Border>
+                                                    <TextBlock DockPanel.Dock="Left" Text="{Binding StartPage, StringFormat=صفحة {0}}" FontSize="12" FontWeight="Bold" Foreground="{StaticResource AppPrimaryBrush}" VerticalAlignment="Center" />
+                                                    <TextBlock Text="{Binding Name}" FontSize="14" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" VerticalAlignment="Center" />
+                                                </DockPanel>
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+
+                        <!-- TAB 3: PAGES LIST -->
+                        <Grid>
+                            <Grid.Style>
+                                <Style TargetType="Grid">
+                                    <Setter Property="Visibility" Value="Collapsed" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding SelectedIndexTab}" Value="Pages">
+                                            <Setter Property="Visibility" Value="Visible" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Grid.Style>
+
+                            <ScrollViewer VerticalScrollBarVisibility="Auto">
+                                <ItemsControl ItemsSource="{Binding AllPages}">
+                                    <ItemsControl.ItemsPanel>
+                                        <ItemsPanelTemplate>
+                                            <WrapPanel Orientation="Horizontal" HorizontalAlignment="Center" />
+                                        </ItemsPanelTemplate>
+                                    </ItemsControl.ItemsPanel>
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate>
+                                            <Button Command="{Binding DataContext.SelectPageCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                    CommandParameter="{Binding}"
+                                                    Style="{StaticResource AppQuietButton}"
+                                                    Width="52"
+                                                    Height="42"
+                                                    Margin="3"
+                                                    Padding="0">
+                                                <TextBlock Text="{Binding}" FontSize="12" FontWeight="SemiBold" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Button>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </Grid>
+                    </Grid>
+                </Grid>
+            </Border>
+        </Border>
     </Grid>
 </UserControl>

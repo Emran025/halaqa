@@ -39,7 +39,7 @@ public partial class TimePicker : UserControl
             return;
         }
 
-        Value = (string)e.AddedItems[0];
+        Value = e.AddedItems[0] as string;
         PickerPopup.IsOpen = false;
     }
 }

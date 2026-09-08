@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Globalization;
 using CommunityToolkit.Mvvm.ComponentModel;
@@ -83,10 +83,55 @@ public sealed partial class TeacherProfileViewModel : ObservableObject
     [ObservableProperty] private string? _availableTimeError;
     [ObservableProperty] private string? _bioError;
     [ObservableProperty] private string? _maxHalaqasError;
+    [ObservableProperty] private bool _isEditDialogOpen;
+
+    public string GenderDisplay => Gender == "male" ? "ذكر" : (Gender == "female" ? "أنثى" : "غير محدد");
+    public string AgeDisplay
+    {
+        get
+        {
+            if (DateTime.TryParse(BirthDate, out var dt))
+            {
+                var age = DateTime.Today.Year - dt.Year;
+                return $"{age} سنة";
+            }
+            return "غير محدد";
+        }
+    }
+    public string LocationDisplay
+    {
+        get
+        {
+            var parts = new[] { Country, City, Residence }.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            return parts.Count > 0 ? string.Join(" - ", parts) : "غير محدد";
+        }
+    }
+    public string PhoneDisplay => !string.IsNullOrWhiteSpace(PhoneZone) ? $"{PhoneZone} {Phone}" : (!string.IsNullOrWhiteSpace(Phone) ? Phone : "غير محدد");
+    public string WhatsappDisplay => !string.IsNullOrWhiteSpace(WhatsappZone) ? $"{WhatsappZone} {WhatsappPhone}" : (!string.IsNullOrWhiteSpace(WhatsappPhone) ? WhatsappPhone : "غير محدد");
+    public string ExperienceDisplay => !string.IsNullOrWhiteSpace(ExperienceYears) ? $"{ExperienceYears} سنة" : "غير محدد";
+    public string CapacityDisplay => CapacityAvailable ? "متاح لاستقبال طلاب جدد" : "مكتمل العدد حالياً";
 
     public event EventHandler? BackRequested;
     public event EventHandler? DocumentsRequested;
     public event EventHandler<TeacherProfile>? ProfileUpdated;
+
+    [RelayCommand]
+    private void OpenEditDialog()
+    {
+        IsEditDialogOpen = true;
+        ClearFeedback();
+    }
+
+    [RelayCommand]
+    private void CloseEditDialog()
+    {
+        IsEditDialogOpen = false;
+        ClearFeedback();
+        if (_loadedProfile != null)
+        {
+            ApplyProfile(_loadedProfile);
+        }
+    }
 
     [RelayCommand(CanExecute = nameof(CanLoad))]
     private async Task LoadAsync()
@@ -134,7 +179,8 @@ public sealed partial class TeacherProfileViewModel : ObservableObject
             ApplyProfile(result.Value);
             MaxHalaqas = null;
             ClearMaxHalaqas = false;
-            Message = "تم حفظ الملف التفصيلي للمعلم.";
+            Message = "تم حفظ التعديلات بنجاح.";
+            IsEditDialogOpen = false;
             ProfileUpdated?.Invoke(this, result.Value);
         }
         finally
@@ -201,6 +247,14 @@ public sealed partial class TeacherProfileViewModel : ObservableObject
         ClearMaxHalaqas = false;
         Replace(Documents, profile.Documents);
         Replace(PublicHalaqas, profile.PublicHalaqas);
+
+        OnPropertyChanged(nameof(GenderDisplay));
+        OnPropertyChanged(nameof(AgeDisplay));
+        OnPropertyChanged(nameof(LocationDisplay));
+        OnPropertyChanged(nameof(PhoneDisplay));
+        OnPropertyChanged(nameof(WhatsappDisplay));
+        OnPropertyChanged(nameof(ExperienceDisplay));
+        OnPropertyChanged(nameof(CapacityDisplay));
     }
 
     private bool TryCreateUpdateCommand(out UpdateTeacherProfileCommand? command, out string? error)

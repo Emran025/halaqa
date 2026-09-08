@@ -1,4 +1,4 @@
-﻿using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Profile.Domain.Entities;
 using Halaqa.Desktop.Features.Profile.Domain.UseCases;
@@ -40,6 +40,7 @@ public sealed partial class GeneralProfileViewModel : ObservableObject
     [ObservableProperty] private string? _reviewLevel;
     [ObservableProperty] private bool _clearMemorizationLevel;
     [ObservableProperty] private bool _clearReviewLevel;
+    [ObservableProperty] private bool _isEditDialogOpen;
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private string? _message;
     [ObservableProperty] private bool _isError;
@@ -48,8 +49,26 @@ public sealed partial class GeneralProfileViewModel : ObservableObject
     [ObservableProperty] private string? _memorizationLevelError;
     [ObservableProperty] private string? _reviewLevelError;
 
+    public string PhoneDisplay => string.IsNullOrWhiteSpace(Phone) ? "غير محدد" : Phone;
+    public string MemorizationLevelDisplay => string.IsNullOrWhiteSpace(MemorizationLevel) ? "غير محدد" : MemorizationLevel;
+    public string ReviewLevelDisplay => string.IsNullOrWhiteSpace(ReviewLevel) ? "غير محدد" : ReviewLevel;
+
     public event EventHandler? BackRequested;
     public event EventHandler<UserProfile>? ProfileUpdated;
+
+    [RelayCommand]
+    private void OpenEditDialog()
+    {
+        ClearFeedback();
+        IsEditDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseEditDialog()
+    {
+        ClearFeedback();
+        IsEditDialogOpen = false;
+    }
 
     [RelayCommand(CanExecute = nameof(CanLoad))]
     private async Task LoadAsync()
@@ -108,8 +127,8 @@ public sealed partial class GeneralProfileViewModel : ObservableObject
             MemorizationLevel = null;
             ReviewLevel = null;
             ClearMemorizationLevel = false;
-            ClearReviewLevel = false;
             Message = "تم حفظ الملف الشخصي.";
+            IsEditDialogOpen = false;
             ProfileUpdated?.Invoke(this, result.Value);
         }
         finally
@@ -123,9 +142,21 @@ public sealed partial class GeneralProfileViewModel : ObservableObject
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
 
     partial void OnNameChanged(string value) => SaveCommand.NotifyCanExecuteChanged();
-    partial void OnPhoneChanged(string? value) => SaveCommand.NotifyCanExecuteChanged();
-    partial void OnMemorizationLevelChanged(string? value) => SaveCommand.NotifyCanExecuteChanged();
-    partial void OnReviewLevelChanged(string? value) => SaveCommand.NotifyCanExecuteChanged();
+    partial void OnPhoneChanged(string? value)
+    {
+        OnPropertyChanged(nameof(PhoneDisplay));
+        SaveCommand.NotifyCanExecuteChanged();
+    }
+    partial void OnMemorizationLevelChanged(string? value)
+    {
+        OnPropertyChanged(nameof(MemorizationLevelDisplay));
+        SaveCommand.NotifyCanExecuteChanged();
+    }
+    partial void OnReviewLevelChanged(string? value)
+    {
+        OnPropertyChanged(nameof(ReviewLevelDisplay));
+        SaveCommand.NotifyCanExecuteChanged();
+    }
     partial void OnClearMemorizationLevelChanged(bool value) => SaveCommand.NotifyCanExecuteChanged();
     partial void OnClearReviewLevelChanged(bool value) => SaveCommand.NotifyCanExecuteChanged();
 

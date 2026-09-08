@@ -20,6 +20,7 @@ public static class ProfileFeatureModule
         services.AddSingleton<GetCurrentProfileUseCase>();
         services.AddSingleton<UpdateCurrentProfileUseCase>();
         services.AddSingleton<GetCurrentStudentProfileUseCase>();
+        services.AddSingleton<GetStudentProfileByIdUseCase>();
         services.AddSingleton<UpdateCurrentStudentProfileUseCase>();
         services.AddSingleton<GetCurrentTeacherProfileUseCase>();
         services.AddSingleton<UpdateCurrentTeacherProfileUseCase>();

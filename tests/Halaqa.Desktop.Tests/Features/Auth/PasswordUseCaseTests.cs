@@ -51,6 +51,7 @@ public sealed class PasswordUseCaseTests
             ChangeCalled = true;
             return Task.FromResult(Result.Success());
         }
+        public Task<Result<TeacherVerificationResult>> VerifyTeacherCodeAsync(string code, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result> LogoutAsync(CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 }

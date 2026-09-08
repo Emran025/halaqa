@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Globalization;
@@ -17,6 +17,18 @@ public sealed partial class StudentWeeklySlotEditor : ObservableObject
     [ObservableProperty] private string _from = "18:00";
     [ObservableProperty] private string _to = "18:30";
     [ObservableProperty] private bool _preferred;
+
+    public string DayName => DayOfWeek switch
+    {
+        0 => "الأحد",
+        1 => "الاثنين",
+        2 => "الثلاثاء",
+        3 => "الأربعاء",
+        4 => "الخميس",
+        5 => "الجمعة",
+        6 => "السبت",
+        _ => $"يوم {DayOfWeek}"
+    };
 
     public static StudentWeeklySlotEditor FromDomain(StudentWeeklyAvailabilitySlot value) => new()
     {
@@ -97,6 +109,19 @@ public sealed partial class StudentProfileViewModel : ObservableObject
         _updateCurrentStudentProfileUseCase = updateCurrentStudentProfileUseCase;
         WeeklySlots.CollectionChanged += OnEditorCollectionChanged;
         PlanDetails.CollectionChanged += OnEditorCollectionChanged;
+    }
+
+    public void Initialize(string? name = null, string? email = null)
+    {
+        if (!string.IsNullOrWhiteSpace(name))
+        {
+            Name = name;
+        }
+        if (!string.IsNullOrWhiteSpace(email))
+        {
+            Email = email;
+        }
+        ClearFeedback();
     }
 
     public ObservableCollection<StudentWeeklySlotEditor> WeeklySlots { get; } = new();
@@ -197,9 +222,60 @@ public sealed partial class StudentProfileViewModel : ObservableObject
     [ObservableProperty] private string? _attendancePreferencesError;
     [ObservableProperty] private string? _followUpPlanError;
     [ObservableProperty] private string? _bioError;
+    [ObservableProperty] private bool _isEditDialogOpen;
+
+    public string GenderDisplay => Gender == "male" ? "ذكر" : (Gender == "female" ? "أنثى" : "غير محدد");
+    public string AgeDisplay
+    {
+        get
+        {
+            if (DateTime.TryParse(BirthDate, out var dt))
+            {
+                var age = DateTime.Today.Year - dt.Year;
+                return $"{age} سنة";
+            }
+            return "غير محدد";
+        }
+    }
+    public string LocationDisplay
+    {
+        get
+        {
+            var parts = new[] { Country, City, Residence }.Where(s => !string.IsNullOrWhiteSpace(s)).ToList();
+            return parts.Count > 0 ? string.Join(" - ", parts) : "غير محدد";
+        }
+    }
+    public string PhoneDisplay => !string.IsNullOrWhiteSpace(PhoneZone) ? $"{PhoneZone} {Phone}" : (!string.IsNullOrWhiteSpace(Phone) ? Phone : "غير محدد");
+    public string WhatsappDisplay => !string.IsNullOrWhiteSpace(WhatsappZone) ? $"{WhatsappZone} {WhatsappPhone}" : (!string.IsNullOrWhiteSpace(WhatsappPhone) ? WhatsappPhone : "غير محدد");
+    public string PlanFrequencyDisplay => PlanFrequency switch
+    {
+        "daily" => "يومياً",
+        "onceAWeek" => "مرة أسبوعياً",
+        "twiceAWeek" => "مرتان أسبوعياً",
+        "thriceAWeek" => "ثلاث مرات أسبوعياً",
+        _ => PlanFrequency
+    };
 
     public event EventHandler? BackRequested;
     public event EventHandler<StudentProfile>? ProfileUpdated;
+
+    [RelayCommand]
+    private void OpenEditDialog()
+    {
+        IsEditDialogOpen = true;
+        ClearFeedback();
+    }
+
+    [RelayCommand]
+    private void CloseEditDialog()
+    {
+        IsEditDialogOpen = false;
+        ClearFeedback();
+        if (_loadedProfile != null)
+        {
+            ApplyProfile(_loadedProfile);
+        }
+    }
 
     [RelayCommand(CanExecute = nameof(CanLoad))]
     private async Task LoadAsync()
@@ -246,7 +322,8 @@ public sealed partial class StudentProfileViewModel : ObservableObject
 
             ApplyProfile(result.Value);
             Bio = null;
-            Message = "تم حفظ الملف التفصيلي للطالب.";
+            Message = "تم حفظ التعديلات بنجاح.";
+            IsEditDialogOpen = false;
             ProfileUpdated?.Invoke(this, result.Value);
         }
         finally
@@ -343,6 +420,13 @@ public sealed partial class StudentProfileViewModel : ObservableObject
         PlanStartsOn = followUpPlan?.StartsOn?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         PlanEndsOn = followUpPlan?.EndsOn?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
         ReplaceEditors(PlanDetails, followUpPlan?.Details.Select(StudentPlanDetailEditor.FromDomain) ?? Array.Empty<StudentPlanDetailEditor>());
+
+        OnPropertyChanged(nameof(GenderDisplay));
+        OnPropertyChanged(nameof(AgeDisplay));
+        OnPropertyChanged(nameof(LocationDisplay));
+        OnPropertyChanged(nameof(PhoneDisplay));
+        OnPropertyChanged(nameof(WhatsappDisplay));
+        OnPropertyChanged(nameof(PlanFrequencyDisplay));
     }
 
     private bool TryCreateUpdateCommand(out UpdateStudentProfileCommand? command, out string? error)

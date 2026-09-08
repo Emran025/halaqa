@@ -93,6 +93,8 @@ public sealed class ChangePasswordViewModelTests
             return Task.FromResult(ChangeResult);
         }
 
+        public Task<Result<TeacherVerificationResult>> VerifyTeacherCodeAsync(string code, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+
         public Task<Result> LogoutAsync(CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 }

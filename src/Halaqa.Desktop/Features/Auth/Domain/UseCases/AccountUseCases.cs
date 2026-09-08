@@ -1,4 +1,4 @@
-﻿using Halaqa.Desktop.Features.Auth.Domain.Entities;
+using Halaqa.Desktop.Features.Auth.Domain.Entities;
 using Halaqa.Desktop.Features.Auth.Domain.Repositories;
 using Halaqa.Desktop.Shared.Domain.Common;
 
@@ -189,4 +189,24 @@ public sealed class ResendVerificationUseCase
         string.IsNullOrWhiteSpace(email) || !email.Contains('@')
             ? Task.FromResult(Result.Failure(new AppError(AppErrorKind.Validation, "أدخل بريداً إلكترونياً صالحاً.")))
             : repository.ResendVerificationAsync(email, cancellationToken);
+}
+
+public sealed class VerifyTeacherCodeUseCase
+{
+    private readonly IAuthRepository repository;
+
+    public VerifyTeacherCodeUseCase(IAuthRepository repository)
+    {
+        this.repository = repository;
+    }
+
+    public Task<Result<TeacherVerificationResult>> ExecuteAsync(string teacherCode, CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(teacherCode))
+        {
+            return Task.FromResult(Result<TeacherVerificationResult>.Failure(new AppError(AppErrorKind.Validation, "يرجى إدخال معرف المعلم للتحقق.")));
+        }
+
+        return repository.VerifyTeacherCodeAsync(teacherCode.Trim(), cancellationToken);
+    }
 }

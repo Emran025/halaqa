@@ -7,5 +7,7 @@ public partial class QuranReaderView : UserControl
     public QuranReaderView()
     {
         InitializeComponent();
+        Loaded += (_, _) => Focus();
+        MouseDown += (_, _) => Focus();
     }
 }

@@ -40,6 +40,7 @@ public sealed class RegisterStudentUseCaseTests
         public Task<Result> RequestPasswordResetAsync(string email, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result> ResetPasswordAsync(string email, string token, string password, string passwordConfirmation, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result> ChangePasswordAsync(string currentPassword, string password, string passwordConfirmation, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<Result<TeacherVerificationResult>> VerifyTeacherCodeAsync(string code, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result> LogoutAsync(CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 }

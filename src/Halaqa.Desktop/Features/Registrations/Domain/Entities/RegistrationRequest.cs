@@ -26,7 +26,10 @@ public sealed record RegistrationRequest(
     string? Message,
     string? DecisionNote,
     DateTimeOffset? DecidedAt,
-    DateTimeOffset CreatedAt);
+    DateTimeOffset CreatedAt,
+    string? TeacherName = null,
+    string? TeacherCode = null,
+    string? HalaqaName = null);
 
 public sealed record RegistrationRequestPage(
     IReadOnlyList<RegistrationRequest> Requests,

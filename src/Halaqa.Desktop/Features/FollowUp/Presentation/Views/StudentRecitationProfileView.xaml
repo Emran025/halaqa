@@ -18,6 +18,7 @@
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
                 <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
@@ -59,8 +60,11 @@
                             <Border Background="{StaticResource AppPrimarySoftBrush}" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
                                 <TextBlock Text="{Binding StudentCode}" FontSize="11" Foreground="{StaticResource AppPrimaryBrush}" FontWeight="SemiBold" />
                             </Border>
-                            <Border Background="#0A000000" CornerRadius="4" Padding="8,3">
+                            <Border Background="#0A000000" CornerRadius="4" Padding="8,3" Margin="0,0,8,0">
                                 <TextBlock Text="{Binding HalaqaName}" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" />
+                            </Border>
+                            <Border Background="#101F7A4D" CornerRadius="4" Padding="8,3" Visibility="{Binding HasLoadedProfile, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="{Binding RegistrationStatus, StringFormat=الحساب: {0}}" FontSize="11" Foreground="{StaticResource AppSuccessBrush}" FontWeight="SemiBold" />
                             </Border>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Margin="0,8,0,0">
@@ -106,8 +110,129 @@
                 </Grid>
             </Border>
 
+            <!-- Personal & Registration Details Card (معلومات الطالب التي قام بالتسجيل بها) -->
+            <Border Grid.Row="2" Style="{StaticResource AppCard}" Padding="20" Margin="0,0,0,20">
+                <StackPanel>
+                    <!-- Card Header -->
+                    <DockPanel Margin="0,0,0,16" LastChildFill="False">
+                        <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" VerticalAlignment="Center">
+                            <controls:AppIcon Kind="AccountDetailsOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="20" Margin="0,0,8,0" />
+                            <TextBlock Text="المعلومات الشخصية وبيانات التسجيل" FontSize="16" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" />
+                        </StackPanel>
+                        <Button DockPanel.Dock="Left" Command="{Binding RefreshPersonalProfileCommand}"
+                                Style="{StaticResource AppQuietButton}" Padding="8,4" ToolTip="إعادة تحميل البيانات الشخصية">
+                            <StackPanel Orientation="Horizontal">
+                                <controls:AppIcon Kind="Refresh" FontSize="13" Margin="0,0,4,0" />
+                                <TextBlock Text="تحديث البيانات الشخصية" FontSize="11" />
+                            </StackPanel>
+                        </Button>
+                    </DockPanel>
+
+                    <!-- Loading / Error states -->
+                    <ProgressBar Height="3" IsIndeterminate="True" Margin="0,0,0,10"
+                                 Visibility="{Binding IsLoadingProfile, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                    <Border Background="#10DC3545" BorderBrush="#33DC3545" BorderThickness="1" CornerRadius="4" Padding="12,8" Margin="0,0,0,12"
+                            Visibility="{Binding ProfileErrorMessage, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="{Binding ProfileErrorMessage}" Foreground="{StaticResource AppErrorBrush}" FontSize="12" />
+                    </Border>
+
+                    <!-- Personal Information Grid: 3 columns -->
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="16" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+
+                        <!-- Column 1: Identity & Contact -->
+                        <Border Grid.Column="0" Background="#06000000" CornerRadius="6" Padding="14,12" BorderBrush="#14000000" BorderThickness="1">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <controls:AppIcon Kind="CardAccountDetailsOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="16" Margin="0,0,6,0" />
+                                    <TextBlock Text="الهوية والتواصل" FontWeight="Bold" FontSize="13" Foreground="{StaticResource AppInkBrush}" />
+                                </StackPanel>
+
+                                <TextBlock Text="البريد الإلكتروني" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding Email}" FontSize="12" FontWeight="SemiBold" Margin="0,2,0,8" TextTrimming="CharacterEllipsis" ToolTip="{Binding Email}" />
+
+                                <TextBlock Text="رقم الهاتف" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding Phone}" FontSize="12" FontWeight="SemiBold" FlowDirection="LeftToRight" HorizontalAlignment="Right" Margin="0,2,0,8" />
+
+                                <TextBlock Text="رقم الواتساب" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding WhatsappPhone}" FontSize="12" FontWeight="SemiBold" FlowDirection="LeftToRight" HorizontalAlignment="Right" Margin="0,2,0,8" />
+
+                                <TextBlock Text="الجنس وتاريخ الميلاد" Style="{StaticResource CaptionText}" />
+                                <StackPanel Orientation="Horizontal" Margin="0,2,0,8">
+                                    <TextBlock Text="{Binding Gender}" FontSize="12" FontWeight="SemiBold" Margin="0,0,8,0" />
+                                    <TextBlock Text="{Binding BirthDate, StringFormat=({0})}" FontSize="12" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,0,4,0" />
+                                    <TextBlock Text="{Binding Age}" FontSize="11" Foreground="{StaticResource AppPrimaryBrush}" FontWeight="SemiBold" />
+                                </StackPanel>
+
+                                <TextBlock Text="الدولة ومحل الإقامة" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding Location}" FontSize="12" FontWeight="SemiBold" Margin="0,2,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Column 2: Quranic Background -->
+                        <Border Grid.Column="2" Background="#06000000" CornerRadius="6" Padding="14,12" BorderBrush="#14000000" BorderThickness="1">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="16" Margin="0,0,6,0" />
+                                    <TextBlock Text="الخلفية القرآنية عند التسجيل" FontWeight="Bold" FontSize="13" Foreground="{StaticResource AppInkBrush}" />
+                                </StackPanel>
+
+                                <TextBlock Text="مستوى الحفظ المسجل" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding MemorizationLevel}" FontSize="12" FontWeight="SemiBold" Margin="0,2,0,8" />
+
+                                <TextBlock Text="مستوى المراجعة المسجل" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding ReviewLevel}" FontSize="12" FontWeight="SemiBold" Margin="0,2,0,8" />
+
+                                <TextBlock Text="الأجزاء المحفوظة سابقاً" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding PreviousMemorizedJuzCount}" FontSize="12" FontWeight="SemiBold" Margin="0,2,0,8" />
+
+                                <TextBlock Text="السور المحفوظة" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding PreviousMemorizedSurahs}" FontSize="12" FontWeight="SemiBold" Margin="0,2,0,8" TextWrapping="Wrap" />
+
+                                <TextBlock Text="ملاحظات المعلم السابق" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding PreviousTeacherNotes}" FontSize="12" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,2,0,8" TextWrapping="Wrap" />
+
+                                <TextBlock Text="أسباب التوقف والانقطاع" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding StopReasons}" FontSize="12" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,2,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+
+                        <!-- Column 3: Attendance & Preferences -->
+                        <Border Grid.Column="4" Background="#06000000" CornerRadius="6" Padding="14,12" BorderBrush="#14000000" BorderThickness="1">
+                            <StackPanel>
+                                <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
+                                    <controls:AppIcon Kind="CalendarClockOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="16" Margin="0,0,6,0" />
+                                    <TextBlock Text="تفضيلات الحضور والمواعيد" FontWeight="Bold" FontSize="13" Foreground="{StaticResource AppInkBrush}" />
+                                </StackPanel>
+
+                                <TextBlock Text="المنطقة الزمنية" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding Timezone}" FontSize="12" FontWeight="SemiBold" Margin="0,2,0,8" />
+
+                                <TextBlock Text="مدة الجلسة المفضلة" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding PreferredSessionDuration}" FontSize="12" FontWeight="SemiBold" Margin="0,2,0,8" />
+
+                                <TextBlock Text="مواعيد الحضور المسجلة بالحلقة" Style="{StaticResource CaptionText}" />
+                                <StackPanel Orientation="Horizontal" Margin="0,2,0,8">
+                                    <TextBlock Text="{Binding AttendanceFrom, StringFormat=من {0}}" FontSize="12" FontWeight="SemiBold" />
+                                    <TextBlock Text="{Binding AttendanceTo, StringFormat= إلى {0}}" FontSize="12" FontWeight="SemiBold" Margin="4,0,0,0" />
+                                </StackPanel>
+
+                                <TextBlock Text="أوقات التفرغ الأسبوعية للمتعلم" Style="{StaticResource CaptionText}" />
+                                <TextBlock Text="{Binding WeeklyAvailability}" FontSize="12" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,2,0,0" TextWrapping="Wrap" />
+                            </StackPanel>
+                        </Border>
+                    </Grid>
+                </StackPanel>
+            </Border>
+
             <!-- Stats Row (4 cards) -->
-            <Grid Grid.Row="2" Margin="0,0,0,20">
+            <Grid Grid.Row="3" Margin="0,0,0,20">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="*" />
@@ -149,7 +274,7 @@
             </Grid>
 
             <!-- Session History Table -->
-            <Border Grid.Row="3" Style="{StaticResource AppCard}" Padding="0">
+            <Border Grid.Row="4" Style="{StaticResource AppCard}" Padding="0">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />

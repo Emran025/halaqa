@@ -19,6 +19,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Using Include="System.Net.Http" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="../../src/Halaqa.Desktop/Halaqa.Desktop.csproj" />
   </ItemGroup>
 </Project>

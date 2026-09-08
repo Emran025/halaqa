@@ -22,3 +22,14 @@ internal sealed record UserDto(
     [property: JsonPropertyName("email")] string Email,
     [property: JsonPropertyName("status")] string Status,
     [property: JsonPropertyName("email_verification_required")] bool EmailVerificationRequired = false);
+
+internal sealed record TeacherVerificationResponseDto(
+    [property: JsonPropertyName("valid")] bool Valid,
+    [property: JsonPropertyName("teacher")] VerifiedTeacherInfoDto? Teacher,
+    [property: JsonPropertyName("message")] string? Message);
+
+internal sealed record VerifiedTeacherInfoDto(
+    [property: JsonPropertyName("id")] Guid Id,
+    [property: JsonPropertyName("name")] string Name,
+    [property: JsonPropertyName("teacher_code")] string TeacherCode,
+    [property: JsonPropertyName("gender")] string Gender);

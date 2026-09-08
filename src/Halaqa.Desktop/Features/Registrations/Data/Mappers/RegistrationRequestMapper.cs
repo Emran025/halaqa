@@ -1,4 +1,4 @@
-﻿using Halaqa.Desktop.Features.Registrations.Data.Models;
+using Halaqa.Desktop.Features.Registrations.Data.Models;
 using Halaqa.Desktop.Features.Registrations.Domain.Entities;
 using Halaqa.Desktop.Shared.Domain.Common;
 
@@ -20,6 +20,10 @@ internal static class RegistrationRequestMapper
             return Result<RegistrationRequest>.Failure(applicant.Error!);
         }
 
+        var teacherName = dto.RequestedTeacher?.DisplayName;
+        var teacherCode = dto.RequestedTeacher?.TeacherCode ?? dto.TeacherCode;
+        var halaqaName = dto.RequestedHalaqa?.Name;
+
         return Result<RegistrationRequest>.Success(new RegistrationRequest(
             dto.Id,
             applicant.Value,
@@ -28,7 +32,10 @@ internal static class RegistrationRequestMapper
             dto.Message,
             dto.DecisionNote,
             dto.DecidedAt,
-            dto.CreatedAt));
+            dto.CreatedAt,
+            teacherName,
+            teacherCode,
+            halaqaName));
     }
 
     public static Result<RegistrationRequestPage> ToDomain(RegistrationCollectionResponseDto dto)

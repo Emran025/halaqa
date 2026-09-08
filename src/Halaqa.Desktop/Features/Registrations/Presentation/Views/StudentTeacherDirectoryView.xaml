@@ -7,104 +7,465 @@
     <UserControl.Resources>
         <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
         <shared:InverseBooleanConverter x:Key="InverseBooleanConverter" />
-        <Style x:Key="FieldError" TargetType="TextBlock">
-            <Setter Property="Foreground" Value="{StaticResource AppErrorBrush}" />
-            <Setter Property="TextWrapping" Value="Wrap" />
-            <Setter Property="Margin" Value="0,4,0,8" />
+        <shared:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+        <Style x:Key="DialogSectionTitle" TargetType="TextBlock" BasedOn="{StaticResource SectionTitle}">
+            <Setter Property="Margin" Value="0,12,0,6" />
         </Style>
     </UserControl.Resources>
+
     <Grid Background="{StaticResource AppCanvasBrush}">
-        <Border Style="{StaticResource AppElevatedCard}" MaxWidth="1120" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="28">
-            <Grid>
-                <Grid.RowDefinitions>
-                    <RowDefinition Height="Auto" />
-                    <RowDefinition Height="*" />
-                    <RowDefinition Height="Auto" />
-                </Grid.RowDefinitions>
-                <DockPanel>
-                    <StackPanel DockPanel.Dock="Left" Orientation="Horizontal">
-                        <Button Content="طلباتي" Command="{Binding OpenMyRequestsCommand}" Margin="0,0,8,0" Style="{StaticResource AppSecondaryButton}" />
-                        <Button Command="{Binding BackCommand}" ToolTip="العودة إلى لوحة التحكم" Style="{StaticResource AppBackButton}">
-                            <controls:AppIcon Kind="ArrowRight" />
-                        </Button>
-                    </StackPanel>
-                    <StackPanel>
-                        <TextBlock Text="البحث عن معلم" Style="{StaticResource PageTitle}" />
-                        <TextBlock Text="تظهر البطاقات العامة فقط؛ لا تظهر وسائل الاتصال أو البيانات التفصيلية للمعلم قبل قبول الطلب." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,0" />
-                    </StackPanel>
-                </DockPanel>
-                <Grid Grid.Row="1" Margin="0,16,0,0">
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- MAIN FULL-SCREEN VIEW (دليل المعلمين) -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <Grid Margin="28,24">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
+
+            <!-- Top Header -->
+            <DockPanel Grid.Row="0" Margin="0,0,0,18" LastChildFill="False">
+                <Button Command="{Binding BackCommand}" DockPanel.Dock="Left" Style="{StaticResource AppBackButton}" ToolTip="العودة للرئيسية">
+                    <controls:AppIcon Kind="ArrowRight" />
+                </Button>
+                <StackPanel VerticalAlignment="Center">
+                    <TextBlock Text="دليل المعلمين المتاحين" Style="{StaticResource PageTitle}" />
+                    <TextBlock Text="تصفح المعلمين المعتمدين واطلع على مؤهلاتهم وحلقاتهم، ثم قدّم طلب التسجيل مباشرة" Style="{StaticResource BodyMuted}" Margin="0,4,0,0" />
+                </StackPanel>
+            </DockPanel>
+
+            <!-- Search & Filter Toolbar Card -->
+            <Border Grid.Row="1" Style="{StaticResource AppCard}" Padding="16,12" Margin="0,0,0,16">
+                <Grid>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition Width="1.25*" />
-                        <ColumnDefinition Width="1*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
-                    <Border Background="#0A000000" CornerRadius="4" Padding="12" Margin="0,0,12,0">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="*" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-                            <StackPanel>
-                                <DockPanel>
-                                    <TextBlock Text="المعلمون المتاحون" Style="{StaticResource SectionTitle}" />
-                                    <TextBlock DockPanel.Dock="Left" Text="{Binding Total, StringFormat=الإجمالي: {0}}" Style="{StaticResource BodyMuted}" />
-                                </DockPanel>
-                                <Grid Margin="0,10,0,0">
-                                    <Grid.ColumnDefinitions><ColumnDefinition Width="*" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" /></Grid.ColumnDefinitions>
-                                    <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" ToolTip="ابحث بالاسم أو الوصف" />
-                                    <TextBox Grid.Column="1" Text="{Binding TeacherCode, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" FlowDirection="LeftToRight" Margin="8,0,0,0" ToolTip="كود المعلم" />
-                                    <Button Grid.Column="2" Content="بحث" Command="{Binding SearchCommand}" Margin="8,0,0,0" />
-                                </Grid>
-                                <TextBlock Text="{Binding SearchError}" Style="{StaticResource FieldError}" />
+
+                    <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                        <!-- Search Box -->
+                        <TextBox Text="{Binding SearchText, UpdateSourceTrigger=PropertyChanged}" Width="200" ToolTip="ابحث باسم المعلم، المدينة، أو المؤهل" Margin="0,0,10,0" VerticalAlignment="Center" Height="36" Padding="8,0" />
+
+                        <!-- Teacher Code Box -->
+                        <TextBox Text="{Binding TeacherCode, UpdateSourceTrigger=PropertyChanged}" Width="120" ToolTip="كود المعلم (اختياري)" FlowDirection="LeftToRight" Margin="0,0,10,0" VerticalAlignment="Center" Height="36" Padding="8,0" />
+
+                        <!-- Capacity Filter ComboBox -->
+                        <ComboBox ItemsSource="{Binding FilterOptions}"
+                                  SelectedValue="{Binding SelectedFilterTab}"
+                                  SelectedValuePath="Value"
+                                  Width="150"
+                                  Margin="0,0,10,0"
+                                  VerticalAlignment="Center"
+                                  Height="36">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Label}" />
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+
+                        <!-- Search / Apply Button -->
+                        <Button Content="بحث" Command="{Binding SearchCommand}" Style="{StaticResource AppPrimaryButton}" Padding="18,0" Height="36" Margin="0,0,10,0" />
+
+                        <!-- Refresh Button -->
+                        <Button Content="تحديث" Command="{Binding LoadCommand}" Style="{StaticResource AppOutlinedButton}" Padding="14,0" Height="36" Margin="0,0,10,0" />
+
+                        <!-- My Requests Button -->
+                        <Button Content="متابعة طلباتي" Command="{Binding OpenMyRequestsCommand}" Style="{StaticResource AppOutlinedButton}" Padding="14,0" Height="36" />
+
+                        <!-- Loading Indicator -->
+                        <ProgressBar Width="70" Height="4" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="12,0,0,0" VerticalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Total Counter Badge -->
+                    <Border Grid.Column="1" Background="{StaticResource AppSurfaceMutedBrush}" CornerRadius="4" Padding="12,6" VerticalAlignment="Center">
+                        <TextBlock Text="{Binding Total, StringFormat=إجمالي المعلمين: {0}}" FontWeight="SemiBold" Foreground="{StaticResource AppInkBrush}" FontSize="13" />
+                    </Border>
+                </Grid>
+            </Border>
+
+            <!-- Full-Width Teachers List Area Card -->
+            <Border Grid.Row="2" Style="{StaticResource AppCard}" Padding="16">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Top Banner: Active Request Notice -->
+                    <Border Grid.Row="0" Background="#18F57F17" BorderBrush="#66F57F17" BorderThickness="1" CornerRadius="6" Padding="14,10" Margin="0,0,0,12"
+                            Visibility="{Binding HasActiveRequest, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <DockPanel LastChildFill="True">
+                            <Button DockPanel.Dock="Left"
+                                    Command="{Binding OpenMyRequestsCommand}"
+                                    Style="{StaticResource AppPrimaryButton}"
+                                    Padding="14,6" Margin="12,0,0,0">
+                                <TextBlock Text="عرض ومتابعة الطلب" FontWeight="Bold" />
+                            </Button>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock Text="{Binding ActiveRequestSummary}" FontWeight="Bold" Foreground="#FF995C00" FontSize="13" />
+                                <TextBlock Text="تمنع لوائح المنصة تقديم أكثر من طلب تسجيل مفتوح في نفس الوقت لتسريع معالجة الحلقات." Style="{StaticResource BodyMuted}" Margin="0,2,0,0" />
                             </StackPanel>
-                            <ListBox Grid.Row="1" ItemsSource="{Binding Teachers}" SelectedItem="{Binding SelectedTeacher}" Margin="0,8,0,0" BorderThickness="0" Background="Transparent">
-                                <ListBox.ItemTemplate>
-                                    <DataTemplate>
-                                        <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="3" Padding="10" Margin="0,3">
-                                            <StackPanel>
-                                                <DockPanel>
-                                                    <TextBlock Text="{Binding DisplayName}" FontWeight="SemiBold" />
-                                                    <TextBlock DockPanel.Dock="Left" Text="{Binding CapacityAvailable, StringFormat=مقاعد متاحة: {0}}" Style="{StaticResource BodyMuted}" />
-                                                </DockPanel>
-                                                <TextBlock Text="{Binding Qualification}" Style="{StaticResource BodyMuted}" />
-                                                <TextBlock Text="{Binding Country}" Style="{StaticResource BodyMuted}" />
-                                                <TextBlock Text="{Binding City}" Style="{StaticResource BodyMuted}" />
-                                                <TextBlock Text="{Binding ExperienceYears, StringFormat=سنوات الخبرة: {0}}" Style="{StaticResource BodyMuted}" />
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Top Banner: Profile Incomplete Warning -->
+                    <Border Grid.Row="0" Background="#142367C9" BorderBrush="#442367C9" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,0,0,12"
+                            Visibility="{Binding ProfileIncompleteWarning, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <DockPanel LastChildFill="True">
+                            <controls:AppIcon DockPanel.Dock="Right" Kind="AlertCircleOutline" Foreground="{StaticResource AppInfoBrush}" FontSize="18" Margin="0,0,8,0" VerticalAlignment="Center" />
+                            <TextBlock Text="{Binding ProfileIncompleteWarning}" Foreground="{StaticResource AppInfoBrush}" FontSize="12" TextWrapping="Wrap" VerticalAlignment="Center" />
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Scrollable Teachers List -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto">
+                        <ItemsControl ItemsSource="{Binding DisplayedTeachers}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="6" Padding="16,14" Margin="0,0,0,10" Background="{StaticResource AppSurfaceBrush}">
+                                        <Grid>
+                                            <Grid.ColumnDefinitions>
+                                                <!-- Column 0: Avatar (Right in RTL) -->
+                                                <ColumnDefinition Width="Auto" />
+                                                <!-- Column 1: Info (Middle) -->
+                                                <ColumnDefinition Width="*" />
+                                                <!-- Column 2: Actions (Left in RTL) -->
+                                                <ColumnDefinition Width="Auto" />
+                                            </Grid.ColumnDefinitions>
+
+                                            <!-- Teacher Avatar on Column 0 (Right) -->
+                                            <Border Grid.Column="0" Width="44" Height="44" CornerRadius="22" Background="{StaticResource AppPrimarySoftBrush}" Margin="0,0,14,0" VerticalAlignment="Center">
+                                                <controls:AppIcon Kind="AccountTieOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="24" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                            </Border>
+
+                                            <!-- Teacher Info in Column 1 (Middle) -->
+                                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Margin="0,0,16,0">
+                                                <!-- Row 1: Name + Capacity Badge + Public Halaqas Badge -->
+                                                <StackPanel Orientation="Horizontal">
+                                                    <TextBlock Text="{Binding DisplayName}" FontWeight="Bold" FontSize="15" Foreground="{StaticResource AppInkBrush}" VerticalAlignment="Center" />
+
+                                                    <!-- Capacity Badge -->
+                                                    <Border CornerRadius="4" Padding="8,2" Margin="12,0,0,0" VerticalAlignment="Center">
+                                                        <Border.Style>
+                                                            <Style TargetType="Border">
+                                                                <Setter Property="Background" Value="#151F7A4D" />
+                                                                <Style.Triggers>
+                                                                    <DataTrigger Binding="{Binding CapacityAvailable}" Value="False">
+                                                                        <Setter Property="Background" Value="#15C75037" />
+                                                                    </DataTrigger>
+                                                                </Style.Triggers>
+                                                            </Style>
+                                                        </Border.Style>
+                                                        <TextBlock FontSize="11" FontWeight="Bold">
+                                                            <TextBlock.Style>
+                                                                <Style TargetType="TextBlock">
+                                                                    <Setter Property="Text" Value="مقاعد شاغرة متاحة" />
+                                                                    <Setter Property="Foreground" Value="{StaticResource AppSuccessBrush}" />
+                                                                    <Style.Triggers>
+                                                                        <DataTrigger Binding="{Binding CapacityAvailable}" Value="False">
+                                                                            <Setter Property="Text" Value="المقاعد مكتملة" />
+                                                                            <Setter Property="Foreground" Value="{StaticResource AppErrorBrush}" />
+                                                                        </DataTrigger>
+                                                                    </Style.Triggers>
+                                                                </Style>
+                                                            </TextBlock.Style>
+                                                        </TextBlock>
+                                                    </Border>
+
+                                                    <!-- Public Halaqas Count Badge -->
+                                                    <Border Background="{StaticResource AppSurfaceMutedBrush}" CornerRadius="4" Padding="8,2" Margin="8,0,0,0" VerticalAlignment="Center">
+                                                        <TextBlock Text="{Binding PublicHalaqas.Count, StringFormat='{}حلقات عامة: {0}'}" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" />
+                                                    </Border>
+                                                </StackPanel>
+
+                                                <!-- Row 2: Metadata (Code, Country - City, Experience, Qualification) -->
+                                                <StackPanel Orientation="Horizontal" Margin="0,6,0,0">
+                                                    <TextBlock Text="{Binding TeacherCode, StringFormat='كود المعلم: {0}'}" Style="{StaticResource CaptionText}" Foreground="{StaticResource AppMutedInkBrush}" FlowDirection="LeftToRight" Margin="0,0,16,0" />
+
+                                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                                                        <controls:AppIcon Kind="MapMarkerOutline" FontSize="13" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,0,4,0" VerticalAlignment="Center" />
+                                                        <TextBlock FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" VerticalAlignment="Center">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding StringFormat="{}{0} - {1}">
+                                                                    <Binding Path="Country" />
+                                                                    <Binding Path="City" />
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                    </StackPanel>
+
+                                                    <StackPanel Orientation="Horizontal" Margin="0,0,16,0">
+                                                        <controls:AppIcon Kind="ClockTimeFourOutline" FontSize="13" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,0,4,0" VerticalAlignment="Center" />
+                                                        <TextBlock Text="{Binding ExperienceYears, StringFormat='خبرة {0} سنوات'}" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" VerticalAlignment="Center" />
+                                                    </StackPanel>
+
+                                                    <TextBlock Text="{Binding Qualification, StringFormat='المؤهل: {0}'}" Style="{StaticResource CaptionText}" Foreground="{StaticResource AppInkBrush}" MaxWidth="320" TextTrimming="CharacterEllipsis" VerticalAlignment="Center" />
+                                                </StackPanel>
+
+                                                <!-- Row 3: Bio Snippet (if available) -->
+                                                <TextBlock Text="{Binding Bio}" Visibility="{Binding Bio, Converter={StaticResource StringToVisibilityConverter}}"
+                                                           Style="{StaticResource CaptionText}" Foreground="{StaticResource AppMutedInkBrush}"
+                                                           TextTrimming="CharacterEllipsis" Margin="0,4,0,0" />
                                             </StackPanel>
-                                        </Border>
-                                    </DataTemplate>
-                                </ListBox.ItemTemplate>
-                            </ListBox>
-                            <StackPanel Grid.Row="2" Orientation="Horizontal" HorizontalAlignment="Center">
-                                <Button Content="السابق" Command="{Binding LoadPreviousPageCommand}" />
-                                <TextBlock Text="{Binding CurrentPage, StringFormat=الصفحة {0}}" VerticalAlignment="Center" Margin="12,0" />
-                                <Button Content="التالي" Command="{Binding LoadNextPageCommand}" />
+
+                                            <!-- Actions in Column 2 (Left in RTL) -->
+                                            <StackPanel Grid.Column="2" Orientation="Horizontal" VerticalAlignment="Center">
+                                                <Button Content="تصفح الملف"
+                                                        Command="{Binding DataContext.OpenTeacherProfileCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource AppOutlinedButton}"
+                                                        Padding="14,8" Margin="0,0,8,0" VerticalAlignment="Center" />
+
+                                                <Button Content="تقديم طلب"
+                                                        Command="{Binding DataContext.OpenSubmitRequestCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                                                        CommandParameter="{Binding}"
+                                                        Style="{StaticResource AppPrimaryButton}"
+                                                        Padding="18,8" VerticalAlignment="Center"
+                                                        IsEnabled="{Binding DataContext.HasActiveRequest, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource InverseBooleanConverter}}" />
+                                            </StackPanel>
+                                        </Grid>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+
+                    <!-- Empty State -->
+                    <StackPanel Grid.Row="1" VerticalAlignment="Center" HorizontalAlignment="Center" Margin="0,50"
+                                Visibility="{Binding HasNoTeachers, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <controls:AppIcon Kind="AccountSearchOutline" FontSize="48" Foreground="{StaticResource AppBorderBrush}" HorizontalAlignment="Center" />
+                        <TextBlock Text="لم يتم العثور على معلمين متاحين حالياً" FontSize="15" FontWeight="Bold" Foreground="{StaticResource AppMutedInkBrush}" HorizontalAlignment="Center" Margin="0,12,0,4" />
+                        <TextBlock Text="تأكد من شروط البحث والتصفية أو انقر على تحديث لتحميل قائمة المعلمين" FontSize="12" Foreground="{StaticResource AppMutedInkBrush}" HorizontalAlignment="Center" />
+                    </StackPanel>
+
+                    <!-- Pagination Footer -->
+                    <Border Grid.Row="2" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="0,1,0,0" Padding="0,14,0,0" Margin="0,8,0,0">
+                        <Grid>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                <Button Content="السابق" Command="{Binding LoadPreviousPageCommand}" Style="{StaticResource AppOutlinedButton}" Padding="14,6" />
+                                <TextBlock Text="{Binding CurrentPage, StringFormat=صفحة {0}}" VerticalAlignment="Center" FontWeight="SemiBold" Margin="14,0" />
+                                <Button Content="التالي" Command="{Binding LoadNextPageCommand}" Style="{StaticResource AppOutlinedButton}" Padding="14,6" />
                             </StackPanel>
+                            <TextBlock Text="{Binding Total, StringFormat=إجمالي المعلمين: {0}}" HorizontalAlignment="Right" VerticalAlignment="Center" Foreground="{StaticResource AppMutedInkBrush}" FontSize="12" />
                         </Grid>
                     </Border>
-                    <ScrollViewer Grid.Column="1" VerticalScrollBarVisibility="Auto">
+                </Grid>
+            </Border>
+        </Grid>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- MODAL 1: TEACHER PROFILE PREVIEW DIALOG (تصفح ملف المعلم) -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <Grid Background="#7F000000"
+              Visibility="{Binding IsTeacherProfileDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Style="{StaticResource AppElevatedCard}"
+                    Width="600" MaxWidth="640"
+                    MaxHeight="650"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    CornerRadius="8" Padding="24" Margin="24"
+                    BorderThickness="1" BorderBrush="#331B524A">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Header -->
+                    <DockPanel Grid.Row="0" LastChildFill="False" Margin="0,0,0,16">
+                        <StackPanel DockPanel.Dock="Right">
+                            <TextBlock Text="الملف المهني للمعلم" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" />
+                            <TextBlock Text="بيانات المعلم المعتمدة والحلقات العامة المتاحة للانضمام." Style="{StaticResource BodyMuted}" Margin="0,2,0,0" />
+                        </StackPanel>
+                        <Button DockPanel.Dock="Left"
+                                Command="{Binding CloseTeacherProfileDialogCommand}"
+                                Style="{StaticResource AppQuietButton}"
+                                Padding="8,4" ToolTip="إغلاق">
+                            <controls:AppIcon Kind="Close" FontSize="18" Foreground="{StaticResource AppMutedInkBrush}" />
+                        </Button>
+                    </DockPanel>
+
+                    <!-- Content -->
+                    <ScrollViewer Grid.Row="1" VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
                         <StackPanel>
-                            <ProgressBar Height="4" IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,12" />
-                            <TextBlock Text="{Binding RequestTitle}" Style="{StaticResource SectionTitle}" />
-                            <TextBlock Text="{Binding ProfileReadiness}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,6,0,8" />
-                            <Button Content="تحميل بيانات ملفي" Command="{Binding RefreshProfileCommand}" HorizontalAlignment="Left" />
-                            <TextBlock Text="{Binding ProfileError}" Style="{StaticResource FieldError}" />
+                            <!-- Teacher Profile Header -->
+                            <Border Background="{StaticResource AppPanelBrush}" CornerRadius="6" Padding="16" Margin="0,0,0,14">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto" />
+                                        <ColumnDefinition Width="14" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+                                    <Border Width="60" Height="60" CornerRadius="30" Background="#181B524A"
+                                            BorderBrush="{StaticResource AppPrimaryBrush}" BorderThickness="2">
+                                        <controls:AppIcon Kind="AccountTieOutline" Foreground="{StaticResource AppPrimaryBrush}" FontSize="32" HorizontalAlignment="Center" VerticalAlignment="Center" />
+                                    </Border>
+                                    <StackPanel Grid.Column="2" VerticalAlignment="Center">
+                                        <TextBlock Text="{Binding SelectedTeacher.DisplayName}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" />
+                                        <TextBlock Text="{Binding SelectedTeacher.TeacherCode, StringFormat='رمز المعلم: {0}'}" FontSize="12" Foreground="{StaticResource AppMutedInkBrush}" FlowDirection="LeftToRight" HorizontalAlignment="Right" Margin="0,2,0,0" />
+                                        <WrapPanel Margin="0,6,0,0">
+                                            <Border Background="#101F7A4D" CornerRadius="4" Padding="6,2" Margin="0,0,8,0"
+                                                    Visibility="{Binding SelectedTeacher.CapacityAvailable, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                                <TextBlock Text="مقاعد شاغرة متاحة" FontSize="11" Foreground="{StaticResource AppSuccessBrush}" FontWeight="SemiBold" />
+                                            </Border>
+                                            <TextBlock Text="{Binding SelectedTeacher.ExperienceYears, StringFormat='خبرة {0} سنوات'}" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" Margin="0,0,8,0" VerticalAlignment="Center" />
+                                            <TextBlock Text="{Binding SelectedTeacher.Country, StringFormat='الدولة: {0}'}" FontSize="11" Foreground="{StaticResource AppMutedInkBrush}" VerticalAlignment="Center" />
+                                        </WrapPanel>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
 
-                            <TextBlock Text="اختيار حلقة عامة (اختياري)" Style="{StaticResource SectionTitle}" Margin="0,16,0,0" />
-                            <ComboBox ItemsSource="{Binding PublicHalaqas}" SelectedItem="{Binding SelectedHalaqa}" DisplayMemberPath="Name" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}" ToolTip="الحلقة المطلوبة" />
-                            <TextBlock Text="يمكن ترك الحقل فارغاً لإرسال الطلب موجهاً إلى المعلم فقط." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,10" />
+                            <!-- Qualifications -->
+                            <TextBlock Text="المؤهلات والروايات" Style="{StaticResource DialogSectionTitle}" />
+                            <Border Background="{StaticResource AppPanelBrush}" CornerRadius="4" Padding="12,10" Margin="0,0,0,10">
+                                <TextBlock Text="{Binding SelectedTeacher.Qualification}" TextWrapping="Wrap" FontSize="13" />
+                            </Border>
 
-                            <TextBox Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="{Binding IsBusy}" AcceptsReturn="True" Height="90" TextWrapping="Wrap" ToolTip="رسالة للمعلم (اختيارية)" />
-                            <TextBlock Text="{Binding MessageTextError}" Style="{StaticResource FieldError}" />
-                            <TextBlock Text="يُرسل الطلب بلقطة من ملف الطالب الموجود على الخادم، مع معرّف عملية ثابت لإعادة المحاولة. لا تُحفظ هذه البيانات في التطبيق." Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,4,0,8" />
-                            <Button Content="إرسال طلب التسجيل" Command="{Binding SubmitCommand}" HorizontalAlignment="Left" />
-                            <TextBlock Text="{Binding Message}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,12,0,0" />
+                            <!-- Bio (if available) -->
+                            <TextBlock Text="نبذة السيرة الذاتية" Style="{StaticResource DialogSectionTitle}"
+                                       Visibility="{Binding SelectedTeacher.Bio, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                            <Border Background="{StaticResource AppPanelBrush}" CornerRadius="4" Padding="12,10" Margin="0,0,0,10"
+                                    Visibility="{Binding SelectedTeacher.Bio, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                <TextBlock Text="{Binding SelectedTeacher.Bio}" TextWrapping="Wrap" Style="{StaticResource BodyMuted}" />
+                            </Border>
+
+                            <!-- Public Halaqas -->
+                            <TextBlock Text="الحلقات العامة المتاحة" Style="{StaticResource DialogSectionTitle}" />
+                            <ItemsControl ItemsSource="{Binding PublicHalaqas}">
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Border BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="1" CornerRadius="4" Padding="12,8" Margin="0,0,0,6" Background="White">
+                                            <DockPanel LastChildFill="True">
+                                                <Border DockPanel.Dock="Left" Background="#101F7A4D" CornerRadius="4" Padding="6,2" VerticalAlignment="Center">
+                                                    <TextBlock Text="{Binding AvailableCapacity, StringFormat='شاغر: {0}'}" FontSize="10" Foreground="{StaticResource AppSuccessBrush}" FontWeight="SemiBold" />
+                                                </Border>
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold" FontSize="13" />
+                                                    <TextBlock Text="{Binding Country, StringFormat='الموقع: {0}'}" FontSize="11" Style="{StaticResource BodyMuted}" />
+                                                </StackPanel>
+                                            </DockPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
                         </StackPanel>
                     </ScrollViewer>
+
+                    <!-- Footer Actions -->
+                    <Border Grid.Row="2" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="0,1,0,0" Padding="0,14,0,0" Margin="0,12,0,0">
+                        <DockPanel LastChildFill="False">
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <Button Content="تقديم طلب تسجيل لهذا المعلم"
+                                        Command="{Binding OpenSubmitRequestCommand}"
+                                        CommandParameter="{Binding SelectedTeacher}"
+                                        Style="{StaticResource AppPrimaryButton}"
+                                        Padding="18,8" Margin="0,0,8,0" />
+                                <Button Content="إغلاق"
+                                        Command="{Binding CloseTeacherProfileDialogCommand}"
+                                        Style="{StaticResource AppSecondaryButton}"
+                                        Padding="14,8" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
                 </Grid>
-                <Button Grid.Row="2" Content="إعادة تحميل المعلمين" Command="{Binding LoadCommand}" HorizontalAlignment="Left" Margin="0,16,0,0" />
-            </Grid>
-        </Border>
+            </Border>
+        </Grid>
+
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <!-- MODAL 2: SUBMIT REGISTRATION REQUEST DIALOG (إتمام عملية التقديم) -->
+        <!-- ═══════════════════════════════════════════════════════════════ -->
+        <Grid Background="#7F000000"
+              Visibility="{Binding IsSubmitRequestDialogOpen, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <Border Style="{StaticResource AppElevatedCard}"
+                    Width="600" MaxWidth="640"
+                    MaxHeight="680"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    CornerRadius="8" Padding="26" Margin="24"
+                    BorderThickness="1" BorderBrush="#331B524A">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                        <RowDefinition Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!-- Header -->
+                    <DockPanel Grid.Row="0" LastChildFill="False" Margin="0,0,0,14">
+                        <StackPanel DockPanel.Dock="Right">
+                            <TextBlock Text="{Binding RequestTitle}" FontSize="18" FontWeight="Bold" Foreground="{StaticResource AppInkBrush}" />
+                            <TextBlock Text="حدد خيارات الطلب وتأكد من رغبتك قبل الإرسال." Style="{StaticResource BodyMuted}" Margin="0,2,0,0" />
+                        </StackPanel>
+                        <Button DockPanel.Dock="Left"
+                                Command="{Binding CloseSubmitRequestDialogCommand}"
+                                Style="{StaticResource AppQuietButton}"
+                                Padding="8,4" ToolTip="إغلاق">
+                            <controls:AppIcon Kind="Close" FontSize="18" Foreground="{StaticResource AppMutedInkBrush}" />
+                        </Button>
+                    </DockPanel>
+
+                    <!-- Feedback inside modal -->
+                    <Border Grid.Row="1" Background="#12C75037" BorderBrush="{StaticResource AppErrorBrush}" BorderThickness="1" CornerRadius="4" Padding="10,6" Margin="0,0,0,10"
+                            Visibility="{Binding IsError, Converter={StaticResource BooleanToVisibilityConverter}}">
+                        <TextBlock Text="{Binding Message}" Foreground="{StaticResource AppErrorBrush}" TextWrapping="Wrap" />
+                    </Border>
+
+                    <!-- Content -->
+                    <ScrollViewer Grid.Row="2" VerticalScrollBarVisibility="Auto" Padding="0,0,8,0">
+                        <StackPanel>
+                            <ProgressBar IsIndeterminate="True" Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,10" />
+
+                            <!-- Notice about auto-loaded profile -->
+                            <Border Background="{StaticResource AppInfoSoftBrush}" BorderBrush="#332367C9" BorderThickness="1" CornerRadius="6" Padding="12,8" Margin="0,0,0,14">
+                                <StackPanel>
+                                    <TextBlock Text="لقطة بيانات الملف الرسمي" FontWeight="SemiBold" Foreground="{StaticResource AppInfoBrush}" FontSize="12" />
+                                    <TextBlock Text="{Binding ProfileReadiness}" Style="{StaticResource BodyMuted}" TextWrapping="Wrap" Margin="0,2,0,0" FontSize="11" />
+                                </StackPanel>
+                            </Border>
+
+                            <TextBlock Text="{Binding ProfileError}" Foreground="{StaticResource AppErrorBrush}" Margin="0,0,0,8"
+                                       Visibility="{Binding ProfileError, Converter={StaticResource BooleanToVisibilityConverter}}" />
+
+                            <!-- Select Halaqa -->
+                            <TextBlock Text="اختيار حلقة عامة (اختياري)" Style="{StaticResource DialogSectionTitle}" />
+                            <ComboBox ItemsSource="{Binding PublicHalaqas}"
+                                      SelectedItem="{Binding SelectedHalaqa}"
+                                      DisplayMemberPath="Name"
+                                      IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}"
+                                      ToolTip="الحلقة المطلوبة" Margin="0,2,0,0" />
+                            <TextBlock Text="يمكن ترك الحقل فارغاً لإرسال الطلب موجهاً إلى المعلم عامة." Style="{StaticResource BodyMuted}" Margin="0,4,0,14" FontSize="11" />
+
+                            <!-- Message to Teacher -->
+                            <TextBlock Text="رسالة للمعلم (اختيارية)" Style="{StaticResource DialogSectionTitle}" />
+                            <TextBox Text="{Binding MessageText, UpdateSourceTrigger=PropertyChanged}"
+                                     IsReadOnly="{Binding IsBusy}"
+                                     AcceptsReturn="True" Height="85" TextWrapping="Wrap"
+                                     ToolTip="أضف أي رغبة أو تفاصيل خاصة بطلبك" Margin="0,2,0,0" />
+                            <TextBlock Text="{Binding MessageTextError}" Foreground="{StaticResource AppErrorBrush}" Margin="0,4,0,8"
+                                       Visibility="{Binding MessageTextError, Converter={StaticResource BooleanToVisibilityConverter}}" />
+                        </StackPanel>
+                    </ScrollViewer>
+
+                    <!-- Footer Actions -->
+                    <Border Grid.Row="3" BorderBrush="{StaticResource AppBorderBrush}" BorderThickness="0,1,0,0" Padding="0,14,0,0" Margin="0,12,0,0">
+                        <DockPanel LastChildFill="False">
+                            <StackPanel DockPanel.Dock="Right" Orientation="Horizontal">
+                                <Button Content="إرسال طلب التسجيل"
+                                        Command="{Binding SubmitCommand}"
+                                        Style="{StaticResource AppPrimaryButton}"
+                                        Padding="20,8" Margin="0,0,8,0" />
+                                <Button Content="إلغاء"
+                                        Command="{Binding CloseSubmitRequestDialogCommand}"
+                                        Style="{StaticResource AppSecondaryButton}"
+                                        Padding="16,8" />
+                            </StackPanel>
+                        </DockPanel>
+                    </Border>
+                </Grid>
+            </Border>
+        </Grid>
     </Grid>
 </UserControl>

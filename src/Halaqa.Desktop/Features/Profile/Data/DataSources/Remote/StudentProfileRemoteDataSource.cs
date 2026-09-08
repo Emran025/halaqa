@@ -7,6 +7,7 @@ namespace Halaqa.Desktop.Features.Profile.Data.DataSources.Remote;
 internal interface IStudentProfileRemoteDataSource
 {
     Task<Result<StudentProfileResponseDto>> GetCurrentAsync(CancellationToken cancellationToken = default);
+    Task<Result<StudentProfileResponseDto>> GetByIdAsync(Guid studentId, CancellationToken cancellationToken = default);
     Task<Result<StudentProfileResponseDto>> UpdateCurrentAsync(
         UpdateStudentProfileRequestDto request,
         CancellationToken cancellationToken = default);
@@ -32,6 +33,9 @@ internal sealed class StudentProfileRemoteDataSource : IStudentProfileRemoteData
 
     public Task<Result<StudentProfileResponseDto>> GetCurrentAsync(CancellationToken cancellationToken = default) =>
         apiClient.GetAsync<StudentProfileResponseDto>("me/student-profile", cancellationToken);
+
+    public Task<Result<StudentProfileResponseDto>> GetByIdAsync(Guid studentId, CancellationToken cancellationToken = default) =>
+        apiClient.GetAsync<StudentProfileResponseDto>($"students/{studentId}", cancellationToken);
 
     public Task<Result<StudentProfileResponseDto>> UpdateCurrentAsync(
         UpdateStudentProfileRequestDto request,

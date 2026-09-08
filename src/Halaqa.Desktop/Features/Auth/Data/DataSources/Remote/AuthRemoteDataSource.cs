@@ -13,6 +13,7 @@ internal interface IAuthRemoteDataSource
     Task<Result> RequestPasswordResetAsync(ForgotPasswordRequestDto request, CancellationToken cancellationToken = default);
     Task<Result> ResetPasswordAsync(ResetPasswordRequestDto request, CancellationToken cancellationToken = default);
     Task<Result> ChangePasswordAsync(ChangePasswordRequestDto request, CancellationToken cancellationToken = default);
+    Task<Result<TeacherVerificationResponseDto>> VerifyTeacherCodeAsync(string teacherCode, CancellationToken cancellationToken = default);
     Task<Result> LogoutAsync(CancellationToken cancellationToken = default);
 }
 
@@ -54,6 +55,9 @@ internal sealed class AuthRemoteDataSource : IAuthRemoteDataSource
 
     public Task<Result> ChangePasswordAsync(ChangePasswordRequestDto request, CancellationToken cancellationToken = default) =>
         apiClient.PostAsync("auth/password/change", request, cancellationToken);
+
+    public Task<Result<TeacherVerificationResponseDto>> VerifyTeacherCodeAsync(string teacherCode, CancellationToken cancellationToken = default) =>
+        apiClient.GetAsync<TeacherVerificationResponseDto>($"auth/teachers/verify?code={Uri.EscapeDataString(teacherCode)}", cancellationToken);
 
     public Task<Result> LogoutAsync(CancellationToken cancellationToken = default) =>
         apiClient.PostAsync("auth/logout", new { }, cancellationToken);

@@ -37,6 +37,41 @@ public sealed class StudentTeacherDirectoryViewModelTests
         Assert.False(viewModel.IsError);
     }
 
+    [Fact]
+    public async Task OpenDialogs_AndFilterTabs_ManageStateCorrectly()
+    {
+        var registrationRepository = new FakeStudentRegistrationRepository();
+        var profileRepository = new FakeStudentProfileRepository();
+        var viewModel = new StudentTeacherDirectoryViewModel(
+            new ListAvailableTeachersUseCase(registrationRepository),
+            new CreateStudentRegistrationRequestUseCase(registrationRepository),
+            new GetCurrentStudentProfileUseCase(profileRepository));
+        viewModel.Initialize();
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+        var teacher = Assert.Single(viewModel.DisplayedTeachers);
+
+        // Open profile dialog
+        viewModel.OpenTeacherProfileCommand.Execute(teacher);
+        Assert.True(viewModel.IsTeacherProfileDialogOpen);
+        Assert.Equal(teacher, viewModel.SelectedTeacher);
+
+        viewModel.CloseTeacherProfileDialogCommand.Execute(null);
+        Assert.False(viewModel.IsTeacherProfileDialogOpen);
+
+        // Open submit dialog
+        viewModel.OpenSubmitRequestCommand.Execute(teacher);
+        Assert.True(viewModel.IsSubmitRequestDialogOpen);
+
+        viewModel.CloseSubmitRequestDialogCommand.Execute(null);
+        Assert.False(viewModel.IsSubmitRequestDialogOpen);
+
+        // Filter tab
+        viewModel.SelectFilterTabCommand.Execute("AvailableCapacity");
+        Assert.Equal("AvailableCapacity", viewModel.SelectedFilterTab);
+        Assert.Single(viewModel.DisplayedTeachers);
+    }
+
     private sealed class FakeStudentRegistrationRepository : IStudentRegistrationRepository
     {
         private readonly AvailableTeacher _teacher = new(
@@ -88,6 +123,9 @@ public sealed class StudentTeacherDirectoryViewModelTests
         private readonly StudentProfile _profile = CreateProfile();
 
         public Task<Result<StudentProfile>> GetCurrentAsync(CancellationToken cancellationToken = default) =>
+            Task.FromResult(Result<StudentProfile>.Success(_profile));
+
+        public Task<Result<StudentProfile>> GetByIdAsync(Guid studentId, CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<StudentProfile>.Success(_profile));
 
         public Task<Result<StudentProfile>> UpdateCurrentAsync(

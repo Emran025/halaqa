@@ -24,6 +24,7 @@ public interface IRegistrationRequestRepository
 
     Task<Result<RegistrationRequest>> AcceptAsync(
         Guid registrationId,
+        Guid? targetHalaqaId = null,
         CancellationToken cancellationToken = default);
 
     Task<Result<RegistrationRequest>> RejectAsync(

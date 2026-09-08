@@ -1,4 +1,4 @@
-﻿using Halaqa.Desktop.Features.Profile.Domain.Entities;
+using Halaqa.Desktop.Features.Profile.Domain.Entities;
 using Halaqa.Desktop.Features.Profile.Domain.Repositories;
 using Halaqa.Desktop.Shared.Domain.Common;
 
@@ -24,6 +24,19 @@ public sealed class GetCurrentStudentProfileUseCase
 
     public Task<Result<StudentProfile>> ExecuteAsync(CancellationToken cancellationToken = default) =>
         repository.GetCurrentAsync(cancellationToken);
+}
+
+public sealed class GetStudentProfileByIdUseCase
+{
+    private readonly IStudentProfileRepository repository;
+
+    public GetStudentProfileByIdUseCase(IStudentProfileRepository repository)
+    {
+        this.repository = repository;
+    }
+
+    public Task<Result<StudentProfile>> ExecuteAsync(Guid studentId, CancellationToken cancellationToken = default) =>
+        repository.GetByIdAsync(studentId, cancellationToken);
 }
 
 public sealed class UpdateCurrentStudentProfileUseCase

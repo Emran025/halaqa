@@ -43,6 +43,70 @@ public sealed class StudentRegistrationRequestsViewModelTests
         Assert.False(viewModel.CancelCommand.CanExecute(null));
     }
 
+    [Fact]
+    public async Task Load_DetectsActiveRequest_AndNewSearchInvokesEvent()
+    {
+        var repository = new FakeRegistrationRepository { InitialState = RegistrationState.Pending };
+        var viewModel = new StudentRegistrationRequestsViewModel(
+            new ListMyRegistrationRequestsUseCase(repository),
+            new CancelRegistrationRequestUseCase(repository));
+        viewModel.Initialize();
+
+        var searchRequestedCalled = false;
+        viewModel.SearchTeachersRequested += (_, _) => searchRequestedCalled = true;
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        Assert.True(viewModel.HasActiveRequest);
+        Assert.NotNull(viewModel.ActiveRequest);
+
+        viewModel.NewSearchCommand.Execute(null);
+        Assert.True(searchRequestedCalled);
+    }
+
+    [Fact]
+    public async Task Load_WithRequests_SetsHasRequestsTrue_AndHasNoRequestsFalse()
+    {
+        var repository = new FakeRegistrationRepository { InitialState = RegistrationState.Pending };
+        var viewModel = new StudentRegistrationRequestsViewModel(
+            new ListMyRegistrationRequestsUseCase(repository),
+            new CancelRegistrationRequestUseCase(repository));
+        viewModel.Initialize();
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        Assert.True(viewModel.HasRequests);
+        Assert.False(viewModel.HasNoRequests);
+    }
+
+    [Fact]
+    public async Task Load_WithPendingOrAcceptedRequest_SetsCanSearchNewTeacherFalse()
+    {
+        var repository = new FakeRegistrationRepository { InitialState = RegistrationState.Pending };
+        var viewModel = new StudentRegistrationRequestsViewModel(
+            new ListMyRegistrationRequestsUseCase(repository),
+            new CancelRegistrationRequestUseCase(repository));
+        viewModel.Initialize();
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        Assert.False(viewModel.CanSearchNewTeacher);
+    }
+
+    [Fact]
+    public async Task Load_WithRejectedOrWithdrawnRequest_SetsCanSearchNewTeacherTrue()
+    {
+        var repository = new FakeRegistrationRepository { InitialState = RegistrationState.Rejected };
+        var viewModel = new StudentRegistrationRequestsViewModel(
+            new ListMyRegistrationRequestsUseCase(repository),
+            new CancelRegistrationRequestUseCase(repository));
+        viewModel.Initialize();
+
+        await viewModel.LoadCommand.ExecuteAsync(null);
+
+        Assert.True(viewModel.CanSearchNewTeacher);
+    }
+
     private sealed class FakeRegistrationRepository : IRegistrationRequestRepository
     {
         public RegistrationState InitialState { get; init; } = RegistrationState.Pending;
@@ -92,7 +156,10 @@ public sealed class StudentRegistrationRequestsViewModelTests
             CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<RegistrationRequestPage>.Success(new RegistrationRequestPage(Array.Empty<RegistrationRequest>(), 1, 1, 20, 0)));
 
-        public Task<Result<RegistrationRequest>> AcceptAsync(Guid registrationId, CancellationToken cancellationToken = default) =>
+        public Task<Result<RegistrationRequest>> AcceptAsync(
+            Guid registrationId,
+            Guid? targetHalaqaId = null,
+            CancellationToken cancellationToken = default) =>
             Task.FromResult(Result<RegistrationRequest>.Success(Request));
 
         public Task<Result<RegistrationRequest>> RejectAsync(

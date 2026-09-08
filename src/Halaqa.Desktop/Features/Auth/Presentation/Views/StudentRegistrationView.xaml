@@ -1,4 +1,4 @@
-﻿<UserControl x:Class="Halaqa.Desktop.Features.Auth.Presentation.Views.StudentRegistrationView"
+<UserControl x:Class="Halaqa.Desktop.Features.Auth.Presentation.Views.StudentRegistrationView"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
@@ -160,8 +160,48 @@
                                     <controls:TimePicker Value="{Binding AttendanceFrom, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
                                     <TextBlock Text="إلى" Style="{StaticResource CaptionText}" />
                                     <controls:TimePicker Value="{Binding AttendanceTo, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" />
-                                    <TextBlock Text="رمز المعلم (اختياري)" Style="{StaticResource CaptionText}" />
-                                    <TextBox Text="{Binding TeacherCode}" ToolTip="رمز المعلم" />
+                                    <TextBlock Text="معرف الأستاذ (اختياري)" Style="{StaticResource CaptionText}" />
+                                    <Grid Margin="0,0,0,4">
+                                         <Grid.ColumnDefinitions>
+                                             <ColumnDefinition Width="*" />
+                                             <ColumnDefinition Width="8" />
+                                             <ColumnDefinition Width="Auto" />
+                                         </Grid.ColumnDefinitions>
+                                         <TextBox Grid.Column="0" Text="{Binding TeacherCode, UpdateSourceTrigger=PropertyChanged}" ToolTip="أدخل معرف المعلم مثل ITQAN-AR-01" FlowDirection="LeftToRight" />
+                                         <Button Grid.Column="2" Content="تحقق من المعرف" Command="{Binding VerifyTeacherCodeCommand}" Style="{StaticResource AppSecondaryButton}" Padding="10,0" Height="36" />
+                                     </Grid>
+                                     <ProgressBar Height="3" IsIndeterminate="True" Visibility="{Binding IsVerifyingTeacherCode, Converter={StaticResource BooleanToVisibilityConverter}}" Margin="0,0,0,4" />
+                                     <Border CornerRadius="4" Padding="8,5" Margin="0,2,0,0"
+                                             Visibility="{Binding HasTeacherCodeMessage, Converter={StaticResource BooleanToVisibilityConverter}}">
+                                         <Border.Style>
+                                             <Style TargetType="Border">
+                                                 <Setter Property="Background" Value="#15000000" />
+                                                 <Style.Triggers>
+                                                     <DataTrigger Binding="{Binding IsTeacherCodeValid}" Value="True">
+                                                         <Setter Property="Background" Value="#181F7A4D" />
+                                                     </DataTrigger>
+                                                     <DataTrigger Binding="{Binding IsTeacherCodeValid}" Value="False">
+                                                         <Setter Property="Background" Value="#18BA1A1A" />
+                                                     </DataTrigger>
+                                                 </Style.Triggers>
+                                             </Style>
+                                         </Border.Style>
+                                         <TextBlock Text="{Binding TeacherCodeMessage}" FontSize="12" FontWeight="SemiBold">
+                                             <TextBlock.Style>
+                                                 <Style TargetType="TextBlock">
+                                                     <Setter Property="Foreground" Value="{StaticResource AppMutedInkBrush}" />
+                                                     <Style.Triggers>
+                                                         <DataTrigger Binding="{Binding IsTeacherCodeValid}" Value="True">
+                                                             <Setter Property="Foreground" Value="#FF1F7A4D" />
+                                                         </DataTrigger>
+                                                         <DataTrigger Binding="{Binding IsTeacherCodeValid}" Value="False">
+                                                             <Setter Property="Foreground" Value="{StaticResource AppErrorBrush}" />
+                                                         </DataTrigger>
+                                                     </Style.Triggers>
+                                                 </Style>
+                                             </TextBlock.Style>
+                                         </TextBlock>
+                                     </Border>
                                 </StackPanel>
                             </Grid>
                         </StackPanel>

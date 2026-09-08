@@ -25,6 +25,7 @@ internal interface IRegistrationRequestRemoteDataSource
 
     Task<Result<RegistrationResponseDto>> AcceptAsync(
         Guid registrationId,
+        Guid? targetHalaqaId = null,
         CancellationToken cancellationToken = default);
 
     Task<Result<RegistrationResponseDto>> RejectAsync(
@@ -110,10 +111,21 @@ internal sealed class RegistrationRequestRemoteDataSource : IRegistrationRequest
 
     public Task<Result<RegistrationResponseDto>> AcceptAsync(
         Guid registrationId,
-        CancellationToken cancellationToken = default) =>
-        apiClient.PostEmptyAsync<RegistrationResponseDto>(
+        Guid? targetHalaqaId = null,
+        CancellationToken cancellationToken = default)
+    {
+        if (targetHalaqaId.HasValue && targetHalaqaId.Value != Guid.Empty)
+        {
+            return apiClient.PostAsync<object, RegistrationResponseDto>(
+                $"registration-requests/{registrationId}/accept",
+                new { target_halaqa_id = targetHalaqaId.Value },
+                cancellationToken);
+        }
+
+        return apiClient.PostEmptyAsync<RegistrationResponseDto>(
             $"registration-requests/{registrationId}/accept",
             cancellationToken);
+    }
 
     public Task<Result<RegistrationResponseDto>> RejectAsync(
         Guid registrationId,

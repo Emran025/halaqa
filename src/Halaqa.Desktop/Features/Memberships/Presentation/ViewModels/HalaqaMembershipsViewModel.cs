@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Memberships.Domain.Entities;
@@ -16,6 +16,8 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
     private readonly RemoveHalaqaMembershipUseCase _removeHalaqaMembershipUseCase;
     private Guid _halaqaId;
 
+    private readonly List<HalaqaMembership> _rawMemberships = new();
+
     public HalaqaMembershipsViewModel(
         ListHalaqaMembershipsUseCase listHalaqaMembershipsUseCase,
         AssignStudentToHalaqaUseCase assignStudentToHalaqaUseCase,
@@ -29,6 +31,7 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
     }
 
     public ObservableCollection<HalaqaMembership> Memberships { get; } = new();
+
     public IReadOnlyList<LocalizedOption<string>> MembershipStatusOptions { get; } = new[]
     {
         new LocalizedOption<string>("active", "نشطة"),
@@ -49,6 +52,9 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
     [ObservableProperty] private string _selectedStatus = "active";
     [ObservableProperty] private string? _reason;
     [ObservableProperty] private string _filterStatus = string.Empty;
+    [ObservableProperty] private string _searchText = string.Empty;
+    [ObservableProperty] private bool _isDialogOpen;
+    [ObservableProperty] private bool _isAssignMode;
     [ObservableProperty] private int _currentPage = 1;
     [ObservableProperty] private int _lastPage = 1;
     [ObservableProperty] private int _total;
@@ -59,9 +65,13 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
     [ObservableProperty] private string? _statusError;
     [ObservableProperty] private string? _reasonError;
 
-    public string EditorTitle => SelectedMembership is null
-        ? "اختر عضوية لتغيير حالتها"
-        : $"إدارة عضوية {SelectedMembership.Student.Name}";
+    public bool HasNoMemberships => Memberships.Count == 0 && !IsBusy;
+
+    public string DialogTitle => IsAssignMode
+        ? "إسناد طالب جديد إلى الحلقة"
+        : (SelectedMembership is null ? "إدارة العضوية" : $"إدارة عضوية: {SelectedMembership.Student.Name}");
+
+    public string EditorTitle => DialogTitle;
 
     public event EventHandler? BackRequested;
 
@@ -74,6 +84,10 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
         SelectedStatus = "active";
         Reason = null;
         FilterStatus = string.Empty;
+        SearchText = string.Empty;
+        IsDialogOpen = false;
+        IsAssignMode = false;
+        _rawMemberships.Clear();
         Memberships.Clear();
         CurrentPage = 1;
         LastPage = 1;
@@ -106,6 +120,43 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private void OpenAssignDialog()
+    {
+        IsAssignMode = true;
+        SelectedMembership = null;
+        StudentId = string.Empty;
+        ClearFeedback();
+        OnPropertyChanged(nameof(DialogTitle));
+        OnPropertyChanged(nameof(EditorTitle));
+        IsDialogOpen = true;
+        NotifyCommands();
+    }
+
+    [RelayCommand]
+    private void OpenManageDialog(HalaqaMembership? membership)
+    {
+        if (membership is not null)
+        {
+            SelectedMembership = membership;
+            SelectedStatus = ToContractValue(membership.Status);
+            Reason = null;
+        }
+        IsAssignMode = false;
+        ClearFeedback();
+        OnPropertyChanged(nameof(DialogTitle));
+        OnPropertyChanged(nameof(EditorTitle));
+        IsDialogOpen = true;
+        NotifyCommands();
+    }
+
+    [RelayCommand]
+    private void CloseDialog()
+    {
+        IsDialogOpen = false;
+        ClearFeedback();
+    }
+
     [RelayCommand(CanExecute = nameof(CanAssign))]
     private async Task AssignAsync()
     {
@@ -134,7 +185,8 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
             Upsert(result.Value);
             StudentId = string.Empty;
             Total++;
-            Message = "تم إسناد الطالب إلى الحلقة.";
+            Message = "تم إسناد الطالب إلى الحلقة بنجاح.";
+            IsDialogOpen = false;
         }
         finally
         {
@@ -175,7 +227,7 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
 
             Upsert(result.Value);
             SelectedMembership = result.Value;
-            Message = "تم تحديث حالة العضوية.";
+            Message = "تم تحديث حالة العضوية بنجاح.";
         }
         finally
         {
@@ -204,10 +256,16 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
                 return;
             }
 
-            Memberships.Remove(selected);
+            var index = _rawMemberships.FindIndex(m => m.Id == selected.Id);
+            if (index >= 0)
+            {
+                _rawMemberships.RemoveAt(index);
+            }
+            ApplyLocalFilter();
             SelectedMembership = null;
             Total = Math.Max(0, Total - 1);
-            Message = "تمت إزالة العضوية مع الإبقاء على سجلها التاريخي في الخادم.";
+            Message = "تمت إزالة العضوية مع الإبقاء على سجلها التاريخي.";
+            IsDialogOpen = false;
         }
         finally
         {
@@ -219,6 +277,8 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
     [RelayCommand(CanExecute = nameof(CanNavigateBack))]
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
 
+    partial void OnSearchTextChanged(string value) => ApplyLocalFilter();
+
     partial void OnSelectedMembershipChanged(HalaqaMembership? value)
     {
         if (value is not null)
@@ -226,6 +286,7 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
             SelectedStatus = ToContractValue(value.Status);
             Reason = null;
         }
+        OnPropertyChanged(nameof(DialogTitle));
         OnPropertyChanged(nameof(EditorTitle));
         UpdateStatusCommand.NotifyCanExecuteChanged();
         RemoveCommand.NotifyCanExecuteChanged();
@@ -258,11 +319,12 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
                 return;
             }
 
-            Memberships.Clear();
+            _rawMemberships.Clear();
             foreach (var membership in result.Value.Memberships)
             {
-                Memberships.Add(membership);
+                _rawMemberships.Add(membership);
             }
+            ApplyLocalFilter();
             CurrentPage = result.Value.CurrentPage;
             LastPage = result.Value.LastPage;
             Total = result.Value.Total;
@@ -277,15 +339,36 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
 
     private void Upsert(HalaqaMembership membership)
     {
-        var existing = Memberships.Select((value, index) => (value, index)).FirstOrDefault(item => item.value.Id == membership.Id);
-        if (existing.value is not null)
+        var rawIndex = _rawMemberships.FindIndex(m => m.Id == membership.Id);
+        if (rawIndex >= 0)
         {
-            Memberships[existing.index] = membership;
+            _rawMemberships[rawIndex] = membership;
         }
         else
         {
-            Memberships.Insert(0, membership);
+            _rawMemberships.Insert(0, membership);
         }
+        ApplyLocalFilter();
+    }
+
+    private void ApplyLocalFilter()
+    {
+        Memberships.Clear();
+        var query = _rawMemberships.AsEnumerable();
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            var term = SearchText.Trim();
+            query = query.Where(m =>
+                (m.Student.Name != null && m.Student.Name.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                (m.Student.Email != null && m.Student.Email.Contains(term, StringComparison.OrdinalIgnoreCase)) ||
+                (m.Student.Phone != null && m.Student.Phone.Contains(term, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        foreach (var m in query)
+        {
+            Memberships.Add(m);
+        }
+        OnPropertyChanged(nameof(HasNoMemberships));
     }
 
     private bool EnsureHalaqaSelected()
@@ -309,6 +392,7 @@ public sealed partial class HalaqaMembershipsViewModel : ObservableObject
         UpdateStatusCommand.NotifyCanExecuteChanged();
         RemoveCommand.NotifyCanExecuteChanged();
         BackCommand.NotifyCanExecuteChanged();
+        OnPropertyChanged(nameof(HasNoMemberships));
     }
 
     private void ClearFeedback()

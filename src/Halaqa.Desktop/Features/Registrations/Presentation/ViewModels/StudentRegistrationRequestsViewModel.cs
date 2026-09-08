@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Registrations.Domain.Entities;
@@ -41,12 +41,20 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
     [ObservableProperty] private bool _isBusy;
     [ObservableProperty] private bool _isError;
     [ObservableProperty] private string? _message;
+    [ObservableProperty] private bool _hasActiveRequest;
+    [ObservableProperty] private RegistrationRequest? _activeRequest;
+    [ObservableProperty] private bool _canSearchNewTeacher;
+    private bool _hasGlobalActiveOrAccepted;
+
+    public bool HasNoRequests => !IsBusy && Requests.Count == 0;
+    public bool HasRequests => !IsBusy && Requests.Count > 0;
 
     public string EditorTitle => SelectedRequest is null
         ? "اختر طلباً لعرض حالته"
         : $"طلب التسجيل بتاريخ {SelectedRequest.CreatedAt:yyyy-MM-dd}";
 
     public event EventHandler? BackRequested;
+    public event EventHandler? SearchTeachersRequested;
 
     public void Initialize()
     {
@@ -56,8 +64,23 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
         CurrentPage = 1;
         LastPage = 1;
         Total = 0;
+        HasActiveRequest = false;
+        ActiveRequest = null;
+        _hasGlobalActiveOrAccepted = false;
+        CanSearchNewTeacher = false;
         ClearFeedback();
         NotifyCommands();
+        NotifyStateChanges();
+    }
+
+    [RelayCommand]
+    private void NewSearch() => SearchTeachersRequested?.Invoke(this, EventArgs.Empty);
+
+    [RelayCommand(CanExecute = nameof(CanLoad))]
+    private async Task SelectFilterTabAsync(string state)
+    {
+        FilterState = state ?? string.Empty;
+        await LoadPageAsync(1);
     }
 
     [RelayCommand(CanExecute = nameof(CanLoad))]
@@ -105,7 +128,7 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
             }
 
             await LoadPageAsync(CurrentPage);
-            Message = "تم سحب طلب التسجيل. يعرض الخادم الحالة الرسمية بعد إعادة التحميل.";
+            Message = "تم سحب طلب التسجيل بنجاح. يمكنك الآن البحث عن معلم جديد والتقديم.";
         }
         finally
         {
@@ -121,6 +144,11 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
     {
         OnPropertyChanged(nameof(EditorTitle));
         CancelCommand.NotifyCanExecuteChanged();
+    }
+
+    partial void OnIsBusyChanged(bool value)
+    {
+        NotifyStateChanges();
     }
 
     private bool CanLoad() => !IsBusy;
@@ -156,11 +184,44 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
             LastPage = result.Value.LastPage;
             Total = result.Value.Total;
             SelectedRequest = null;
+
+            if (string.IsNullOrEmpty(FilterState))
+            {
+                _hasGlobalActiveOrAccepted = Requests.Any(r =>
+                    r.State == RegistrationState.Pending ||
+                    r.State == RegistrationState.CompletionRequested ||
+                    r.State == RegistrationState.Accepted);
+                CanSearchNewTeacher = !_hasGlobalActiveOrAccepted;
+
+                ActiveRequest = Requests.FirstOrDefault(r =>
+                    r.State == RegistrationState.Pending || r.State == RegistrationState.CompletionRequested);
+                HasActiveRequest = ActiveRequest is not null;
+            }
+            else if (FilterState == "pending")
+            {
+                ActiveRequest = Requests.FirstOrDefault(r =>
+                    r.State == RegistrationState.Pending || r.State == RegistrationState.CompletionRequested);
+                HasActiveRequest = ActiveRequest is not null;
+                if (HasActiveRequest)
+                {
+                    _hasGlobalActiveOrAccepted = true;
+                    CanSearchNewTeacher = false;
+                }
+            }
+            else if (FilterState == "accepted")
+            {
+                if (Requests.Any(r => r.State == RegistrationState.Accepted))
+                {
+                    _hasGlobalActiveOrAccepted = true;
+                    CanSearchNewTeacher = false;
+                }
+            }
         }
         finally
         {
             IsBusy = false;
             NotifyCommands();
+            NotifyStateChanges();
         }
     }
 
@@ -172,6 +233,12 @@ public sealed partial class StudentRegistrationRequestsViewModel : ObservableObj
         LoadPreviousPageCommand.NotifyCanExecuteChanged();
         CancelCommand.NotifyCanExecuteChanged();
         BackCommand.NotifyCanExecuteChanged();
+    }
+
+    private void NotifyStateChanges()
+    {
+        OnPropertyChanged(nameof(HasNoRequests));
+        OnPropertyChanged(nameof(HasRequests));
     }
 
     private void ClearFeedback()

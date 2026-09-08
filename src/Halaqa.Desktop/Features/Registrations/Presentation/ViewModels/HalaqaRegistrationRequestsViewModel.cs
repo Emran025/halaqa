@@ -1,6 +1,8 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using Halaqa.Desktop.Features.Memberships.Domain.Entities;
+using Halaqa.Desktop.Features.Memberships.Domain.UseCases;
 using Halaqa.Desktop.Features.Registrations.Domain.Entities;
 using Halaqa.Desktop.Features.Registrations.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
@@ -14,19 +16,24 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
     private readonly AcceptRegistrationRequestUseCase _acceptRequestUseCase;
     private readonly RejectRegistrationRequestUseCase _rejectRequestUseCase;
     private readonly RequestRegistrationCompletionUseCase _requestCompletionUseCase;
+    private readonly AssignStudentToHalaqaUseCase _assignStudentToHalaqaUseCase;
     private Guid _halaqaId;
 
     public HalaqaRegistrationRequestsViewModel(
         ListHalaqaRegistrationRequestsUseCase listRequestsUseCase,
         AcceptRegistrationRequestUseCase acceptRequestUseCase,
         RejectRegistrationRequestUseCase rejectRequestUseCase,
-        RequestRegistrationCompletionUseCase requestCompletionUseCase)
+        RequestRegistrationCompletionUseCase requestCompletionUseCase,
+        AssignStudentToHalaqaUseCase assignStudentToHalaqaUseCase)
     {
         _listRequestsUseCase = listRequestsUseCase;
         _acceptRequestUseCase = acceptRequestUseCase;
         _rejectRequestUseCase = rejectRequestUseCase;
         _requestCompletionUseCase = requestCompletionUseCase;
+        _assignStudentToHalaqaUseCase = assignStudentToHalaqaUseCase;
     }
+
+    private readonly List<RegistrationRequest> _rawRequests = new();
 
     public ObservableCollection<RegistrationRequest> Requests { get; } = new();
     public IReadOnlyList<LocalizedOption<string>> FilterOptions { get; } = new[]
@@ -43,6 +50,8 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
     [ObservableProperty] private string _halaqaName = string.Empty;
     [ObservableProperty] private RegistrationRequest? _selectedRequest;
     [ObservableProperty] private string _filterState = string.Empty;
+    [ObservableProperty] private string _searchText = string.Empty;
+    [ObservableProperty] private bool _isDialogOpen;
     [ObservableProperty] private string? _rejectionNote;
     [ObservableProperty] private string _requiredFields = string.Empty;
     [ObservableProperty] private string? _completionNote;
@@ -56,9 +65,11 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
     [ObservableProperty] private string? _requiredFieldsError;
     [ObservableProperty] private string? _completionNoteError;
 
+    public bool HasNoRequests => Requests.Count == 0 && !IsBusy;
+
     public string EditorTitle => SelectedRequest is null
-        ? "اختر طلب تسجيل لمراجعته"
-        : $"مراجعة طلب {SelectedRequest.Applicant.DisplayName}";
+        ? "مراجعة طلب التسجيل"
+        : $"مراجعة طلب: {SelectedRequest.Applicant.DisplayName}";
 
     public event EventHandler? BackRequested;
 
@@ -68,9 +79,12 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
         HalaqaName = halaqaName;
         SelectedRequest = null;
         FilterState = string.Empty;
+        SearchText = string.Empty;
+        IsDialogOpen = false;
         RejectionNote = null;
         RequiredFields = string.Empty;
         CompletionNote = null;
+        _rawRequests.Clear();
         Requests.Clear();
         CurrentPage = 1;
         LastPage = 1;
@@ -103,7 +117,10 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanDecide))]
+    public bool IsPendingState => SelectedRequest is not null && (SelectedRequest.State == RegistrationState.Pending || SelectedRequest.State == RegistrationState.CompletionRequested);
+    public bool IsAcceptedState => SelectedRequest is not null && SelectedRequest.State == RegistrationState.Accepted;
+
+    [RelayCommand(CanExecute = nameof(CanAccept))]
     private async Task AcceptAsync()
     {
         var selected = SelectedRequest;
@@ -116,7 +133,7 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
         ClearFeedback();
         try
         {
-            var result = await _acceptRequestUseCase.ExecuteAsync(selected.Id);
+            var result = await _acceptRequestUseCase.ExecuteAsync(selected.Id, _halaqaId);
             if (!result.IsSuccess || result.Value is null)
             {
                 SetFailure(result.Error);
@@ -125,7 +142,7 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
 
             Upsert(result.Value);
             SelectedRequest = result.Value;
-            Message = "تم قبول طلب التسجيل. تظهر العضوية الناتجة وفق إجراءات الخادم.";
+            Message = "تم قبول طلب التسجيل وإدخال الطالب إلى الحلقة بنجاح.";
         }
         finally
         {
@@ -134,7 +151,38 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
         }
     }
 
-    [RelayCommand(CanExecute = nameof(CanDecide))]
+    [RelayCommand(CanExecute = nameof(CanAssignToHalaqa))]
+    private async Task AssignToHalaqaAsync()
+    {
+        var selected = SelectedRequest;
+        if (selected is null || _halaqaId == Guid.Empty)
+        {
+            return;
+        }
+
+        IsBusy = true;
+        ClearFeedback();
+        try
+        {
+            var result = await _assignStudentToHalaqaUseCase.ExecuteAsync(
+                new AssignStudentToHalaqaCommand(_halaqaId, selected.Applicant.Id));
+
+            if (!result.IsSuccess)
+            {
+                SetFailure(result.Error);
+                return;
+            }
+
+            Message = "تم إدخال الطالب إلى هذه الحلقة بنجاح.";
+        }
+        finally
+        {
+            IsBusy = false;
+            NotifyCommands();
+        }
+    }
+
+    [RelayCommand(CanExecute = nameof(CanReject))]
     private async Task RejectAsync()
     {
         var selected = SelectedRequest;
@@ -211,8 +259,27 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
         }
     }
 
+    [RelayCommand]
+    private void OpenDialog(RegistrationRequest? request)
+    {
+        if (request is not null)
+        {
+            SelectedRequest = request;
+        }
+        ClearFeedback();
+        IsDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseDialog()
+    {
+        IsDialogOpen = false;
+    }
+
     [RelayCommand(CanExecute = nameof(CanNavigateBack))]
     private void Back() => BackRequested?.Invoke(this, EventArgs.Empty);
+
+    partial void OnSearchTextChanged(string value) => ApplyLocalFilter();
 
     partial void OnSelectedRequestChanged(RegistrationRequest? value)
     {
@@ -220,16 +287,16 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
         RequiredFields = string.Empty;
         CompletionNote = null;
         OnPropertyChanged(nameof(EditorTitle));
-        AcceptCommand.NotifyCanExecuteChanged();
-        RejectCommand.NotifyCanExecuteChanged();
-        RequestCompletionCommand.NotifyCanExecuteChanged();
+        NotifyCommands();
     }
 
     partial void OnRequiredFieldsChanged(string value) => RequestCompletionCommand.NotifyCanExecuteChanged();
 
     private bool CanLoad() => !IsBusy && _halaqaId != Guid.Empty;
-    private bool CanDecide() => !IsBusy && SelectedRequest is not null;
-    private bool CanRequestCompletion() => !IsBusy && SelectedRequest is not null && ParseRequiredFields().Count > 0;
+    private bool CanAccept() => !IsBusy && IsPendingState;
+    private bool CanAssignToHalaqa() => !IsBusy && _halaqaId != Guid.Empty && IsAcceptedState;
+    private bool CanReject() => !IsBusy && IsPendingState;
+    private bool CanRequestCompletion() => !IsBusy && IsPendingState && ParseRequiredFields().Count > 0;
     private bool CanNavigateBack() => !IsBusy;
 
     private async Task LoadPageAsync(int page)
@@ -256,11 +323,12 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
                 return;
             }
 
-            Requests.Clear();
+            _rawRequests.Clear();
             foreach (var request in result.Value.Requests)
             {
-                Requests.Add(request);
+                _rawRequests.Add(request);
             }
+            ApplyLocalFilter();
             CurrentPage = result.Value.CurrentPage;
             LastPage = result.Value.LastPage;
             Total = result.Value.Total;
@@ -275,15 +343,36 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
 
     private void Upsert(RegistrationRequest request)
     {
-        var existing = Requests.Select((value, index) => (value, index)).FirstOrDefault(item => item.value.Id == request.Id);
-        if (existing.value is not null)
+        var rawIndex = _rawRequests.FindIndex(r => r.Id == request.Id);
+        if (rawIndex >= 0)
         {
-            Requests[existing.index] = request;
+            _rawRequests[rawIndex] = request;
         }
         else
         {
-            Requests.Insert(0, request);
+            _rawRequests.Insert(0, request);
         }
+        ApplyLocalFilter();
+    }
+
+    private void ApplyLocalFilter()
+    {
+        Requests.Clear();
+        var query = _rawRequests.AsEnumerable();
+        if (!string.IsNullOrWhiteSpace(SearchText))
+        {
+            var term = SearchText.Trim();
+            query = query.Where(r =>
+                r.Applicant.DisplayName.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                (r.Message != null && r.Message.Contains(term, StringComparison.OrdinalIgnoreCase)));
+        }
+
+        foreach (var r in query)
+        {
+            Requests.Add(r);
+        }
+
+        OnPropertyChanged(nameof(HasNoRequests));
     }
 
     private IReadOnlyList<string> ParseRequiredFields() => RequiredFields
@@ -304,11 +393,15 @@ public sealed partial class HalaqaRegistrationRequestsViewModel : ObservableObje
 
     private void NotifyCommands()
     {
+        OnPropertyChanged(nameof(IsPendingState));
+        OnPropertyChanged(nameof(IsAcceptedState));
+        OnPropertyChanged(nameof(HasNoRequests));
         LoadCommand.NotifyCanExecuteChanged();
         ApplyFilterCommand.NotifyCanExecuteChanged();
         LoadNextPageCommand.NotifyCanExecuteChanged();
         LoadPreviousPageCommand.NotifyCanExecuteChanged();
         AcceptCommand.NotifyCanExecuteChanged();
+        AssignToHalaqaCommand.NotifyCanExecuteChanged();
         RejectCommand.NotifyCanExecuteChanged();
         RequestCompletionCommand.NotifyCanExecuteChanged();
         BackCommand.NotifyCanExecuteChanged();

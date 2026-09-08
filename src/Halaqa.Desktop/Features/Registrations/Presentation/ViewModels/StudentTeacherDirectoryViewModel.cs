@@ -1,4 +1,4 @@
-﻿using System.Collections.ObjectModel;
+using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using Halaqa.Desktop.Features.Profile.Domain.Entities;
@@ -14,20 +14,24 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
     private readonly ListAvailableTeachersUseCase _listTeachersUseCase;
     private readonly CreateStudentRegistrationRequestUseCase _createRequestUseCase;
     private readonly GetCurrentStudentProfileUseCase _getCurrentStudentProfileUseCase;
+    private readonly ListMyRegistrationRequestsUseCase? _listRequestsUseCase;
     private Guid _clientOperationId = Guid.NewGuid();
     private StudentProfile? _currentProfile;
 
     public StudentTeacherDirectoryViewModel(
         ListAvailableTeachersUseCase listTeachersUseCase,
         CreateStudentRegistrationRequestUseCase createRequestUseCase,
-        GetCurrentStudentProfileUseCase getCurrentStudentProfileUseCase)
+        GetCurrentStudentProfileUseCase getCurrentStudentProfileUseCase,
+        ListMyRegistrationRequestsUseCase? listRequestsUseCase = null)
     {
         _listTeachersUseCase = listTeachersUseCase;
         _createRequestUseCase = createRequestUseCase;
         _getCurrentStudentProfileUseCase = getCurrentStudentProfileUseCase;
+        _listRequestsUseCase = listRequestsUseCase;
     }
 
     public ObservableCollection<AvailableTeacher> Teachers { get; } = new();
+    public ObservableCollection<AvailableTeacher> DisplayedTeachers { get; } = new();
     public IReadOnlyList<PublicHalaqa> PublicHalaqas => SelectedTeacher?.PublicHalaqas ?? Array.Empty<PublicHalaqa>();
 
     [ObservableProperty] private AvailableTeacher? _selectedTeacher;
@@ -44,14 +48,35 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
     [ObservableProperty] private string? _searchError;
     [ObservableProperty] private string? _messageTextError;
     [ObservableProperty] private string? _profileError;
+    [ObservableProperty] private bool _isTeacherProfileDialogOpen;
+    [ObservableProperty] private bool _isSubmitRequestDialogOpen;
+    [ObservableProperty] private bool _hasActiveRequest;
+    [ObservableProperty] private string? _activeRequestSummary;
+    [ObservableProperty] private bool _isProfileComplete = true;
+    [ObservableProperty] private string? _profileIncompleteWarning;
+    [ObservableProperty] private string _selectedFilterTab = "All";
+
+    public IReadOnlyList<Halaqa.Desktop.Shared.Presentation.Models.LocalizedOption<string>> FilterOptions { get; } = new[]
+    {
+        new Halaqa.Desktop.Shared.Presentation.Models.LocalizedOption<string>("All", "جميع المعلمين"),
+        new Halaqa.Desktop.Shared.Presentation.Models.LocalizedOption<string>("AvailableCapacity", "مقاعد شاغرة فقط")
+    };
+
+    partial void OnSelectedFilterTabChanged(string value)
+    {
+        ApplyTeacherFilter();
+    }
+
+    public bool HasNoTeachers => !IsBusy && DisplayedTeachers.Count == 0;
+    public bool HasTeachers => !IsBusy && DisplayedTeachers.Count > 0;
 
     public string RequestTitle => SelectedTeacher is null
-        ? "اختر معلماً لبدء طلب التسجيل"
+        ? "تقديم طلب تسجيل جديد"
         : $"طلب تسجيل موجّه إلى {SelectedTeacher.DisplayName}";
 
     public string ProfileReadiness => _currentProfile is null
-        ? "لم تُحمّل بيانات ملفك بعد."
-        : "ستُرسل بيانات ملفك المحدثة مع الطلب دون تخزين محلي.";
+        ? "جاري مزامنة بيانات ملفك..."
+        : "ستُرسل بيانات ملفك المحدثة مع الطلب لدراستها وقبولك في الحلقة.";
 
     public event EventHandler? BackRequested;
     public event EventHandler? MyRequestsRequested;
@@ -59,6 +84,7 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
     public void Initialize()
     {
         Teachers.Clear();
+        DisplayedTeachers.Clear();
         SelectedTeacher = null;
         SelectedHalaqa = null;
         SearchText = null;
@@ -69,9 +95,17 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
         Total = 0;
         _currentProfile = null;
         _clientOperationId = Guid.NewGuid();
+        IsTeacherProfileDialogOpen = false;
+        IsSubmitRequestDialogOpen = false;
+        HasActiveRequest = false;
+        ActiveRequestSummary = null;
+        IsProfileComplete = true;
+        ProfileIncompleteWarning = null;
+        SelectedFilterTab = "All";
         ClearFeedback();
         OnPropertyChanged(nameof(ProfileReadiness));
         NotifyCommands();
+        NotifyStateChanges();
     }
 
     [RelayCommand(CanExecute = nameof(CanLoad))]
@@ -98,8 +132,55 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
         }
     }
 
+    [RelayCommand]
+    private void SelectFilterTab(string tab)
+    {
+        if (SelectedFilterTab == tab)
+        {
+            ApplyTeacherFilter();
+        }
+        else
+        {
+            SelectedFilterTab = tab;
+        }
+    }
+
+    [RelayCommand]
+    private void OpenTeacherProfile(AvailableTeacher? teacher)
+    {
+        if (teacher is null) return;
+        SelectedTeacher = teacher;
+        IsTeacherProfileDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseTeacherProfileDialog()
+    {
+        IsTeacherProfileDialogOpen = false;
+    }
+
+    [RelayCommand]
+    private void OpenSubmitRequest(AvailableTeacher? teacher)
+    {
+        var target = teacher ?? SelectedTeacher;
+        if (target is null) return;
+        SelectedTeacher = target;
+        SelectedHalaqa = null;
+        MessageText = null;
+        ClearFeedback();
+        IsTeacherProfileDialogOpen = false;
+        IsSubmitRequestDialogOpen = true;
+    }
+
+    [RelayCommand]
+    private void CloseSubmitRequestDialog()
+    {
+        ClearFeedback();
+        IsSubmitRequestDialogOpen = false;
+    }
+
     [RelayCommand(CanExecute = nameof(CanLoad))]
-    private async Task RefreshProfileAsync()
+    public async Task RefreshProfileAsync()
     {
         IsBusy = true;
         ClearFeedback();
@@ -113,7 +194,7 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
             }
 
             _currentProfile = result.Value;
-            Message = "حُمّلت بيانات ملفك لتجهيز طلب التسجيل.";
+            ValidateProfileCompleteness(_currentProfile);
             OnPropertyChanged(nameof(ProfileReadiness));
         }
         finally
@@ -150,7 +231,11 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
 
             MessageText = null;
             _clientOperationId = Guid.NewGuid();
-            Message = "تم تقديم طلب التسجيل. راجع حالته بعد أن يعالج الخادم الطلب.";
+            Message = "تم تقديم طلب التسجيل بنجاح.";
+            IsSubmitRequestDialogOpen = false;
+            HasActiveRequest = true;
+            ActiveRequestSummary = "تم تقديم طلب التسجيل بنجاح وهو قيد المعالجة حالياً.";
+            MyRequestsRequested?.Invoke(this, EventArgs.Empty);
         }
         finally
         {
@@ -176,7 +261,7 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
     partial void OnMessageTextChanged(string? value) => SubmitCommand.NotifyCanExecuteChanged();
 
     private bool CanLoad() => !IsBusy;
-    private bool CanSubmit() => !IsBusy && SelectedTeacher is not null;
+    private bool CanSubmit() => !IsBusy && SelectedTeacher is not null && !HasActiveRequest;
     private bool CanNavigateBack() => !IsBusy;
 
     private async Task LoadPageAsync(int page)
@@ -185,6 +270,42 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
         ClearFeedback();
         try
         {
+            // 1. Auto-load profile if not loaded
+            if (_currentProfile is null)
+            {
+                var profileResult = await _getCurrentStudentProfileUseCase.ExecuteAsync();
+                if (profileResult.IsSuccess && profileResult.Value is not null)
+                {
+                    _currentProfile = profileResult.Value;
+                    ValidateProfileCompleteness(_currentProfile);
+                    OnPropertyChanged(nameof(ProfileReadiness));
+                }
+            }
+
+            // 2. Check active requests
+            if (_listRequestsUseCase is not null)
+            {
+                var requestsResult = await _listRequestsUseCase.ExecuteAsync(null, 1);
+                if (requestsResult.IsSuccess && requestsResult.Value is not null)
+                {
+                    var active = requestsResult.Value.Requests.FirstOrDefault(r =>
+                        r.State == RegistrationState.Pending || r.State == RegistrationState.CompletionRequested);
+                    if (active is not null)
+                    {
+                        HasActiveRequest = true;
+                        ActiveRequestSummary = active.State == RegistrationState.Pending
+                            ? "لديك طلب تسجيل مفتوح حالياً قيد المراجعة لدى المعلم."
+                            : "لديك طلب تسجيل بانتظار استكمال البيانات.";
+                    }
+                    else
+                    {
+                        HasActiveRequest = false;
+                        ActiveRequestSummary = null;
+                    }
+                }
+            }
+
+            // 3. Load teachers
             var result = await _listTeachersUseCase.ExecuteAsync(TeacherCode, SearchText, page);
             if (!result.IsSuccess || result.Value is null)
             {
@@ -200,12 +321,56 @@ public sealed partial class StudentTeacherDirectoryViewModel : ObservableObject
             CurrentPage = result.Value.CurrentPage;
             LastPage = result.Value.LastPage;
             Total = result.Value.Total;
-            SelectedTeacher = null;
+            ApplyTeacherFilter();
         }
         finally
         {
             IsBusy = false;
             NotifyCommands();
+            NotifyStateChanges();
+        }
+    }
+
+    private void ApplyTeacherFilter()
+    {
+        DisplayedTeachers.Clear();
+        var query = Teachers.AsEnumerable();
+        if (SelectedFilterTab == "AvailableCapacity")
+        {
+            query = query.Where(t => t.CapacityAvailable);
+        }
+        foreach (var t in query)
+        {
+            DisplayedTeachers.Add(t);
+        }
+        NotifyStateChanges();
+    }
+
+    partial void OnIsBusyChanged(bool value)
+    {
+        NotifyStateChanges();
+    }
+
+    private void NotifyStateChanges()
+    {
+        OnPropertyChanged(nameof(HasNoTeachers));
+        OnPropertyChanged(nameof(HasTeachers));
+    }
+
+    private void ValidateProfileCompleteness(StudentProfile profile)
+    {
+        var attendance = profile.AttendancePreferences ?? profile.FollowUpPlan?.AttendancePreferences;
+        if (profile.BirthDate is null || string.IsNullOrWhiteSpace(profile.Country) ||
+            string.IsNullOrWhiteSpace(profile.City) || string.IsNullOrWhiteSpace(profile.Phone) ||
+            string.IsNullOrWhiteSpace(profile.PhoneZone) || attendance is null || profile.FollowUpPlan is null)
+        {
+            IsProfileComplete = false;
+            ProfileIncompleteWarning = "بيانات ملفك الشخصي تحتاج استكمالاً (تاريخ الميلاد، الدولة، المدينة، الهاتف، وتفضيلات الحضور). يرجى استكمالها في ملفك الشخصي لتجنب رفض الطلب.";
+        }
+        else
+        {
+            IsProfileComplete = true;
+            ProfileIncompleteWarning = null;
         }
     }
 

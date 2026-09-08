@@ -1,4 +1,4 @@
-﻿﻿using System.Collections.Concurrent;
+using System.Collections.Concurrent;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Documents;
@@ -37,6 +37,26 @@ public sealed class InteractiveQuranCanvas : ContentControl
         typeof(int),
         typeof(InteractiveQuranCanvas),
         new FrameworkPropertyMetadata(0, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+    public static readonly DependencyProperty IsReadOnlyProperty = DependencyProperty.Register(
+        nameof(IsReadOnly),
+        typeof(bool),
+        typeof(InteractiveQuranCanvas),
+        new PropertyMetadata(false, OnIsReadOnlyChanged));
+
+    public bool IsReadOnly
+    {
+        get => (bool)GetValue(IsReadOnlyProperty);
+        set => SetValue(IsReadOnlyProperty, value);
+    }
+
+    private static void OnIsReadOnlyChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+    {
+        if (d is InteractiveQuranCanvas canvas)
+        {
+            canvas.RenderMushafPage();
+        }
+    }
 
     public QuranPage? QuranPage
     {
@@ -181,13 +201,14 @@ public sealed class InteractiveQuranCanvas : ContentControl
             {
                 FontFamily = fontFamily,
                 FontSize = 26,
-                Cursor = Cursors.Hand
+                Cursor = IsReadOnly ? Cursors.Arrow : Cursors.Hand
             };
 
             // Check mistake color for this specific character
             if (_currentMistakes.TryGetValue(currentIndex, out var mistakeType))
             {
                 ApplyMistakeColorToRun(run, mistakeType);
+                run.ToolTip = $"خطأ رُصد في التسميع: {mistakeType}";
             }
             else if (StopAyahNumber.HasValue && StopAyahNumber.Value == ayahNum)
             {
@@ -203,19 +224,22 @@ public sealed class InteractiveQuranCanvas : ContentControl
                 run.TextDecorations = null;
             }
 
-            // Attach single-word click handler
-            var capturedWordIndex = currentIndex;
-            var capturedAyahNum = ayahNum;
-            var capturedWord = wordGlyph;
-
-            run.MouseDown += (s, e) =>
+            if (!IsReadOnly)
             {
-                if (e.ChangedButton == MouseButton.Right || e.ChangedButton == MouseButton.Left)
+                // Attach single-word click handler for teacher marking
+                var capturedWordIndex = currentIndex;
+                var capturedAyahNum = ayahNum;
+                var capturedWord = wordGlyph;
+
+                run.MouseDown += (s, e) =>
                 {
-                    ShowMistakeContextMenu(run, capturedWordIndex, capturedAyahNum, capturedWord);
-                    e.Handled = true;
-                }
-            };
+                    if (e.ChangedButton == MouseButton.Right || e.ChangedButton == MouseButton.Left)
+                    {
+                        ShowMistakeContextMenu(run, capturedWordIndex, capturedAyahNum, capturedWord);
+                        e.Handled = true;
+                    }
+                };
+            }
 
             _textBlock.Inlines.Add(run);
         }
@@ -285,12 +309,37 @@ public sealed class InteractiveQuranCanvas : ContentControl
 
     private static void ApplyMistakeColorToRun(Run run, string mistakeType)
     {
-        // Keep every word on the same page background. An error is identified only
-        // by black, bold text and an underline; its type remains available in the
-        // context menu and in the recorded mistake payload.
-        run.Background = Brushes.Transparent;
-        run.Foreground = Brushes.Black;
+        var (fg, bg) = mistakeType switch
+        {
+            "حفظ" => (Color.FromRgb(180, 20, 20), Color.FromArgb(0x35, 0xDC, 0x35, 0x45)),
+            "تجويد" => (Color.FromRgb(200, 80, 0), Color.FromArgb(0x35, 0xFF, 0x98, 0x00)),
+            "تشكيل" => (Color.FromRgb(180, 110, 0), Color.FromArgb(0x35, 0xFF, 0xC1, 0x07)),
+            "تنبيه" => (Color.FromRgb(20, 100, 180), Color.FromArgb(0x35, 0x21, 0x96, 0xF3)),
+            _ => (Color.FromRgb(180, 20, 20), Color.FromArgb(0x35, 0xDC, 0x35, 0x45))
+        };
+
+        run.Background = new SolidColorBrush(bg);
+        run.Foreground = new SolidColorBrush(fg);
         run.FontWeight = FontWeights.Bold;
         run.TextDecorations = TextDecorations.Underline;
+    }
+
+    public static void RegisterStudentMistake(Guid studentId, int pageNumber, int wordIndex, string mistakeType)
+    {
+        if (studentId == Guid.Empty) return;
+        var pageDict = StudentPageMistakes.GetOrAdd(studentId, _ => new Dictionary<int, Dictionary<int, string>>());
+        if (!pageDict.TryGetValue(pageNumber, out var mistakes))
+        {
+            mistakes = new Dictionary<int, string>();
+            pageDict[pageNumber] = mistakes;
+        }
+        mistakes[wordIndex] = mistakeType;
+    }
+
+    public static void SetStudentPageMistakes(Guid studentId, int pageNumber, Dictionary<int, string> pageMistakes)
+    {
+        if (studentId == Guid.Empty) return;
+        var pageDict = StudentPageMistakes.GetOrAdd(studentId, _ => new Dictionary<int, Dictionary<int, string>>());
+        pageDict[pageNumber] = new Dictionary<int, string>(pageMistakes);
     }
 }

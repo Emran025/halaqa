@@ -10,9 +10,23 @@ internal sealed record RegistrationApplicantDto(
     [property: JsonPropertyName("submitted_at")] DateTimeOffset SubmittedAt,
     [property: JsonPropertyName("sensitive_fields_hidden")] bool SensitiveFieldsHidden);
 
+internal sealed record RequestedTeacherSummaryDto(
+    [property: JsonPropertyName("id")] Guid Id,
+    [property: JsonPropertyName("display_name")] string DisplayName,
+    [property: JsonPropertyName("teacher_code")] string? TeacherCode,
+    [property: JsonPropertyName("avatar")] string? Avatar,
+    [property: JsonPropertyName("qualification")] string? Qualification);
+
+internal sealed record RequestedHalaqaSummaryDto(
+    [property: JsonPropertyName("id")] Guid Id,
+    [property: JsonPropertyName("name")] string Name);
+
 internal sealed record RegistrationRequestDto(
     [property: JsonPropertyName("id")] Guid Id,
     [property: JsonPropertyName("student_summary")] RegistrationApplicantDto StudentSummary,
+    [property: JsonPropertyName("requested_teacher")] RequestedTeacherSummaryDto? RequestedTeacher,
+    [property: JsonPropertyName("requested_halaqa")] RequestedHalaqaSummaryDto? RequestedHalaqa,
+    [property: JsonPropertyName("teacher_code")] string? TeacherCode,
     [property: JsonPropertyName("state")] string State,
     [property: JsonPropertyName("visibility")] string Visibility,
     [property: JsonPropertyName("message")] string? Message,

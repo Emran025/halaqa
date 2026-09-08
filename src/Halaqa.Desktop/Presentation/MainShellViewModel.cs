@@ -15,6 +15,8 @@ using Halaqa.Desktop.Features.Profile.Domain.Entities;
 using Halaqa.Desktop.Features.Progress.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Quran.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Profile.Presentation.ViewModels;
+using Halaqa.Desktop.Features.Registrations.Domain.Entities;
+using Halaqa.Desktop.Features.Registrations.Domain.UseCases;
 using Halaqa.Desktop.Features.Registrations.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Sessions.Domain.Entities;
 using Halaqa.Desktop.Features.TeacherDocuments.Presentation.ViewModels;
@@ -56,6 +58,7 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly StudentProgressViewModel _studentProgressViewModel;
     private readonly RestoreSessionUseCase _restoreSessionUseCase;
     private readonly LogoutUseCase _logoutUseCase;
+    private readonly ListMyRegistrationRequestsUseCase _listMyRegistrationRequestsUseCase;
     private AuthenticatedUser? _authenticatedUser;
 
     [ObservableProperty]
@@ -107,7 +110,8 @@ public sealed partial class MainShellViewModel : ObservableObject
         TaskNotesViewModel taskNotesViewModel,
         StudentProgressViewModel studentProgressViewModel,
         RestoreSessionUseCase restoreSessionUseCase,
-        LogoutUseCase logoutUseCase)
+        LogoutUseCase logoutUseCase,
+        ListMyRegistrationRequestsUseCase listMyRegistrationRequestsUseCase)
     {
         _loginViewModel = loginViewModel;
         _studentRegistrationViewModel = studentRegistrationViewModel;
@@ -140,6 +144,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _studentProgressViewModel = studentProgressViewModel;
         _restoreSessionUseCase = restoreSessionUseCase;
         _logoutUseCase = logoutUseCase;
+        _listMyRegistrationRequestsUseCase = listMyRegistrationRequestsUseCase;
 
         _comprehensiveTrackingViewModel.BackRequested += (_, _) => ShowDashboard();
         _comprehensiveTrackingViewModel.RecitationRequested += async (_, args) =>
@@ -214,7 +219,8 @@ public sealed partial class MainShellViewModel : ObservableObject
         _teacherApplicationInboxViewModel.BackRequested += (_, _) => ShowDashboard();
         _studentTeacherDirectoryViewModel.BackRequested += (_, _) => ShowDashboard();
         _studentTeacherDirectoryViewModel.MyRequestsRequested += async (_, _) => await ShowStudentRegistrationRequestsAsync();
-        _studentRegistrationRequestsViewModel.BackRequested += (_, _) => CurrentPage = _studentTeacherDirectoryViewModel;
+        _studentRegistrationRequestsViewModel.BackRequested += (_, _) => ShowDashboard();
+        _studentRegistrationRequestsViewModel.SearchTeachersRequested += async (_, _) => await ShowStudentTeacherDirectoryAsync(forceSearch: true);
         _followUpViewModel.BackRequested += (_, _) => ShowDashboard();
         _quranReaderViewModel.BackRequested += (_, _) => ShowDashboard();
         _notificationsViewModel.BackRequested += (_, _) => ShowDashboard();
@@ -261,6 +267,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         dashboardViewModel.ComprehensiveTrackingRequested += async (_, _) => await ShowComprehensiveTrackingAsync();
         dashboardViewModel.ProfileRequested += async (_, _) => await ShowProfileAsync();
         dashboardViewModel.StudentProfileRequested += async (_, _) => await ShowStudentProfileAsync();
+        dashboardViewModel.TeacherProfileRequested += async (_, _) => await ShowTeacherProfileAsync();
         dashboardViewModel.TeacherDocumentsRequested += async (_, _) => await ShowTeacherDocumentsAsync();
         dashboardViewModel.HalaqasRequested += async (_, _) => await ShowHalaqasAsync();
         dashboardViewModel.StudentsRequested += async (_, _) => await ShowStudentsAsync();
@@ -324,6 +331,10 @@ public sealed partial class MainShellViewModel : ObservableObject
 
     private async Task ShowStudentProfileAsync()
     {
+        if (_authenticatedUser is not null)
+        {
+            _studentProfileViewModel.Initialize(_authenticatedUser.User.Name, _authenticatedUser.User.Email);
+        }
         CurrentPage = _studentProfileViewModel;
         await _studentProfileViewModel.LoadCommand.ExecuteAsync(null);
     }
@@ -421,7 +432,12 @@ public sealed partial class MainShellViewModel : ObservableObject
 
     private async Task ShowQuranReaderAsync()
     {
-        _quranReaderViewModel.Initialize();
+        if (_authenticatedUser?.User.Role != UserRole.Student)
+        {
+            return;
+        }
+
+        _quranReaderViewModel.Initialize(_authenticatedUser.User.Id, _authenticatedUser.User.Role);
         CurrentPage = _quranReaderViewModel;
         await _quranReaderViewModel.LoadPageCommand.ExecuteAsync(null);
     }
@@ -450,8 +466,19 @@ public sealed partial class MainShellViewModel : ObservableObject
         await _studentProgressViewModel.LoadCommand.ExecuteAsync(null);
     }
 
-    private async Task ShowStudentTeacherDirectoryAsync()
+    private async Task ShowStudentTeacherDirectoryAsync(bool forceSearch = false)
     {
+        if (!forceSearch)
+        {
+            var requestsResult = await _listMyRegistrationRequestsUseCase.ExecuteAsync(null, 1);
+            if (requestsResult.IsSuccess && requestsResult.Value?.Requests.Any(r =>
+                r.State == RegistrationState.Pending || r.State == RegistrationState.CompletionRequested) == true)
+            {
+                await ShowStudentRegistrationRequestsAsync();
+                return;
+            }
+        }
+
         _studentTeacherDirectoryViewModel.Initialize();
         CurrentPage = _studentTeacherDirectoryViewModel;
         await _studentTeacherDirectoryViewModel.LoadCommand.ExecuteAsync(null);

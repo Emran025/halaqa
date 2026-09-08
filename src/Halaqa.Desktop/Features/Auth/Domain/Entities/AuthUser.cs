@@ -18,3 +18,10 @@ public sealed record AuthenticatedUser(
     AuthUser User,
     string AccessToken,
     DateTimeOffset ExpiresAt);
+
+public sealed record TeacherVerificationResult(
+    bool IsValid,
+    string? TeacherName,
+    string? TeacherCode,
+    string? Gender,
+    string? Message);

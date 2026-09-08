@@ -1,4 +1,4 @@
-﻿using Halaqa.Desktop.Config.Persistence;
+using Halaqa.Desktop.Config.Persistence;
 using Halaqa.Desktop.Features.Auth.Data.DataSources.Remote;
 using Halaqa.Desktop.Features.Auth.Data.Mappers;
 using Halaqa.Desktop.Features.Auth.Data.Models;
@@ -67,6 +67,23 @@ internal sealed class AuthRepository : IAuthRepository
         string passwordConfirmation,
         CancellationToken cancellationToken = default) =>
         remoteDataSource.ChangePasswordAsync(new ChangePasswordRequestDto(currentPassword, password, passwordConfirmation), cancellationToken);
+
+    public async Task<Result<TeacherVerificationResult>> VerifyTeacherCodeAsync(string teacherCode, CancellationToken cancellationToken = default)
+    {
+        var result = await remoteDataSource.VerifyTeacherCodeAsync(teacherCode, cancellationToken);
+        if (!result.IsSuccess || result.Value is null)
+        {
+            return Result<TeacherVerificationResult>.Failure(result.Error ?? new AppError(AppErrorKind.Validation, "معرف المعلم غير صحيح أو غير مسجل."));
+        }
+
+        var dto = result.Value;
+        return Result<TeacherVerificationResult>.Success(new TeacherVerificationResult(
+            dto.Valid,
+            dto.Teacher?.Name,
+            dto.Teacher?.TeacherCode,
+            dto.Teacher?.Gender,
+            dto.Message));
+    }
 
     public async Task<Result> LogoutAsync(CancellationToken cancellationToken = default)
     {

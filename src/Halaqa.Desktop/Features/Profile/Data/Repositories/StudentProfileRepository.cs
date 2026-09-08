@@ -1,4 +1,4 @@
-﻿using Halaqa.Desktop.Features.Profile.Data.DataSources.Remote;
+using Halaqa.Desktop.Features.Profile.Data.DataSources.Remote;
 using Halaqa.Desktop.Features.Profile.Data.Mappers;
 using Halaqa.Desktop.Features.Profile.Data.Models;
 using Halaqa.Desktop.Features.Profile.Domain.Entities;
@@ -28,6 +28,12 @@ internal sealed class StudentProfileRepository : IStudentProfileRepository
     public async Task<Result<StudentProfile>> GetCurrentAsync(CancellationToken cancellationToken = default)
     {
         var result = await remoteDataSource.GetCurrentAsync(cancellationToken);
+        return MapResponse(result);
+    }
+
+    public async Task<Result<StudentProfile>> GetByIdAsync(Guid studentId, CancellationToken cancellationToken = default)
+    {
+        var result = await remoteDataSource.GetByIdAsync(studentId, cancellationToken);
         return MapResponse(result);
     }
 

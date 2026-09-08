@@ -4,6 +4,7 @@
     <SolidColorBrush x:Key="AppCanvasBrush" Color="#FFF5F7F9" />
     <SolidColorBrush x:Key="AppSurfaceBrush" Color="#FFFFFFFF" />
     <SolidColorBrush x:Key="AppSurfaceMutedBrush" Color="#FFF0F3F5" />
+    <SolidColorBrush x:Key="AppPanelBrush" Color="#FFF0F3F5" />
     <SolidColorBrush x:Key="AppBorderBrush" Color="#FFC3CDD6" />
     <SolidColorBrush x:Key="AppInkBrush" Color="#FF111827" />
     <SolidColorBrush x:Key="AppMutedInkBrush" Color="#FF26313B" />
