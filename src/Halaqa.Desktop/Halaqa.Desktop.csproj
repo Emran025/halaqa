@@ -31,14 +31,15 @@
     <Content Include="Assets\Data\countries.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Assets\Fonts\*.ttf">
+    <None Update="Assets\Fonts\*.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Assets\Fonts\QuranPages\*.ttf">
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </None>
+    <None Update="Assets\Fonts\QuranPages\*.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
+      <CopyToPublishDirectory>Always</CopyToPublishDirectory>
+    </None>
     <Resource Include="Assets\Fonts\*.ttf" />
-    <Resource Include="Assets\Fonts\QuranPages\*.ttf" />
     <Resource Include="Assets\Brand\*.png" />
     <Resource Include="Assets\Brand\*.ico" />
     <Resource Include="Assets\Flags\*.png" />

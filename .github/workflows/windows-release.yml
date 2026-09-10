@@ -121,6 +121,17 @@ jobs:
             throw "The expected executable was not produced for ${{ matrix.runtime }}."
           }
 
+          $sourceFonts = @(Get-ChildItem 'src/Halaqa.Desktop/Assets/Fonts/QuranPages' -Filter '*.ttf')
+          $publishedFonts = @(Get-ChildItem (Join-Path $output 'Assets/Fonts/QuranPages') -Filter '*.ttf' -ErrorAction Stop)
+          if ($publishedFonts.Count -ne $sourceFonts.Count) {
+            throw "Quran font verification failed: expected $($sourceFonts.Count), published $($publishedFonts.Count)."
+          }
+          foreach ($required in @('Cairo-VariableFont_slnt,wght.ttf', 'UthmanicHafs_V20.ttf')) {
+            if (-not (Test-Path (Join-Path $output "Assets/Fonts/$required"))) {
+              throw "Required application font is missing from publish output: $required"
+            }
+          }
+
       - name: Package and checksum
         shell: pwsh
         run: |

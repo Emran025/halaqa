@@ -150,6 +150,21 @@ if (Test-Path $QPagesSrc) {
     }
     $qCount = (Get-ChildItem -Path $QPagesDest -Filter "*.ttf").Count
     Write-Host "  Copied $qCount QuranPages font(s)."
+    $expectedQCount = (Get-ChildItem -Path $QPagesSrc -Filter "*.ttf").Count
+    if ($qCount -ne $expectedQCount) {
+        throw "Quran font copy verification failed: expected $expectedQCount, copied $qCount."
+    }
+}
+else {
+    throw "QuranPages source directory was not found: $QPagesSrc"
+}
+
+foreach ($requiredFont in @("Cairo-VariableFont_slnt,wght.ttf", "UthmanicHafs_V20.ttf")) {
+    $requiredSource = Join-Path $FontsSource $requiredFont
+    $requiredDest = Join-Path $FontsDest $requiredFont
+    if (-not (Test-Path $requiredSource) -or -not (Test-Path $requiredDest)) {
+        throw "Required application font is missing: $requiredFont"
+    }
 }
 Write-Host "Font copy complete." -ForegroundColor Green
 
