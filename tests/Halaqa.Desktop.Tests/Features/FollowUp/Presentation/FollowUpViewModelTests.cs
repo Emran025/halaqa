@@ -173,6 +173,9 @@ public sealed class FollowUpViewModelTests
                 1, 1, 20, 1)));
         }
 
+        public Task<Result<IReadOnlyList<StudentHalaqaSummary>>> GetHalaqaStudentsSummaryAsync(Guid halaqaId, CancellationToken cancellationToken = default) =>
+            throw new NotImplementedException();
+
         private FollowUpPlan CreatePlan(Guid studentId) => new(
             _planId,
             studentId,

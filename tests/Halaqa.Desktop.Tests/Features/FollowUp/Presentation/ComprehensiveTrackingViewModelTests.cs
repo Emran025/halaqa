@@ -233,6 +233,7 @@ public sealed class ComprehensiveTrackingViewModelTests
         public Task<Result<FollowUpItem>> CompleteItemAsync(Guid itemId, Guid clientOperationId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result<FollowUpItem>> SkipItemAsync(Guid itemId, string reason, Guid clientOperationId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
         public Task<Result<FollowUpItem>> RescheduleItemAsync(RescheduleFollowUpItemCommand command, CancellationToken cancellationToken = default) => throw new NotImplementedException();
+        public Task<Result<IReadOnlyList<StudentHalaqaSummary>>> GetHalaqaStudentsSummaryAsync(Guid halaqaId, CancellationToken cancellationToken = default) => throw new NotImplementedException();
     }
 
     private sealed class FakeProgressRepository : IStudentProgressRepository
