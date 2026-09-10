@@ -776,6 +776,9 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     public void TagWordDirect(InteractiveQuranWord? word, string mistakeType)
     {
         if (word == null) return;
+
+        var clickedAt = DateTimeOffset.UtcNow;
+
         word.SetMistake(mistakeType);
         RecalculateMistakes();
 
@@ -786,7 +789,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         if (word.HasMistake)
             _studentMistakesIsolated[StudentId].Add((word.PageNumber, word.WordIndex, word.MistakeType!));
 
-        _ = _mushafRealtimeChannel.SendRepeatRequestAsync(new PeerRepeatRequest(SessionId, TaskId, word.AyahNumber, mistakeType));
+        _ = _mushafRealtimeChannel.SendRepeatRequestAsync(new PeerRepeatRequest(SessionId, TaskId, word.AyahNumber, mistakeType, clickedAt));
 
         OperationMessage = mistakeType == "\u0625\u0644\u063a\u0627\u0621"
             ? "\u062a\u0645 \u0625\u0632\u0627\u0644\u0629 \u0627\u0644\u062e\u0637\u0623 \u0645\u0646 \u0627\u0644\u0643\u0644\u0645\u0629."

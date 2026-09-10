@@ -23,7 +23,7 @@ public sealed class IncomingSessionPollingService : IAsyncDisposable
         TimeSpan? interval = null)
     {
         _listSessionsUseCase = listSessionsUseCase;
-        _interval = interval ?? TimeSpan.FromSeconds(6);
+        _interval = interval ?? TimeSpan.FromSeconds(2); // 2 ثانية للاستجابة الفورية
     }
 
     /// <summary>يبدأ دورة الفحص للطالب المُسجَّل دخوله.</summary>
@@ -45,8 +45,22 @@ public sealed class IncomingSessionPollingService : IAsyncDisposable
 
     private async Task PollLoopAsync(Guid? studentId, CancellationToken cancellationToken)
     {
+        // فحص فوري عند البدء — بدون انتظار الـ interval
+        try { await CheckForIncomingSessionAsync(studentId, cancellationToken); }
+        catch (OperationCanceledException) { return; }
+        catch { /* تجاهل خطأ الشبكة */ }
+
         while (!cancellationToken.IsCancellationRequested)
         {
+            try
+            {
+                await Task.Delay(_interval, cancellationToken);
+            }
+            catch (OperationCanceledException)
+            {
+                break;
+            }
+
             try
             {
                 await CheckForIncomingSessionAsync(studentId, cancellationToken);
@@ -58,15 +72,6 @@ public sealed class IncomingSessionPollingService : IAsyncDisposable
             catch
             {
                 // تجاهل أخطاء الشبكة — نعيد المحاولة في الدورة القادمة
-            }
-
-            try
-            {
-                await Task.Delay(_interval, cancellationToken);
-            }
-            catch (OperationCanceledException)
-            {
-                break;
             }
         }
     }

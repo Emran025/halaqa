@@ -63,7 +63,8 @@ public sealed record PeerRepeatRequest(
     Guid SessionId,
     Guid TaskId,
     int? AyahId,
-    string? Reason);
+    string? Reason,
+    DateTimeOffset Timestamp);
 
 public interface ILocalVideoRecorder : IDisposable, IAsyncDisposable
 {

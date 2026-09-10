@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+using System.Text.Json.Serialization;
 using Halaqa.Desktop.Features.Sessions.Domain.Entities;
 using Halaqa.Desktop.Features.Sessions.Domain.Repositories;
 
@@ -16,7 +16,8 @@ internal sealed record RepeatRequestMessageDto(
     [property: JsonPropertyName("session_id")] Guid SessionId,
     [property: JsonPropertyName("task_id")] Guid TaskId,
     [property: JsonPropertyName("ayah_id")] int? AyahId,
-    [property: JsonPropertyName("reason")] string? Reason);
+    [property: JsonPropertyName("reason")] string? Reason,
+    [property: JsonPropertyName("timestamp_utc")] long TimestampUtc);
 
 internal static class MushafRealtimeMessageFactory
 {
@@ -36,5 +37,6 @@ internal static class MushafRealtimeMessageFactory
     }
 
     public static RepeatRequestMessageDto CreateRepeatRequest(PeerRepeatRequest request) =>
-        new("guidance.request_repeat", request.SessionId, request.TaskId, request.AyahId, request.Reason);
+        new("guidance.request_repeat", request.SessionId, request.TaskId, request.AyahId, request.Reason,
+            request.Timestamp.ToUnixTimeMilliseconds());
 }

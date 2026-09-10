@@ -64,6 +64,8 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly LogoutUseCase _logoutUseCase;
     private readonly ListMyRegistrationRequestsUseCase _listMyRegistrationRequestsUseCase;
     private AuthenticatedUser? _authenticatedUser;
+    /// <summary>الصفحة التي أطلقت آخر جلسة تسميع — للعودة الصحيحة بعد انتهاء الجلسة.</summary>
+    private object? _previousSessionSourcePage;
 
     [ObservableProperty]
     private object? _currentPage;
@@ -187,25 +189,27 @@ public sealed partial class MainShellViewModel : ObservableObject
         _comprehensiveTrackingViewModel.BackRequested += (_, _) => ShowDashboard();
         _comprehensiveTrackingViewModel.RecitationRequested += async (_, args) =>
         {
+            _previousSessionSourcePage = _comprehensiveTrackingViewModel;
             await _liveSessionViewModel.InitializeForStudentAsync(args.Student, args.TaskType, args.TargetPage);
             CurrentPage = _liveSessionViewModel;
         };
         _comprehensiveTrackingViewModel.ProfileRequested += (_, student) => ShowStudentRecitationProfile(student);
         _comprehensiveTrackingViewModel.ReportsRequested += (_, student) => ShowStudentRecitationProfile(student);
 
-        _liveSessionViewModel.BackRequested += (_, _) => CurrentPage = _comprehensiveTrackingViewModel;
+        _liveSessionViewModel.BackRequested += (_, _) => CurrentPage = _previousSessionSourcePage ?? _comprehensiveTrackingViewModel;
         _liveSessionViewModel.SessionCompleted += (_, report) =>
         {
             _sessionReports.Add(report);
             _comprehensiveTrackingViewModel.MarkStudentCompleted(report);
             _studentRecitationProfileViewModel.AddReport(report);
-            CurrentPage = _comprehensiveTrackingViewModel;
+            CurrentPage = _previousSessionSourcePage ?? _comprehensiveTrackingViewModel;
         };
 
         _studentsViewModel.BackRequested += (_, _) => ShowDashboard();
         _studentsViewModel.StudentProfileRequested += (_, student) => ShowStudentRecitationProfile(student);
         _studentsViewModel.RecitationRequested += async (_, args) =>
         {
+            _previousSessionSourcePage = _studentsViewModel;
             await _liveSessionViewModel.InitializeForStudentAsync(args.Student, args.TaskType, args.TargetPage);
             CurrentPage = _liveSessionViewModel;
         };
@@ -213,6 +217,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _studentRecitationProfileViewModel.BackRequested += (_, _) => CurrentPage = _studentsViewModel;
         _studentRecitationProfileViewModel.RecitationRequested += async (_, args) =>
         {
+            _previousSessionSourcePage = _studentRecitationProfileViewModel;
             await _liveSessionViewModel.InitializeForStudentAsync(args.Student, args.TaskType, args.TargetPage);
             CurrentPage = _liveSessionViewModel;
         };
