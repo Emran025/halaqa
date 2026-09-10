@@ -121,6 +121,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     // Audio/Video control states
     [ObservableProperty] private bool _isCallActive;
     [ObservableProperty] private bool _isIndexDialogOpen;
+    [ObservableProperty] private string _selectedIndexTab = "Surahs";
     [ObservableProperty] private bool _isMushafVisibleToStudent = true;
     [ObservableProperty] private bool _isStudentMicMutedByTeacher;
     [ObservableProperty] private bool _isStudentCameraMutedByTeacher;
