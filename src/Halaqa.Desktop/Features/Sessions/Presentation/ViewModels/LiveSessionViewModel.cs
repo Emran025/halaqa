@@ -264,6 +264,58 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         }
     }
 
+    /// <summary>
+    /// يُهيّئ الجلسة من منظور الطالب عند قبوله لدعوة من المعلم.
+    /// الطالب لا ينشئ الجلسة — فقط ينضمّ إليها ويفتح قناة الاتصال.
+    /// </summary>
+    public async Task InitializeAsStudentJoinAsync(
+        Halaqa.Desktop.Features.Sessions.Domain.Entities.SessionListItem session)
+    {
+        if (!await _sessionInitializationGate.WaitAsync(0))
+            return;
+
+        try
+        {
+            SessionId   = session.Id;
+            TaskId      = Guid.Empty;
+            StudentId   = Guid.Empty;
+            StudentName = session.Student.Name;
+            HalaqaName  = "جلسة التسميع";
+            TaskType    = session.TaskType.ToString() switch
+            {
+                "Memorization" => "حفظ",
+                "Review"       => "مراجعة",
+                "Recitation"   => "تلاوة",
+                _              => session.TaskType.ToString()
+            };
+            TargetPage    = 1;
+            MistakesCount = 0;
+            StopAyahNumber = null;
+            EvaluationNotes = string.Empty;
+            EvaluationScore = 4;
+            IsEvaluationPanelOpen = false;
+            IsStudentSession = false;
+            IsCallActive = false;
+            IsIndexDialogOpen = false;
+            IsMushafVisibleToStudent = true;
+            IsStudentMicMutedByTeacher = false;
+            IsStudentCameraMutedByTeacher = false;
+            CallStatusLabel = "تم قبول الجلسة";
+            CallStatusDescription = $"انضممت إلى جلسة التسميع مع المعلم {session.Teacher.Name}. في انتظار الاتصال المباشر...";
+            CallActionButtonText = "الاتصال بالمعلم";
+            OperationMessage = CallStatusDescription;
+            SetScoreSelected(4);
+
+            await PrepareRealtimeSessionAsync();
+            await EnsureIndexLoadedAsync();
+            await LoadMushafPageAsync(TargetPage);
+        }
+        finally
+        {
+            _sessionInitializationGate.Release();
+        }
+    }
+
     private async Task<bool> EnsureOfficialSessionAndTaskAsync(int targetPage)
     {
         if (SessionId != Guid.Empty && TaskId != Guid.Empty)

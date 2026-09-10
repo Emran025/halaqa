@@ -123,6 +123,9 @@
         <DataTemplate DataType="{x:Type notificationsVm:NotificationsViewModel}">
             <notificationsViews:NotificationsView />
         </DataTemplate>
+        <DataTemplate DataType="{x:Type sessionsVm:StudentSessionsViewModel}">
+            <sessionsViews:StudentSessionsView />
+        </DataTemplate>
         <DataTemplate DataType="{x:Type sessionsVm:LiveSessionViewModel}">
             <sessionsViews:LiveSessionView />
         </DataTemplate>
@@ -191,6 +194,14 @@
             </DockPanel>
         </Border>
 
+        <!-- محتوى الصفحة الرئيسية -->
         <ContentControl Grid.Row="1" Content="{Binding CurrentPage}" />
+
+        <!-- أوفرلاي الجلسة الواردة — يظهر فوق كل شيء عند استدعاء المعلم للطالب -->
+        <Grid Grid.Row="0" Grid.RowSpan="2"
+              Visibility="{Binding IsIncomingCallVisible, Converter={StaticResource BooleanToVisibilityConverter}}">
+            <sessionsViews:IncomingSessionCallOverlay
+                DataContext="{Binding IncomingSessionCallViewModel}"/>
+        </Grid>
     </Grid>
 </Window>

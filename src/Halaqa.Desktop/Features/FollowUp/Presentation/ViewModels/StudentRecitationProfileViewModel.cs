@@ -194,7 +194,7 @@ public sealed partial class StudentRecitationProfileViewModel : ObservableObject
 
             HasLoadedProfile = true;
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             ProfileErrorMessage = "حدث خطأ أثناء تحميل البيانات الشخصية.";
         }

@@ -8,6 +8,8 @@
             <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
             <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
             <converters:QuranPageFontFamilyConverter x:Key="QuranPageFontFamilyConverter" />
+            <converters:StringToVisibilityConverter x:Key="StringToVisibilityConverter" />
+            <converters:StringToVisibilityConverter x:Key="NullToCollapsedConverter" />
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="Shared/Presentation/Themes/Colors.xaml" />
                 <ResourceDictionary Source="Shared/Presentation/Themes/Typography.xaml" />

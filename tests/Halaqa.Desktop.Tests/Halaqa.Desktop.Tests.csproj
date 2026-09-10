@@ -3,6 +3,7 @@
     <TargetFramework>net6.0-windows</TargetFramework>
     <LangVersion>10.0</LangVersion>
     <EnableWindowsTargeting>true</EnableWindowsTargeting>
+    <UseWPF>true</UseWPF>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
     <Nullable>enable</Nullable>

@@ -2,6 +2,7 @@ using Halaqa.Desktop.Features.Sessions.Data.DataSources.Remote;
 using Halaqa.Desktop.Features.Sessions.Data.Repositories;
 using Halaqa.Desktop.Features.Sessions.Domain.Repositories;
 using Halaqa.Desktop.Features.Sessions.Domain.UseCases;
+using Halaqa.Desktop.Features.Sessions.Presentation.Services;
 using Halaqa.Desktop.Features.Sessions.Presentation.Stores;
 using Halaqa.Desktop.Features.Sessions.Presentation.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +36,11 @@ public static class SessionsFeatureModule
         services.AddTransient<LiveSessionViewModel>();
         services.AddTransient<SessionsViewModel>();
         services.AddTransient<SessionTasksViewModel>();
+        // وسائل جديدة: الطالب
+        services.AddTransient<StudentSessionsViewModel>();
+        services.AddTransient<IncomingSessionCallViewModel>();
+        services.AddSingleton<IncomingSessionPollingService>();
         return services;
     }
 }
+

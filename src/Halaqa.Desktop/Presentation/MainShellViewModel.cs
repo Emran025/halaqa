@@ -19,8 +19,9 @@ using Halaqa.Desktop.Features.Registrations.Domain.Entities;
 using Halaqa.Desktop.Features.Registrations.Domain.UseCases;
 using Halaqa.Desktop.Features.Registrations.Presentation.ViewModels;
 using Halaqa.Desktop.Features.Sessions.Domain.Entities;
-using Halaqa.Desktop.Features.TeacherDocuments.Presentation.ViewModels;
+using Halaqa.Desktop.Features.Sessions.Presentation.Services;
 using Halaqa.Desktop.Features.Sessions.Presentation.ViewModels;
+using Halaqa.Desktop.Features.TeacherDocuments.Presentation.ViewModels;
 
 namespace Halaqa.Desktop.Presentation;
 
@@ -56,6 +57,9 @@ public sealed partial class MainShellViewModel : ObservableObject
     private readonly TaskEvaluationViewModel _taskEvaluationViewModel;
     private readonly TaskNotesViewModel _taskNotesViewModel;
     private readonly StudentProgressViewModel _studentProgressViewModel;
+    private readonly StudentSessionsViewModel _studentSessionsViewModel;
+    private readonly IncomingSessionCallViewModel _incomingSessionCallViewModel;
+    private readonly IncomingSessionPollingService _incomingSessionPollingService;
     private readonly RestoreSessionUseCase _restoreSessionUseCase;
     private readonly LogoutUseCase _logoutUseCase;
     private readonly ListMyRegistrationRequestsUseCase _listMyRegistrationRequestsUseCase;
@@ -66,6 +70,13 @@ public sealed partial class MainShellViewModel : ObservableObject
 
     [ObservableProperty]
     private bool _isAuthenticated;
+
+    /// <summary>يتحكم في ظهور أوفرلاي "طلب جلسة واردة" فوق الواجهة للطالب.</summary>
+    [ObservableProperty]
+    private bool _isIncomingCallVisible;
+
+    /// <summary>يُعرض للـ XAML لربط DataContext أوفرلاي الجلسة الواردة.</summary>
+    public IncomingSessionCallViewModel IncomingSessionCallViewModel => _incomingSessionCallViewModel;
 
     public bool CanGoToLogin => !IsAuthenticated && CurrentPage != null && CurrentPage != _loginViewModel;
 
@@ -109,6 +120,9 @@ public sealed partial class MainShellViewModel : ObservableObject
         TaskEvaluationViewModel taskEvaluationViewModel,
         TaskNotesViewModel taskNotesViewModel,
         StudentProgressViewModel studentProgressViewModel,
+        StudentSessionsViewModel studentSessionsViewModel,
+        IncomingSessionCallViewModel incomingSessionCallViewModel,
+        IncomingSessionPollingService incomingSessionPollingService,
         RestoreSessionUseCase restoreSessionUseCase,
         LogoutUseCase logoutUseCase,
         ListMyRegistrationRequestsUseCase listMyRegistrationRequestsUseCase)
@@ -142,9 +156,33 @@ public sealed partial class MainShellViewModel : ObservableObject
         _taskEvaluationViewModel = taskEvaluationViewModel;
         _taskNotesViewModel = taskNotesViewModel;
         _studentProgressViewModel = studentProgressViewModel;
+        _studentSessionsViewModel = studentSessionsViewModel;
+        _incomingSessionCallViewModel = incomingSessionCallViewModel;
+        _incomingSessionPollingService = incomingSessionPollingService;
         _restoreSessionUseCase = restoreSessionUseCase;
         _logoutUseCase = logoutUseCase;
         _listMyRegistrationRequestsUseCase = listMyRegistrationRequestsUseCase;
+
+        // ربط أحداث أوفرلاي الجلسة الواردة
+        _incomingSessionCallViewModel.SessionAccepted += async (_, session) =>
+        {
+            IsIncomingCallVisible = false;
+            _incomingSessionPollingService.Stop();
+            // الطالب قبل → ندخل LiveSession بدون تهيئة المعلم (الطالب لا ينشئ جلسة)
+            await _liveSessionViewModel.InitializeAsStudentJoinAsync(session);
+            CurrentPage = _liveSessionViewModel;
+        };
+        _incomingSessionCallViewModel.SessionDismissed += (_, _) =>
+        {
+            IsIncomingCallVisible = false;
+        };
+
+        // ربط أحداث خدمة الـ polling
+        _incomingSessionPollingService.SessionDetected += (_, session) =>
+        {
+            _incomingSessionCallViewModel.Show(session);
+            IsIncomingCallVisible = true;
+        };
 
         _comprehensiveTrackingViewModel.BackRequested += (_, _) => ShowDashboard();
         _comprehensiveTrackingViewModel.RecitationRequested += async (_, args) =>
@@ -234,6 +272,7 @@ public sealed partial class MainShellViewModel : ObservableObject
         _taskEvaluationViewModel.BackRequested += (_, _) => CurrentPage = _sessionTasksViewModel;
         _taskNotesViewModel.BackRequested += (_, _) => CurrentPage = _sessionTasksViewModel;
         _studentProgressViewModel.BackRequested += (_, _) => ShowDashboard();
+        _studentSessionsViewModel.BackRequested += (_, _) => ShowDashboard();
 
         CurrentPage = _loginViewModel;
     }
@@ -281,6 +320,16 @@ public sealed partial class MainShellViewModel : ObservableObject
         dashboardViewModel.SessionsRequested += async (_, _) => await ShowSessionsAsync();
         dashboardViewModel.PasswordChangeRequested += (_, _) => ShowChangePassword();
         CurrentPage = dashboardViewModel;
+
+        // إذا كان المستخدم طالباً → ابدأ polling لاكتشاف الجلسات الواردة
+        if (_authenticatedUser.User.Role == UserRole.Student)
+        {
+            _incomingSessionPollingService.Start(studentId: _authenticatedUser.User.Id);
+        }
+        else
+        {
+            _incomingSessionPollingService.Stop();
+        }
     }
 
     private async Task ShowComprehensiveTrackingAsync()
@@ -379,9 +428,20 @@ public sealed partial class MainShellViewModel : ObservableObject
 
     private async Task ShowSessionsAsync()
     {
-        _sessionsViewModel.Initialize();
-        CurrentPage = _sessionsViewModel;
-        await _sessionsViewModel.LoadCommand.ExecuteAsync(null);
+        // الطالب يرى واجهة مبسّطة للجلسات التاريخية
+        // المعلم يرى الواجهة الكاملة مع الإجراءات
+        if (_authenticatedUser?.User.Role == UserRole.Student)
+        {
+            _studentSessionsViewModel.Initialize();
+            CurrentPage = _studentSessionsViewModel;
+            await _studentSessionsViewModel.LoadCommand.ExecuteAsync(null);
+        }
+        else
+        {
+            _sessionsViewModel.Initialize();
+            CurrentPage = _sessionsViewModel;
+            await _sessionsViewModel.LoadCommand.ExecuteAsync(null);
+        }
     }
 
     private async Task ShowSessionTasksAsync(Halaqa.Desktop.Features.Sessions.Domain.Entities.SessionListItem session)

@@ -1,0 +1,134 @@
+<UserControl x:Class="Halaqa.Desktop.Features.Sessions.Presentation.Views.IncomingSessionCallOverlay"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:Halaqa.Desktop.Shared.Presentation.Controls"
+             xmlns:converters="clr-namespace:Halaqa.Desktop.Shared.Presentation.Converters"
+             FlowDirection="RightToLeft">
+
+    <UserControl.Resources>
+        <BooleanToVisibilityConverter x:Key="BooleanToVisibilityConverter" />
+        <converters:InverseBooleanConverter x:Key="InverseBooleanConverter" />
+        <converters:StringToVisibilityConverter x:Key="NullToCollapsedConverter" />
+    </UserControl.Resources>
+
+    <!-- خلفية معتمة تغطي الشاشة كاملةً -->
+    <Border Background="#CC000000">
+        <Border Background="{StaticResource AppSurfaceBrush}"
+                CornerRadius="16"
+                Width="420"
+                Padding="32,28"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Effect="{StaticResource AppSoftShadow}">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="16"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="24"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="20"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <!-- أيقونة رنين -->
+                <Border Grid.Row="0" Width="72" Height="72" CornerRadius="36"
+                        Background="#141B524A" HorizontalAlignment="Center">
+                    <controls:AppIcon Kind="PhoneInTalk" Foreground="{StaticResource AppPrimaryBrush}"
+                                      FontSize="34" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Border>
+
+                <!-- عنوان -->
+                <StackPanel Grid.Row="2" HorizontalAlignment="Center">
+                    <TextBlock Text="طلب جلسة تسميع" FontSize="18" FontWeight="Bold"
+                               Foreground="{StaticResource AppInkBrush}" HorizontalAlignment="Center"/>
+                    <TextBlock Text="المعلم يدعوك للانضمام إلى الجلسة الآن"
+                               FontSize="12" Foreground="{StaticResource AppMutedInkBrush}"
+                               HorizontalAlignment="Center" Margin="0,4,0,0"/>
+                </StackPanel>
+
+                <!-- بطاقة تفاصيل الجلسة -->
+                <Border Grid.Row="4" Background="#0A000000" CornerRadius="10" Padding="18,14">
+                    <StackPanel>
+                        <!-- اسم المعلم -->
+                        <DockPanel Margin="0,0,0,8">
+                            <controls:AppIcon Kind="AccountTie" Foreground="{StaticResource AppPrimaryBrush}"
+                                              FontSize="16" Margin="0,0,10,0"/>
+                            <TextBlock VerticalAlignment="Center">
+                                <Run Text="المعلم: " Foreground="{StaticResource AppMutedInkBrush}" FontSize="13"/>
+                                <Run Text="{Binding TeacherName}" FontWeight="Bold"
+                                     Foreground="{StaticResource AppInkBrush}" FontSize="14"/>
+                            </TextBlock>
+                        </DockPanel>
+                        <!-- نوع الجلسة -->
+                        <DockPanel>
+                            <controls:AppIcon Kind="BookOpenOutline" Foreground="{StaticResource AppPrimaryBrush}"
+                                              FontSize="16" Margin="0,0,10,0"/>
+                            <TextBlock VerticalAlignment="Center">
+                                <Run Text="نوع التسميع: " Foreground="{StaticResource AppMutedInkBrush}" FontSize="13"/>
+                                <Run Text="{Binding TaskType}" FontWeight="Bold"
+                                     Foreground="{StaticResource AppPrimaryBrush}" FontSize="14"/>
+                            </TextBlock>
+                        </DockPanel>
+                    </StackPanel>
+                </Border>
+
+                <!-- رسالة خطأ إن وُجدت -->
+                <TextBlock Grid.Row="6"
+                           Text="{Binding ErrorMessage}"
+                           Foreground="{StaticResource AppErrorBrush}"
+                           FontSize="12"
+                           TextWrapping="Wrap"
+                           HorizontalAlignment="Center"
+                           Visibility="{Binding ErrorMessage, Converter={StaticResource NullToCollapsedConverter}}"/>
+
+                <!-- أزرار القبول والرفض -->
+                <Grid Grid.Row="8">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="12"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+
+                    <!-- رفض -->
+                    <Button Grid.Column="0"
+                            Command="{Binding RejectCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}"
+                            Background="#14DC3545"
+                            Foreground="#FFDC3545"
+                            BorderBrush="#33DC3545"
+                            BorderThickness="1"
+                            Padding="0,12"
+                            Cursor="Hand">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <controls:AppIcon Kind="PhoneOff" FontSize="16" Margin="0,0,6,0"/>
+                            <TextBlock Text="رفض" FontWeight="Bold" FontSize="14"/>
+                        </StackPanel>
+                    </Button>
+
+                    <!-- قبول -->
+                    <Button Grid.Column="2"
+                            Command="{Binding AcceptCommand}"
+                            IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBooleanConverter}}"
+                            Background="#FF1F7A4D"
+                            Foreground="White"
+                            BorderThickness="0"
+                            Padding="0,12"
+                            Cursor="Hand">
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <controls:AppIcon Kind="Phone" Foreground="White" FontSize="16" Margin="0,0,6,0"/>
+                            <TextBlock Text="دخول الجلسة" FontWeight="Bold" FontSize="14" Foreground="White"/>
+                        </StackPanel>
+                    </Button>
+                </Grid>
+
+                <!-- مؤشر تحميل -->
+                <ProgressBar Grid.Row="8" IsIndeterminate="True" Height="2" VerticalAlignment="Bottom" Margin="0,0,0,-4"
+                             Visibility="{Binding IsBusy, Converter={StaticResource BooleanToVisibilityConverter}}"/>
+            </Grid>
+        </Border>
+    </Border>
+</UserControl>
+
