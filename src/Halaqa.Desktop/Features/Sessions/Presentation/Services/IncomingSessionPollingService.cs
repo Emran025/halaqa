@@ -7,13 +7,18 @@ namespace Halaqa.Desktop.Features.Sessions.Presentation.Services;
 /// تتحقق هذه الخدمة دورياً من وجود جلسات "مطلوبة" (Requested) للطالب الحالي.
 /// عند اكتشاف جلسة جديدة تُطلَق SessionDetected ليعرضها الشل كأوفرلاي فوري.
 /// </summary>
-public sealed class IncomingSessionPollingService : IAsyncDisposable
+public sealed class IncomingSessionPollingService : IDisposable, IAsyncDisposable
 {
     private readonly ListSessionsUseCase _listSessionsUseCase;
     private readonly TimeSpan _interval;
     private CancellationTokenSource? _cts;
     private Task? _pollingTask;
     private Guid _lastSeenSessionId = Guid.Empty;
+
+    public void Dispose()
+    {
+        Stop();
+    }
 
     /// <summary>يُطلَق عند اكتشاف جلسة "Requested" جديدة لم يرها الطالب بعد.</summary>
     public event EventHandler<SessionListItem>? SessionDetected;

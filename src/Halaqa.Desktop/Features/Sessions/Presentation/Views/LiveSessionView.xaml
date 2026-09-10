@@ -86,8 +86,8 @@
                 </StackPanel>
 
                 <!-- Connection indicator -->
-                <Border DockPanel.Dock="Left" Background="#1200796B" CornerRadius="4" Padding="10,3" VerticalAlignment="Center" Margin="12,0,0,0">
-                    <TextBlock Text="{Binding ConnectionLabel}" Foreground="{StaticResource AppInfoBrush}" FontSize="11" />
+                <Border DockPanel.Dock="Left" Background="{Binding ConnectionBadgeBackground}" CornerRadius="4" Padding="10,3" VerticalAlignment="Center" Margin="12,0,0,0">
+                    <TextBlock Text="{Binding ConnectionLabel}" Foreground="{Binding ConnectionBadgeForeground}" FontSize="11" FontWeight="Bold" />
                 </Border>
             </DockPanel>
         </Border>

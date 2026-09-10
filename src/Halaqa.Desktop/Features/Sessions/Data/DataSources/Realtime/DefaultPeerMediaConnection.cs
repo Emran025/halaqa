@@ -10,7 +10,7 @@ public sealed class DefaultPeerMediaConnection : IPeerMediaConnection
 
     public Task InitializeAsync(RealtimeSessionConfig config, CancellationToken cancellationToken = default)
     {
-        StateChanged?.Invoke(this, new PeerConnectionStateChangedEventArgs(LiveSessionState.DirectConnectionUnavailable, "ط§ظ„ط§طھطµط§ظ„ ط§ظ„ظ…ط¨ط§ط´ط± ط¬ط§ظ‡ط² ظ„ظ„طھظپط§ظˆط¶."));
+        StateChanged?.Invoke(this, new PeerConnectionStateChangedEventArgs(LiveSessionState.Negotiating, "الاتصال المباشر جاهز للتفاوض."));
         return Task.CompletedTask;
     }
 

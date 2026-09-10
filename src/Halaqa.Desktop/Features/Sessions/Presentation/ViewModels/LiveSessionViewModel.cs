@@ -92,6 +92,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     private Halaqa.Desktop.Features.FollowUp.Domain.Entities.StudentFollowUpSummary? _currentStudent;
     private SessionTaskType _requestedTaskType;
     private bool _callOperationInProgress;
+    private CancellationTokenSource? _sessionMonitorCts;
 
     [ObservableProperty] private Guid _sessionId;
     [ObservableProperty] private Guid _taskId;
@@ -110,26 +111,24 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     [ObservableProperty] private string? _quranMessage;
     [ObservableProperty] private string _currentSurahName = "\u0633\u0648\u0631\u0629 \u0627\u0644\u0641\u0627\u062a\u062d\u0629";
     [ObservableProperty] private string _currentJuzText = "\u0627\u0644\u062c\u0632\u0621 \u0627\u0644\u0623\u0648\u0644";
-    [ObservableProperty] private string _callStatusLabel = "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0627\u0644\u0631\u062f \u0639\u0644\u0649 \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629";
-    [ObservableProperty] private string _callStatusDescription = "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0642\u0628\u0648\u0644 \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629 \u0645\u0646 \u0627\u0644\u0637\u0627\u0644\u0628...";
+    [ObservableProperty] private string _callStatusLabel = "\u063a\u064a\u0631 \u0645\u062a\u0627\u062d \u0644\u0644\u0627\u062a\u0635\u0627\u0644";
+    [ObservableProperty] private string _callStatusDescription = "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0627\u0646\u0636\u0645\u0627\u0645 \u0627\u0644\u0637\u0627\u0644\u0628 \u0644\u0644\u062c\u0644\u0633\u0629...";
     [ObservableProperty] private string _callActionButtonText = "\u0637\u0644\u0628 \u0627\u062a\u0635\u0627\u0644 \u0645\u0628\u0627\u0634\u0631";
-    [ObservableProperty] private bool _isCallActive;
 
-    // Teacher Direct Controls over Student & Quran
+    public bool HasQuranError => !string.IsNullOrEmpty(QuranMessage);
+
+    // Audio/Video control states
+    [ObservableProperty] private bool _isCallActive;
+    [ObservableProperty] private bool _isIndexDialogOpen;
     [ObservableProperty] private bool _isMushafVisibleToStudent = true;
     [ObservableProperty] private bool _isStudentMicMutedByTeacher;
     [ObservableProperty] private bool _isStudentCameraMutedByTeacher;
+
     [ObservableProperty] private int? _stopAyahNumber;
 
-    // Index Dialog State
-    [ObservableProperty] private bool _isIndexDialogOpen;
-    [ObservableProperty] private string _selectedIndexTab = "Surahs";
-    [ObservableProperty] private string _indexSearchText = string.Empty;
-
-    // Evaluation Overlay State
     [ObservableProperty] private bool _isEvaluationPanelOpen;
-    [ObservableProperty] private int _evaluationScore = 4;
     [ObservableProperty] private string _evaluationNotes = string.Empty;
+    [ObservableProperty] private int _evaluationScore = 4;
     [ObservableProperty] private bool _isScore1;
     [ObservableProperty] private bool _isScore2;
     [ObservableProperty] private bool _isScore3;
@@ -164,11 +163,26 @@ public sealed partial class LiveSessionViewModel : ObservableObject
 
     public string ConnectionLabel => Store.ConnectionState switch
     {
-        LiveSessionState.Connected => "\u0627\u062a\u0635\u0627\u0644 \u0645\u0628\u0627\u0634\u0631 P2P",
-        LiveSessionState.DirectConnectionUnavailable => "\u0627\u0644\u0627\u062a\u0635\u0627\u0644 \u0627\u0644\u0645\u0628\u0627\u0634\u0631 \u063a\u064a\u0631 \u0645\u062a\u0627\u062d",
-        LiveSessionState.Negotiating or LiveSessionState.Reconnecting => "\u062c\u0627\u0631\u0650 \u0627\u0644\u062a\u0641\u0627\u0648\u0636 \u0627\u0644\u0645\u0628\u0627\u0634\u0631",
-        _ => "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u062a\u0647\u064a\u0626\u0629 \u0627\u0644\u062c\u0644\u0633\u0629"
+        LiveSessionState.Connected => "\u0645\u062a\u0635\u0644",
+        LiveSessionState.DirectConnectionUnavailable => "\u063a\u064a\u0631 \u0645\u062a\u0627\u062d \u0644\u0644\u0627\u062a\u0635\u0627\u0644",
+        LiveSessionState.Negotiating or LiveSessionState.Reconnecting => "\u062c\u0627\u0631\u0650 \u0627\u0644\u0627\u062a\u0635\u0627\u0644...",
+        _ => "\u063a\u064a\u0631 \u0645\u062a\u0627\u062d \u0644\u0644\u0627\u062a\u0635\u0627\u0644"
     };
+
+    public Brush ConnectionBadgeBackground => Store.ConnectionState == LiveSessionState.Connected
+        ? new SolidColorBrush(Color.FromArgb(40, 46, 125, 50))
+        : new SolidColorBrush(Color.FromArgb(30, 220, 53, 69));
+
+    public Brush ConnectionBadgeForeground => Store.ConnectionState == LiveSessionState.Connected
+        ? new SolidColorBrush(Color.FromRgb(46, 125, 50))
+        : new SolidColorBrush(Color.FromRgb(220, 53, 69));
+
+    public void NotifyConnectionChanged()
+    {
+        OnPropertyChanged(nameof(ConnectionLabel));
+        OnPropertyChanged(nameof(ConnectionBadgeBackground));
+        OnPropertyChanged(nameof(ConnectionBadgeForeground));
+    }
 
     public LiveSessionViewModel(
         LiveSessionStore store,
@@ -200,7 +214,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         _peerMediaConnection.StateChanged += (_, state) =>
         {
             Store.SetConnectionState(state.State, state.Reason);
-            OnPropertyChanged(nameof(ConnectionLabel));
+            NotifyConnectionChanged();
         };
         _peerMediaConnection.RemoteMediaStateChanged += (_, state) => Store.SetPeerMedia(state.IsMicrophoneMuted, state.IsCameraEnabled);
         _mushafRealtimeChannel.PresenceReceived += (_, state) => Store.SetPeerMushafPresence(state);
@@ -239,10 +253,11 @@ public sealed partial class LiveSessionViewModel : ObservableObject
         IsIndexDialogOpen = false;
         IsMushafVisibleToStudent = true;
         IsStudentMicMutedByTeacher = false;
-        IsStudentCameraMutedByTeacher = false;
-        CallStatusLabel = "\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0627\u0644\u0631\u062f \u0639\u0644\u0649 \u0627\u0644\u0645\u0643\u0627\u0644\u0645\u0629";
-        CallStatusDescription = $"\u0641\u064a \u0627\u0646\u062a\u0638\u0627\u0631 \u0627\u0646\u0636\u0645\u0627\u0645 \u0627\u0644\u0637\u0627\u0644\u0628 {student.StudentName} \u0644\u0644\u0645\u0643\u0627\u0644\u0645\u0629...";
-        CallActionButtonText = "\u0637\u0644\u0628 \u0627\u062a\u0635\u0627\u0644 \u0645\u0628\u0627\u0634\u0631";
+        CallStatusLabel = "غير متاح للاتصال";
+        CallStatusDescription = $"في انتظار انضمام وقبول الطالب {student.StudentName}...";
+        CallActionButtonText = "طلب اتصال مباشر";
+        Store.SetConnectionState(LiveSessionState.DirectConnectionUnavailable, "في انتظار اتصال الطالب.");
+        NotifyConnectionChanged();
         OperationMessage = $"جاري إنشاء جلسة تسميع {taskType} للطالب {student.StudentName} على الخادم...";
         SetScoreSelected(4);
 
@@ -255,8 +270,9 @@ public sealed partial class LiveSessionViewModel : ObservableObject
 
         await PrepareRealtimeSessionAsync();
 
-            await EnsureIndexLoadedAsync();
-            await LoadMushafPageAsync(targetPage);
+        await EnsureIndexLoadedAsync();
+        await LoadMushafPageAsync(targetPage);
+        StartSessionMonitor();
         }
         finally
         {
@@ -295,20 +311,23 @@ public sealed partial class LiveSessionViewModel : ObservableObject
             EvaluationScore = 4;
             IsEvaluationPanelOpen = false;
             IsStudentSession = false;
-            IsCallActive = false;
+            IsCallActive = true;
             IsIndexDialogOpen = false;
             IsMushafVisibleToStudent = true;
             IsStudentMicMutedByTeacher = false;
             IsStudentCameraMutedByTeacher = false;
-            CallStatusLabel = "تم قبول الجلسة";
-            CallStatusDescription = $"انضممت إلى جلسة التسميع مع المعلم {session.Teacher.Name}. في انتظار الاتصال المباشر...";
-            CallActionButtonText = "الاتصال بالمعلم";
+            CallStatusLabel = "متصل";
+            CallStatusDescription = $"انضممت إلى جلسة التسميع مع المعلم {session.Teacher.Name}.";
+            CallActionButtonText = "إنهاء المكالمة";
             OperationMessage = CallStatusDescription;
+            Store.SetConnectionState(LiveSessionState.Connected, "متصل بالجلسة المباشرة.");
+            NotifyConnectionChanged();
             SetScoreSelected(4);
 
             await PrepareRealtimeSessionAsync();
             await EnsureIndexLoadedAsync();
             await LoadMushafPageAsync(TargetPage);
+            StartSessionMonitor();
         }
         finally
         {
@@ -839,6 +858,7 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     [RelayCommand]
     private void ConfirmEvaluation()
     {
+        StopSessionMonitor();
         var report = new SessionReport(
             StudentId: StudentId,
             StudentName: StudentName,
@@ -860,7 +880,108 @@ public sealed partial class LiveSessionViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void GoBack() => BackRequested?.Invoke(this, EventArgs.Empty);
+    private void GoBack()
+    {
+        StopSessionMonitor();
+        BackRequested?.Invoke(this, EventArgs.Empty);
+    }
+
+    private void StartSessionMonitor()
+    {
+        StopSessionMonitor();
+        _sessionMonitorCts = new CancellationTokenSource();
+        var token = _sessionMonitorCts.Token;
+        var targetSessionId = SessionId;
+
+        _ = Task.Run(async () =>
+        {
+            while (!token.IsCancellationRequested)
+            {
+                try
+                {
+                    await Task.Delay(2000, token);
+                    if (token.IsCancellationRequested || targetSessionId == Guid.Empty)
+                        break;
+
+                    var query = new SessionQuery(
+                        HalaqaId: null,
+                        StudentId: null,
+                        State: null,
+                        From: DateTimeOffset.UtcNow.AddHours(-1),
+                        To: null,
+                        Page: 1,
+                        PerPage: 10);
+
+                    var listResult = await _listSessionsUseCase.ExecuteAsync(query, token);
+                    if (listResult.IsSuccess && listResult.Value is not null)
+                    {
+                        var current = listResult.Value.Sessions.FirstOrDefault(s => s.Id == targetSessionId);
+                        if (current != null)
+                        {
+                            System.Windows.Application.Current?.Dispatcher.Invoke(() =>
+                            {
+                                UpdateConnectionStatusForSessionState(current.State);
+                            });
+                        }
+                    }
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+                catch
+                {
+                    // تجاهل أخطاء الشبكة المؤقتة
+                }
+            }
+        }, token);
+    }
+
+    private void StopSessionMonitor()
+    {
+        _sessionMonitorCts?.Cancel();
+        _sessionMonitorCts?.Dispose();
+        _sessionMonitorCts = null;
+    }
+
+    private void UpdateConnectionStatusForSessionState(OfficialSessionState state)
+    {
+        switch (state)
+        {
+            case OfficialSessionState.Accepted:
+            case OfficialSessionState.Connecting:
+            case OfficialSessionState.DirectNegotiation:
+            case OfficialSessionState.Connected:
+                Store.SetConnectionState(LiveSessionState.Connected, "الطالب متصل بالجلسة.");
+                IsCallActive = true;
+                CallStatusLabel = "متصل";
+                CallStatusDescription = $"الطالب {StudentName} متصل الآن بالجلسة المباشرة.";
+                CallActionButtonText = "إنهاء المكالمة";
+                NotifyConnectionChanged();
+                break;
+
+            case OfficialSessionState.Requested:
+                Store.SetConnectionState(LiveSessionState.DirectConnectionUnavailable, "في انتظار قبول الطالب.");
+                IsCallActive = false;
+                CallStatusLabel = "غير متاح للاتصال";
+                CallStatusDescription = $"في انتظار انضمام وقبول الطالب {StudentName}...";
+                CallActionButtonText = "طلب اتصال مباشر";
+                NotifyConnectionChanged();
+                break;
+
+            case OfficialSessionState.Cancelled:
+            case OfficialSessionState.Rejected:
+            case OfficialSessionState.Ended:
+                Store.SetConnectionState(LiveSessionState.DirectConnectionUnavailable, "انتهت الجلسة أو تم إغلاقها.");
+                IsCallActive = false;
+                CallStatusLabel = "غير متاح للاتصال";
+                CallStatusDescription = "انتهت الجلسة أو تم إغلاقها.";
+                CallActionButtonText = "طلب اتصال مباشر";
+                NotifyConnectionChanged();
+                StopSessionMonitor();
+                break;
+        }
+    }
 
     private static SessionTaskType ParseTaskType(string taskType) => taskType switch
     {
