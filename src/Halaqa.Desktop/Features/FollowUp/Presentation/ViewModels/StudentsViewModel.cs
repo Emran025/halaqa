@@ -5,9 +5,6 @@ using Halaqa.Desktop.Features.FollowUp.Domain.Entities;
 using Halaqa.Desktop.Features.FollowUp.Domain.UseCases;
 using Halaqa.Desktop.Features.Halaqas.Domain.Entities;
 using Halaqa.Desktop.Features.Halaqas.Domain.UseCases;
-using Halaqa.Desktop.Features.Memberships.Domain.Entities;
-using Halaqa.Desktop.Features.Memberships.Domain.UseCases;
-using Halaqa.Desktop.Features.Progress.Domain.UseCases;
 using Halaqa.Desktop.Shared.Domain.Common;
 
 namespace Halaqa.Desktop.Features.FollowUp.Presentation.ViewModels;
@@ -15,11 +12,7 @@ namespace Halaqa.Desktop.Features.FollowUp.Presentation.ViewModels;
 public sealed partial class StudentsViewModel : ObservableObject
 {
     private readonly ListHalaqasUseCase _listHalaqasUseCase;
-    private readonly ListHalaqaMembershipsUseCase _listMembershipsUseCase;
-    private readonly GetFollowUpPlanUseCase _getPlanUseCase;
-    private readonly ListFollowUpItemsUseCase _listItemsUseCase;
-    private readonly ListStudentTrackingsUseCase _listTrackingsUseCase;
-    private readonly GetStudentProgressUseCase _getProgressUseCase;
+    private readonly GetHalaqaStudentsSummaryUseCase _getSummaryUseCase;
     private readonly List<StudentFollowUpSummary> _allStudents = new();
     private bool _hasLoaded;
 
@@ -40,18 +33,10 @@ public sealed partial class StudentsViewModel : ObservableObject
 
     public StudentsViewModel(
         ListHalaqasUseCase listHalaqasUseCase,
-        ListHalaqaMembershipsUseCase listMembershipsUseCase,
-        GetFollowUpPlanUseCase getPlanUseCase,
-        ListFollowUpItemsUseCase listItemsUseCase,
-        ListStudentTrackingsUseCase listTrackingsUseCase,
-        GetStudentProgressUseCase getProgressUseCase)
+        GetHalaqaStudentsSummaryUseCase getSummaryUseCase)
     {
         _listHalaqasUseCase = listHalaqasUseCase;
-        _listMembershipsUseCase = listMembershipsUseCase;
-        _getPlanUseCase = getPlanUseCase;
-        _listItemsUseCase = listItemsUseCase;
-        _listTrackingsUseCase = listTrackingsUseCase;
-        _getProgressUseCase = getProgressUseCase;
+        _getSummaryUseCase = getSummaryUseCase;
         StartSardRecitationCommand = new RelayCommand<StudentFollowUpSummary?>(StartSardRecitation);
     }
 
@@ -80,8 +65,9 @@ public sealed partial class StudentsViewModel : ObservableObject
             _allStudents.Clear();
             var today = DateOnly.FromDateTime(DateTime.Today);
             var todayDayOfWeek = (int)DateTime.Today.DayOfWeek;
-            var halaqasResult = await LoadAllHalaqasAsync();
 
+            // ─── جلب قائمة الحلقات ───────────────────────────────────────────
+            var halaqasResult = await LoadAllHalaqasAsync();
             if (!halaqasResult.IsSuccess || halaqasResult.Value is null)
             {
                 IsError = true;
@@ -91,26 +77,63 @@ public sealed partial class StudentsViewModel : ObservableObject
             }
 
             var loadedStudentIds = new HashSet<Guid>();
+
             foreach (var halaqa in halaqasResult.Value)
             {
-                var membershipsResult = await LoadAllMembershipsAsync(halaqa.Id);
-                if (!membershipsResult.IsSuccess || membershipsResult.Value is null)
+                // ─── طلب واحد لكل حلقة بدلاً من N×4 طلبات منفصلة ─────────────
+                var summaryResult = await _getSummaryUseCase.ExecuteAsync(halaqa.Id);
+                if (!summaryResult.IsSuccess || summaryResult.Value is null)
                 {
                     IsError = true;
-                    Message = membershipsResult.Error?.Message ?? "تعذر تحميل أعضاء الحلقة من الخادم.";
+                    Message = summaryResult.Error?.Message ?? "تعذر تحميل بيانات الطلاب من الخادم.";
                     continue;
                 }
 
-                var summaries = membershipsResult.Value
-                    .Where(membership => loadedStudentIds.Add(membership.Student.Id))
-                    .Select(membership => BuildSummaryAsync(
-                        membership.Student.Id,
-                        membership.Student.Name,
-                        halaqa.Id,
-                        halaqa.Name,
-                        today,
-                        todayDayOfWeek));
-                _allStudents.AddRange(await Task.WhenAll(summaries));
+                foreach (var studentSummary in summaryResult.Value)
+                {
+                    // تجنب التكرار إذا انتمى الطالب لأكثر من حلقة
+                    if (!loadedStudentIds.Add(studentSummary.StudentId))
+                        continue;
+
+                    var plan = studentSummary.FollowUpPlan;
+                    var latestTracking = studentSummary.RecentTrackings.FirstOrDefault();
+                    var hasRecitedToday = latestTracking?.Date == today;
+
+                    var hasTodayItem = studentSummary.RecentFollowUpItems
+                        .Any(i => i.ScheduledFor?.Date == today.ToDateTime(TimeOnly.MinValue).Date
+                               && i.State is FollowUpItemState.Upcoming
+                                          or FollowUpItemState.Due
+                                          or FollowUpItemState.InProgress
+                                          or FollowUpItemState.Overdue);
+
+                    var isScheduledToday = hasTodayItem || FollowUpSchedulePolicy.IsScheduledOn(plan, today);
+                    var progress = studentSummary.Progress;
+
+                    var todaySlot = plan?.AttendancePreferences.WeeklySlots
+                        .FirstOrDefault(slot => slot.DayOfWeek == todayDayOfWeek);
+
+                    _allStudents.Add(new StudentFollowUpSummary(
+                        StudentId: studentSummary.StudentId,
+                        StudentName: studentSummary.StudentName,
+                        StudentCode: null,
+                        HalaqaId: halaqa.Id,
+                        HalaqaName: halaqa.Name,
+                        Frequency: plan?.Frequency ?? FollowUpFrequency.Unknown,
+                        AttendanceDay: todaySlot?.DayOfWeek ?? -1,
+                        AttendanceFrom: todaySlot?.From.ToString("HH:mm") ?? string.Empty,
+                        AttendanceTo: todaySlot?.To.ToString("HH:mm") ?? string.Empty,
+                        CurrentMemorizationPage: progress.LastMemorizationPage,
+                        CurrentReviewPage: progress.LastReviewPage,
+                        CurrentRecitationPage: progress.LastRecitationPage,
+                        IsScheduledToday: isScheduledToday,
+                        HasRecitedToday: hasRecitedToday,
+                        LastRecitedAt: null,
+                        LastEvaluation: latestTracking?.Notes,
+                        TotalMistakesRecorded: progress.TotalMistakes,
+                        HasMemorizationPlan: FollowUpSchedulePolicy.HasTaskType(plan, FollowUpTaskType.Memorization),
+                        HasReviewPlan: FollowUpSchedulePolicy.HasTaskType(plan, FollowUpTaskType.Review),
+                        HasRecitationPlan: FollowUpSchedulePolicy.HasTaskType(plan, FollowUpTaskType.Recitation)));
+                }
             }
 
             if (_allStudents.Count == 0 && !IsError)
@@ -148,78 +171,6 @@ public sealed partial class StudentsViewModel : ObservableObject
 
         return Result<IReadOnlyList<HalaqaItem>>.Success(halaqas);
     }
-
-    private async Task<Result<IReadOnlyList<HalaqaMembership>>> LoadAllMembershipsAsync(Guid halaqaId)
-    {
-        var result = await _listMembershipsUseCase.ExecuteAsync(halaqaId, status: "active", page: 1, perPage: 30);
-        if (!result.IsSuccess || result.Value is null)
-            return Result<IReadOnlyList<HalaqaMembership>>.Failure(result.Error!);
-
-        var memberships = result.Value.Memberships.ToList();
-        for (var page = 2; page <= result.Value.LastPage; page++)
-        {
-            var next = await _listMembershipsUseCase.ExecuteAsync(halaqaId, status: "active", page, perPage: 30);
-            if (!next.IsSuccess || next.Value is null)
-                return Result<IReadOnlyList<HalaqaMembership>>.Failure(next.Error!);
-            memberships.AddRange(next.Value.Memberships);
-        }
-
-        return Result<IReadOnlyList<HalaqaMembership>>.Success(memberships);
-    }
-
-    private async Task<StudentFollowUpSummary> BuildSummaryAsync(
-        Guid studentId,
-        string studentName,
-        Guid halaqaId,
-        string halaqaName,
-        DateOnly today,
-        int todayDayOfWeek)
-    {
-        FollowUpPlan? plan = null;
-        var planResult = await _getPlanUseCase.ExecuteAsync(studentId);
-        if (planResult.IsSuccess)
-            plan = planResult.Value;
-
-        var todayItemsResult = await _listItemsUseCase.ExecuteAsync(
-            new FollowUpItemQuery(today, null, null, studentId, Page: 1, PerPage: 50));
-        var hasOfficialTodayItems = todayItemsResult.IsSuccess && todayItemsResult.Value?.Items.Count > 0;
-
-        var trackingResult = await _listTrackingsUseCase.ExecuteAsync(studentId, null, null, page: 1, perPage: 1);
-        var latestTracking = trackingResult.IsSuccess ? trackingResult.Value?.Items.FirstOrDefault() : null;
-
-        var progressResult = await _getProgressUseCase.ExecuteAsync(studentId, taskType: null);
-        var progress = progressResult.IsSuccess ? progressResult.Value : null;
-
-        var todaySlot = plan?.AttendancePreferences.WeeklySlots
-            .FirstOrDefault(slot => slot.DayOfWeek == todayDayOfWeek);
-        var isScheduledToday = hasOfficialTodayItems || FollowUpSchedulePolicy.IsScheduledOn(plan, today);
-        var hasRecitedToday = latestTracking?.Date == today && latestTracking.AttendanceType == AttendanceType.Present;
-
-        return new StudentFollowUpSummary(
-            StudentId: studentId,
-            StudentName: studentName,
-            StudentCode: null,
-            HalaqaId: halaqaId,
-            HalaqaName: halaqaName,
-            Frequency: plan?.Frequency ?? FollowUpFrequency.Unknown,
-            AttendanceDay: todaySlot?.DayOfWeek ?? -1,
-            AttendanceFrom: todaySlot?.From.ToString("HH:mm") ?? string.Empty,
-            AttendanceTo: todaySlot?.To.ToString("HH:mm") ?? string.Empty,
-            CurrentMemorizationPage: GetStartPage(progress?.LastCompleted.Memorization),
-            CurrentReviewPage: GetStartPage(progress?.LastCompleted.Review),
-            CurrentRecitationPage: GetStartPage(progress?.LastCompleted.Recitation),
-            IsScheduledToday: isScheduledToday,
-            HasRecitedToday: hasRecitedToday,
-            LastRecitedAt: latestTracking?.CreatedAt,
-            LastEvaluation: latestTracking?.Note,
-            TotalMistakesRecorded: progress?.Totals.TotalMistakes ?? 0,
-            HasMemorizationPlan: FollowUpSchedulePolicy.HasTaskType(plan, FollowUpTaskType.Memorization),
-            HasReviewPlan: FollowUpSchedulePolicy.HasTaskType(plan, FollowUpTaskType.Review),
-            HasRecitationPlan: FollowUpSchedulePolicy.HasTaskType(plan, FollowUpTaskType.Recitation));
-    }
-
-    private static int? GetStartPage(Halaqa.Desktop.Features.Progress.Domain.Entities.CompletedRecitationRange? range) =>
-        range?.StartPage ?? range?.EndPage;
 
     private void UpdateStats()
     {

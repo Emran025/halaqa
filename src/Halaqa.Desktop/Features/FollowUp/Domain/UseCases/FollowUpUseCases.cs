@@ -201,3 +201,21 @@ public sealed class ListStudentTrackingsUseCase
     public Task<Result<TrackingPage>> ExecuteAsync(Guid studentId, DateOnly? from, DateOnly? to, int page, int perPage, CancellationToken cancellationToken = default) =>
         repository.ListTrackingsAsync(studentId, from, to, page, perPage, cancellationToken);
 }
+
+/// <summary>
+/// يجلب ملخص بيانات جميع الطلاب النشطين في الحلقة دفعةً واحدة.
+/// بديل عن استدعاء GetFollowUpPlan + ListFollowUpItems + ListTrackings + GetProgress
+/// لكل طالب على حدة.
+/// </summary>
+public sealed class GetHalaqaStudentsSummaryUseCase
+{
+    private readonly IFollowUpRepository _repository;
+
+    public GetHalaqaStudentsSummaryUseCase(IFollowUpRepository repository)
+    {
+        _repository = repository;
+    }
+
+    public Task<Result<IReadOnlyList<StudentHalaqaSummary>>> ExecuteAsync(Guid halaqaId, CancellationToken cancellationToken = default) =>
+        _repository.GetHalaqaStudentsSummaryAsync(halaqaId, cancellationToken);
+}

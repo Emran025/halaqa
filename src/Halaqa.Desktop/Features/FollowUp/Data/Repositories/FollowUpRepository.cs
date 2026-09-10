@@ -99,5 +99,13 @@ internal sealed class FollowUpRepository : IFollowUpRepository
             : Result<TrackingPage>.Failure(response.Error!);
     }
 
+    public async Task<Result<IReadOnlyList<StudentHalaqaSummary>>> GetHalaqaStudentsSummaryAsync(Guid halaqaId, CancellationToken cancellationToken = default)
+    {
+        var response = await remoteDataSource.GetHalaqaStudentsSummaryAsync(halaqaId, cancellationToken);
+        return response.IsSuccess && response.Value is not null
+            ? FollowUpMapper.ToStudentHalaqaSummaries(response.Value)
+            : Result<IReadOnlyList<StudentHalaqaSummary>>.Failure(response.Error!);
+    }
+
     private static string? NormalizeOptional(string? value) => string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 }

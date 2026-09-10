@@ -17,6 +17,12 @@ internal interface IFollowUpRemoteDataSource
     Task<Result<FollowUpItemResponseDto>> SkipItemAsync(Guid itemId, SkipFollowUpInputDto request, CancellationToken cancellationToken = default);
     Task<Result<FollowUpItemResponseDto>> RescheduleItemAsync(Guid itemId, RescheduleFollowUpInputDto request, CancellationToken cancellationToken = default);
     Task<Result<TrackingCollectionResponseDto>> ListTrackingsAsync(Guid studentId, DateOnly? from, DateOnly? to, int page, int perPage, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// طلب واحد يُرجع خطة المتابعة، بنود المتابعة، التتبع، والتقدم لجميع
+    /// الطلاب النشطين في الحلقة بدلاً من N×4 طلبات منفصلة.
+    /// </summary>
+    Task<Result<StudentSummaryCollectionResponseDto>> GetHalaqaStudentsSummaryAsync(Guid halaqaId, CancellationToken cancellationToken = default);
 }
 
 internal sealed class FollowUpRemoteDataSource : IFollowUpRemoteDataSource
@@ -63,6 +69,9 @@ internal sealed class FollowUpRemoteDataSource : IFollowUpRemoteDataSource
 
     public Task<Result<TrackingCollectionResponseDto>> ListTrackingsAsync(Guid studentId, DateOnly? from, DateOnly? to, int page, int perPage, CancellationToken cancellationToken = default) =>
         apiClient.GetAsync<TrackingCollectionResponseDto>(BuildTrackingsPath(studentId, from, to, page, perPage), cancellationToken);
+
+    public Task<Result<StudentSummaryCollectionResponseDto>> GetHalaqaStudentsSummaryAsync(Guid halaqaId, CancellationToken cancellationToken = default) =>
+        apiClient.GetAsync<StudentSummaryCollectionResponseDto>($"halaqas/{halaqaId}/students-summary", cancellationToken);
 
     private static string BuildItemsPath(FollowUpItemQuery query)
     {

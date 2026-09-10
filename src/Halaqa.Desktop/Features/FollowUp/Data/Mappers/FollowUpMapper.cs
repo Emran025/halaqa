@@ -1,4 +1,4 @@
-﻿using System.Globalization;
+using System.Globalization;
 using Halaqa.Desktop.Features.FollowUp.Data.Models;
 using Halaqa.Desktop.Features.FollowUp.Domain.Entities;
 using Halaqa.Desktop.Shared.Domain.Common;
@@ -233,4 +233,64 @@ internal static class FollowUpMapper
     private static string? ToDateString(DateOnly? value) => value?.ToString("yyyy-MM-dd", CultureInfo.InvariantCulture);
 
     private static AppError UnexpectedResponseError() => new(AppErrorKind.Unknown, "أعاد الخادم بيانات متابعة بصورة غير متوقعة.");
+
+    // ─── Batch students-summary mapper ───────────────────────────────────────
+
+    public static Result<IReadOnlyList<StudentHalaqaSummary>> ToStudentHalaqaSummaries(StudentSummaryCollectionResponseDto dto)
+    {
+        var list = new List<StudentHalaqaSummary>(dto.Data.Count);
+        foreach (var item in dto.Data)
+        {
+            FollowUpPlan? plan = null;
+            if (item.FollowUpPlan is not null)
+            {
+                var planResult = ToDomain(item.FollowUpPlan);
+                if (planResult.IsSuccess)
+                    plan = planResult.Value;
+            }
+
+            var followUpItems = item.RecentFollowUpItems
+                .Select(i => new StudentHalaqaSummaryFollowUpItem(
+                    Id: i.Id,
+                    StudentId: i.StudentId,
+                    HalaqaId: i.HalaqaId,
+                    ScheduledFor: i.ScheduledFor,
+                    State: TryParseEnum(i.State, out FollowUpItemState state) ? state : FollowUpItemState.Upcoming,
+                    TaskType: TryParseEnum(i.TaskType ?? string.Empty, out FollowUpTaskType tt) ? tt : null,
+                    CompletedAt: i.CompletedAt,
+                    SkippedAt: i.SkippedAt,
+                    SkipReason: i.SkipReason))
+                .ToArray();
+
+            var trackings = item.RecentTrackings
+                .Select(t => new StudentHalaqaSummaryTracking(
+                    Id: t.Id,
+                    StudentId: t.StudentId,
+                    Date: DateOnly.TryParseExact(t.Date ?? string.Empty, "yyyy-MM-dd", out var d) ? d : null,
+                    Notes: t.Notes))
+                .ToArray();
+
+            var progress = new StudentHalaqaProgress(
+                StudentId: item.Progress.StudentId,
+                LastMemorizationPage: item.Progress.LastCompleted.Memorization?.StartPage ?? item.Progress.LastCompleted.Memorization?.EndPage,
+                LastReviewPage: item.Progress.LastCompleted.Review?.StartPage ?? item.Progress.LastCompleted.Review?.EndPage,
+                LastRecitationPage: item.Progress.LastCompleted.Recitation?.StartPage ?? item.Progress.LastCompleted.Recitation?.EndPage,
+                TotalSessions: item.Progress.Totals.TotalSessions,
+                TotalTasks: item.Progress.Totals.TotalTasks,
+                TotalMistakes: item.Progress.Totals.TotalMistakes,
+                MemorizationTasks: item.Progress.Totals.MemorizationTasks,
+                ReviewTasks: item.Progress.Totals.ReviewTasks,
+                RecitationTasks: item.Progress.Totals.RecitationTasks);
+
+            list.Add(new StudentHalaqaSummary(
+                StudentId: item.StudentId,
+                StudentName: item.StudentName,
+                FollowUpPlan: plan,
+                RecentFollowUpItems: followUpItems,
+                RecentTrackings: trackings,
+                Progress: progress));
+        }
+
+        return Result<IReadOnlyList<StudentHalaqaSummary>>.Success(list);
+    }
 }

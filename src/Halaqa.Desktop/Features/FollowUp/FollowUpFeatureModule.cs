@@ -22,6 +22,7 @@ public static class FollowUpFeatureModule
         services.AddSingleton<SkipFollowUpItemUseCase>();
         services.AddSingleton<RescheduleFollowUpItemUseCase>();
         services.AddSingleton<ListStudentTrackingsUseCase>();
+        services.AddSingleton<GetHalaqaStudentsSummaryUseCase>();
         services.AddSingleton<FollowUpViewModel>();
         services.AddSingleton<ComprehensiveTrackingViewModel>();
         services.AddSingleton<StudentsViewModel>();

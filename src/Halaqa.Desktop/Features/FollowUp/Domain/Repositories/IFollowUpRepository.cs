@@ -14,4 +14,10 @@ public interface IFollowUpRepository
     Task<Result<FollowUpItem>> SkipItemAsync(Guid itemId, string reason, Guid clientOperationId, CancellationToken cancellationToken = default);
     Task<Result<FollowUpItem>> RescheduleItemAsync(RescheduleFollowUpItemCommand command, CancellationToken cancellationToken = default);
     Task<Result<TrackingPage>> ListTrackingsAsync(Guid studentId, DateOnly? from, DateOnly? to, int page, int perPage, CancellationToken cancellationToken = default);
+
+    /// <summary>
+    /// يجلب بيانات جميع الطلاب النشطين في الحلقة دفعةً واحدة (خطة المتابعة، البنود، التتبع، التقدم).
+    /// يحل مشكلة N×4 طلبات المتعددة.
+    /// </summary>
+    Task<Result<IReadOnlyList<StudentHalaqaSummary>>> GetHalaqaStudentsSummaryAsync(Guid halaqaId, CancellationToken cancellationToken = default);
 }

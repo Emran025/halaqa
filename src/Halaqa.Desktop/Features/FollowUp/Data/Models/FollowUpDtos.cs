@@ -120,3 +120,75 @@ internal sealed record TrackingDto(
 internal sealed record TrackingCollectionResponseDto(
     [property: JsonPropertyName("trackings")] IReadOnlyList<TrackingDto> Trackings,
     [property: JsonPropertyName("meta")] PaginationMetaDto Meta);
+
+// ─── Batch students-summary DTOs (endpoint: GET halaqas/{id}/students-summary) ─
+
+internal sealed record SummaryFollowUpItemDto(
+    [property: JsonPropertyName("id")] Guid Id,
+    [property: JsonPropertyName("student_id")] Guid StudentId,
+    [property: JsonPropertyName("halaqa_id")] Guid? HalaqaId,
+    [property: JsonPropertyName("scheduled_for")] DateTimeOffset? ScheduledFor,
+    [property: JsonPropertyName("state")] string State,
+    [property: JsonPropertyName("task_type")] string? TaskType,
+    [property: JsonPropertyName("unit")] string? Unit,
+    [property: JsonPropertyName("amount")] decimal? Amount,
+    [property: JsonPropertyName("completed_at")] DateTimeOffset? CompletedAt,
+    [property: JsonPropertyName("skipped_at")] DateTimeOffset? SkippedAt,
+    [property: JsonPropertyName("skip_reason")] string? SkipReason);
+
+internal sealed record SummaryTrackingDetailDto(
+    [property: JsonPropertyName("id")] Guid Id,
+    [property: JsonPropertyName("task_type")] string? TaskType,
+    [property: JsonPropertyName("from_unit")] string? FromUnit,
+    [property: JsonPropertyName("to_unit")] string? ToUnit,
+    [property: JsonPropertyName("from_unit_number")] int? FromUnitNumber,
+    [property: JsonPropertyName("to_unit_number")] int? ToUnitNumber,
+    [property: JsonPropertyName("notes")] string? Notes);
+
+internal sealed record SummaryTrackingDto(
+    [property: JsonPropertyName("id")] Guid Id,
+    [property: JsonPropertyName("student_id")] Guid StudentId,
+    [property: JsonPropertyName("date")] string? Date,
+    [property: JsonPropertyName("notes")] string? Notes,
+    [property: JsonPropertyName("details")] IReadOnlyList<SummaryTrackingDetailDto> Details);
+
+internal sealed record SummaryLastCompletedDto(
+    [property: JsonPropertyName("memorization")] SummaryCompletedRangeDto? Memorization,
+    [property: JsonPropertyName("review")] SummaryCompletedRangeDto? Review,
+    [property: JsonPropertyName("recitation")] SummaryCompletedRangeDto? Recitation);
+
+internal sealed record SummaryCompletedRangeDto(
+    [property: JsonPropertyName("edition_id")] int EditionId,
+    [property: JsonPropertyName("start_page")] int? StartPage,
+    [property: JsonPropertyName("end_page")] int? EndPage,
+    [property: JsonPropertyName("start_ayah_id")] int? StartAyahId,
+    [property: JsonPropertyName("end_ayah_id")] int? EndAyahId);
+
+internal sealed record SummaryTotalsDto(
+    [property: JsonPropertyName("total_sessions")] int TotalSessions,
+    [property: JsonPropertyName("total_tasks")] int TotalTasks,
+    [property: JsonPropertyName("total_mistakes")] int TotalMistakes,
+    [property: JsonPropertyName("memorization_tasks")] int MemorizationTasks,
+    [property: JsonPropertyName("review_tasks")] int ReviewTasks,
+    [property: JsonPropertyName("recitation_tasks")] int RecitationTasks);
+
+internal sealed record SummaryProgressDto(
+    [property: JsonPropertyName("student_id")] Guid StudentId,
+    [property: JsonPropertyName("last_completed")] SummaryLastCompletedDto LastCompleted,
+    [property: JsonPropertyName("totals")] SummaryTotalsDto Totals);
+
+internal sealed record StudentSummaryDto(
+    [property: JsonPropertyName("student_id")] Guid StudentId,
+    [property: JsonPropertyName("student_name")] string StudentName,
+    [property: JsonPropertyName("follow_up_plan")] FollowUpPlanDto? FollowUpPlan,
+    [property: JsonPropertyName("recent_follow_up_items")] IReadOnlyList<SummaryFollowUpItemDto> RecentFollowUpItems,
+    [property: JsonPropertyName("recent_trackings")] IReadOnlyList<SummaryTrackingDto> RecentTrackings,
+    [property: JsonPropertyName("progress")] SummaryProgressDto Progress);
+
+internal sealed record StudentSummaryCollectionResponseDto(
+    [property: JsonPropertyName("data")] IReadOnlyList<StudentSummaryDto> Data,
+    [property: JsonPropertyName("meta")] StudentSummaryMetaDto Meta);
+
+internal sealed record StudentSummaryMetaDto(
+    [property: JsonPropertyName("halaqa_id")] Guid HalaqaId,
+    [property: JsonPropertyName("student_count")] int StudentCount);

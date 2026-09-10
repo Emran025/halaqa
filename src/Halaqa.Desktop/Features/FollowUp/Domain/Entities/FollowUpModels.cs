@@ -179,3 +179,44 @@ public sealed record StudentFollowUpSummary(
     bool HasMemorizationPlan = false,
     bool HasReviewPlan = false,
     bool HasRecitationPlan = false);
+
+/// <summary>
+/// نتيجة الطلب الدفعي GET /halaqas/{id}/students-summary.
+/// يحتوي على كل بيانات طالب واحد دون الحاجة لطلبات إضافية.
+/// </summary>
+public sealed record StudentHalaqaSummary(
+    Guid StudentId,
+    string StudentName,
+    FollowUpPlan? FollowUpPlan,
+    IReadOnlyList<StudentHalaqaSummaryFollowUpItem> RecentFollowUpItems,
+    IReadOnlyList<StudentHalaqaSummaryTracking> RecentTrackings,
+    StudentHalaqaProgress Progress);
+
+public sealed record StudentHalaqaSummaryFollowUpItem(
+    Guid Id,
+    Guid StudentId,
+    Guid? HalaqaId,
+    DateTimeOffset? ScheduledFor,
+    FollowUpItemState State,
+    FollowUpTaskType? TaskType,
+    DateTimeOffset? CompletedAt,
+    DateTimeOffset? SkippedAt,
+    string? SkipReason);
+
+public sealed record StudentHalaqaSummaryTracking(
+    Guid Id,
+    Guid StudentId,
+    DateOnly? Date,
+    string? Notes);
+
+public sealed record StudentHalaqaProgress(
+    Guid StudentId,
+    int? LastMemorizationPage,
+    int? LastReviewPage,
+    int? LastRecitationPage,
+    int TotalSessions,
+    int TotalTasks,
+    int TotalMistakes,
+    int MemorizationTasks,
+    int ReviewTasks,
+    int RecitationTasks);
